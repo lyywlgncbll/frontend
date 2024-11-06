@@ -7,5 +7,4 @@ import SearchUser from './pages/SearchUser.vue';
 </template>
 
 <style scoped>
-
 </style>
