@@ -1,9 +1,19 @@
-<script setup>
+<script>
+import NavigationBar from "~/components/bar/navigation-bar.vue";
+import {defineComponent} from "vue";
 
+export default defineComponent({
+  components:{
+    NavigationBar
+  },
+});
 
 </script>
 
 <template>
+  <div id="naviBar">
+    <navigation-bar/>
+  </div>
   <div  class="loginBox">
     <div class="title">
       <div class="title-h1">
@@ -33,7 +43,11 @@
 </template>
 <style scoped>
 
-
+#naviBar {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
 .loginBox {
   position: absolute;
   z-index: 10;
@@ -47,6 +61,7 @@
   //background: transparent;
   background-color: rgb(255,255,255,0.2);
   border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
   backdrop-filter: blur(7px);
   top: 50%;
   left: 50%;

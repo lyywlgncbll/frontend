@@ -1,8 +1,18 @@
-<script setup>
+<script>
+import NavigationBar from "~/components/bar/navigation-bar.vue";
+import {defineComponent} from "vue";
 
+export default defineComponent({
+  components:{
+    NavigationBar
+  },
+});
 </script>
 
 <template>
+  <div id="naviBar">
+    <navigation-bar/>
+  </div>
   <div class="resetPasswordBox">
     <div class="title">
       <div class="title-h1">
@@ -35,6 +45,11 @@
 </template>
 
 <style scoped>
+#naviBar {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
 .resetPasswordBox {
   position: absolute; /* Ensure it can be controlled by z-index */
   z-index: 10; /* Higher than other elements */
@@ -46,6 +61,7 @@
   box-sizing: border-box;
   font-family: PlastoTrial_ExtraLight,serif;
   background-color: rgb(255,255,255,0.3);
+  border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(7px);
   top: 50%;
