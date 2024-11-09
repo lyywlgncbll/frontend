@@ -38,7 +38,7 @@
             search(){
                 // console.log('search',this.keyword,this.SearchType)
                 //子节点进行搜索
-                // this.$emit("search",this.keyword)
+                this.$emit("search",this.keyword)
                 //父节点进行搜索
             }
         }
