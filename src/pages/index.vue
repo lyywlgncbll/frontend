@@ -9,15 +9,18 @@
                 <searchBar :isExpand="isExpand"></searchBar>
             </div>
             <div :class="{ main: true, collapsed: !isExpand }">
-                
+                <searchItem></searchItem>
+                <searchItem></searchItem>
+                <searchItem></searchItem>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import {  ref } from 'vue';
 import searchBar from '../components/searchBar.vue';
+import searchItem from '../components/searchItem.vue';
 
 //侧边栏是否展开
 const isExpand = ref(true)
