@@ -3,35 +3,47 @@
         <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
             <div class="menu-title" @click="toggleItem(index)">
                 {{ item.title }}
-                <span :class="{ rotated: expandedIndexes.includes(index) }">v</span>
+                <span>
+                    <img v-if="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
+                        width="15px" height="15px">
+                    <img v-else="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
+                        width="15px" height="15px" :style="{ transform: 'rotate(180deg)' }">
+                </span>
             </div>
 
-            <div class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
-                <p v-for="(content, i) in item.contents" :key="i">{{ content }}</p>
-            </div>
+            <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
+                <li v-for="(content, i) in item.contents" :key="i" class="content-item">
+                    <label>
+                        <input type="checkbox" :value="content">
+                        <span>{{ content }}</span>
+                    </label>
+
+                </li>
+                <div class="icon-container" v-show="item.contents.length > 3">
+                    <img src="/src/assets/search/icon/expand.svg" class="icon">
+                </div>
+            </ul>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const menuItems = ref([
+    { title: '时间', contents: ['内容 1', '内容 2', '内容 3'] },
     { title: '主题', contents: ['内容 1', '内容 2', '内容 3'] },
     { title: '来源', contents: ['内容 1', '内容 2', '内容 3'] },
     { title: '学科', contents: ['内容 1', '内容 2', '内容 3'] },
     { title: '作者', contents: ['内容 1', '内容 2', '内容 3'] },
+    { title: '作者', contents: ['内容 1', '内容 2', '内容 3'] },
 ]);
 
-// 使用数组记录多个展开的索引
 const expandedIndexes = ref([]);
-
 const toggleItem = (index) => {
     if (expandedIndexes.value.includes(index)) {
-        // 如果该项已展开，移除索引
         expandedIndexes.value = expandedIndexes.value.filter(i => i !== index);
     } else {
-        // 如果该项未展开，添加索引
         expandedIndexes.value.push(index);
     }
 };
@@ -42,11 +54,14 @@ const toggleItem = (index) => {
     width: 100%;
     padding: 10px;
     margin: 0 auto;
+    position: relative;
+    transition: all 0.3s ease;
 }
 
 .menu-item {
     margin-bottom: 12px;
-    border-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
     overflow: hidden;
     box-shadow: 0px 3px 5px -4px;
 }
@@ -61,9 +76,8 @@ const toggleItem = (index) => {
     cursor: pointer;
 }
 
-.menu-title span.rotated {
-    transform: rotate(180deg);
-    transition: transform 0.3s;
+.menu-title:hover {
+    background-color: #9ecae9;
 }
 
 .menu-content {
@@ -72,10 +86,51 @@ const toggleItem = (index) => {
     height: 0;
     transition: all 1s;
     padding: 0 10px;
+    position: relative;
+}
+
+.menu-content li:nth-child(1) {
+    margin-top: 15px;
+}
+
+.content-item {
+    display: flex;
+    align-items: center;
+    padding: 2px 15px;
+    margin: 5px auto;
+}
+
+.content-item input {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.content-item span {
+    text-align: center;
+    font-size: 15px;
+    cursor: pointer;
+    color: #333;
 }
 
 .expand {
-    height: 100px;
-    padding: 10px;
+    height: 130px;
+    padding: 0 10px;
+}
+
+.icon-container {
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+}
+
+.icon {
+    height: 12px;
+    width: 12px;
 }
 </style>
