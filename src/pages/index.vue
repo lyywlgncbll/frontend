@@ -1,15 +1,15 @@
 <template>
     <div id="search-body">
         <div id="mid">
+            <div class="left-expand" @click="expandBar">
+                <img src="/src/assets/search/icon/down-expand.svg" class="icon" width="15px" height="15px"
+                    :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
+            </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <div class="left-expand" @click="expandBar">
-                    <img src="/src/assets/search/icon/down-expand.svg" class="icon" width="15px" height="15px"
-                        :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
-                </div>
-                <searchBar></searchBar>
+                <searchBar :isExpand="isExpand"></searchBar>
             </div>
             <div :class="{ main: true, collapsed: !isExpand }">
-
+                
             </div>
         </div>
     </div>
@@ -37,14 +37,18 @@ const expandBar = () => {
     height: 100vh;
     display: flex;
     margin: 30px auto;
-    overflow: hidden;
+    position: relative;
 }
 
 .left-bar {
     width: 20%;
     height: 90%;
     transition: all 0.3s ease;
-    position: relative;
+    overflow: hidden;
+}
+
+.left-bar.collapsed {
+    width: 0;
 }
 
 .left-expand {
@@ -56,7 +60,7 @@ const expandBar = () => {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    right: -20px;
+    left: -20px;
     top: 10px;
 }
 
@@ -64,17 +68,14 @@ const expandBar = () => {
     background-color: #85a9c2;
 }
 
-.left-bar.collapsed {
-    transform: translateX(-100%);
-    width: 20px;
-}
-
 .main {
-    border: 1px solid black;
     width: 75%;
     height: 100%;
     margin: 0 auto;
-    transition: width 0.3s ease;
+    transition: all 0.3 ease;
 }
 
+.main.collapsed{
+    width: 90%;
+}
 </style>

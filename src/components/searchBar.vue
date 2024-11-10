@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar">
+    <div :class="{ sidebar: true, collapsed: !isExpand }">
         <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
             <div class="menu-title" @click="toggleItem(index)">
                 {{ item.title }}
@@ -28,8 +28,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-
+import { defineProps, ref } from 'vue';
 const menuItems = ref([
     { title: '时间', contents: ['内容 1', '内容 2', '内容 3'] },
     { title: '主题', contents: ['内容 1', '内容 2', '内容 3'] },
@@ -47,6 +46,10 @@ const toggleItem = (index) => {
         expandedIndexes.value.push(index);
     }
 };
+
+const props = defineProps({
+  isExpand: Boolean, // 定义 props 的类型
+});
 </script>
 
 <style scoped>
@@ -56,6 +59,11 @@ const toggleItem = (index) => {
     margin: 0 auto;
     position: relative;
     transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.sidebar.collapsed{
+    transform: translateX(-100%);
 }
 
 .menu-item {
