@@ -1,6 +1,5 @@
 <script>
 import GradientBackground from "./components/background/gradient-background.vue";
-import Article from './components/Article.vue';
 export default {
   name:"App",
   components:{
@@ -36,3 +35,8 @@ export default {
   z-index: -10;
 }
 </style>
+
+<script setup>
+
+
+</script>
