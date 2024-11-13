@@ -10,6 +10,7 @@
         type="primary"
         @click="search">
         搜索
+        <img src="/src/assets/search/icon/search.svg" class="searchIcon" width="17px" height="17px">
         </el-button>
     </div>
 </template>
@@ -45,5 +46,8 @@
     }
 </script>
 <style scoped>
+.searchIcon{
+    margin-left: 7%;
+}
 </style>
 //搜索方法：search,输入文本框宽度：width,提示词：placeholder,

@@ -17,11 +17,10 @@
                     class="userItem"
                     v-for="userItem in userList"
                     :key="userItem.id"
-                    @click="selectUser(userItem)"
                     >
-                    <img  :src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
+                    <img  @click="selectUser(userItem)":src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
                     <div class="userItem-info">
-                        <span class="userItem-name">{{ userItem.name }}</span>
+                        <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
                         <span class="userItem-institution">{{ userItem.institution }}</span>
                         <div>
                             <span v-for="(domainItem, index) in userItem.domain" :key="index">
@@ -33,11 +32,9 @@
                         <span class="userItem-introduction">{{ userItem.introduction }}</span>
                     </div>
                     <div></div>
-                    <!-- <button class="userItem-button" @click="handleButtonClick(userItem)">关注</button> -->
                     </div>
                 </div>
-                <div>
-                    
+                <div>       
                 </div>
             </div>
         </div>
@@ -71,7 +68,7 @@ export default{
                 domain:["Rag","VA"],
                 introduction:"这是一段个人简介"},
                 {id:"3", name:"just a name", institution:"BeiHang University",
-                avatar:"./src/assets/avatar.jpg",
+                avatar:"./src/assets/test.jpg",
                 domain:["LLM","DNA methylation"],
                 introduction:"这是一段个人简介"},]
         },
@@ -142,7 +139,6 @@ export default{
     align-items: center;
     padding: 1%;
     border-bottom: 1px solid #eee;
-    cursor: pointer;
     position: relative;
     border: 1px solid grey;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12);
@@ -151,12 +147,13 @@ export default{
 }
  
 .userItem-avatar {
-    width: 111px;
+    width: 100px;
     height: 100px;
     border-radius: 50%;
     margin-top: -5%;
     margin-right: 5%;
     margin-left: 2%;
+    cursor: pointer;
 }
  
 .userItem-info {
@@ -169,6 +166,7 @@ export default{
     font-size: 125%;
     font-weight: bold;
     margin-top: 1%;
+    cursor: pointer;
 }
 .userItem-institution {
     font-size: 100%;
@@ -177,18 +175,6 @@ export default{
 .userItem-domain{
     font-size: 100%;
     color: rgba(7, 143, 201, 0.822);
-}
-.userItem-button {
-    position: flex;   
-    margin-top: 5%; 
-    margin-right: 1%; /* 距离右侧的距离 */
-    padding: 5px 10px;
-    font-size: 12px;
-    background-color: #0073e6;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
 }
 .line {
     width: 100%;
