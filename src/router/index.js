@@ -4,7 +4,7 @@ import {
     createWebHistory
 } from 'vue-router'
 
-import searchArticle from '~/pages/searchArticle.vue'
+import searchArticle from '~/pages/search/searchArticle.vue'
 import Index from '~/pages/index.vue'
 import Reader from '../pages/Reader.vue'
 

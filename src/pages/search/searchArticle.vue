@@ -18,8 +18,8 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import searchBar from '../components/searchBar.vue';
-import searchItem from '../components/searchItem.vue';
+import searchBar from '/src/components/searchBar.vue';
+import searchItem from '/src/components/searchItem.vue';
 
 //侧边栏是否展开
 const isExpand = ref(true)
