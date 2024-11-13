@@ -4,8 +4,12 @@
     </div>
     <div id="search-body">
         <div id="mid">
-            <div class="left-bar">
-                <searchBar />
+            <div class="left-expand" @click="expandBar">
+                <img src="/src/assets/search/icon/down-expand.svg" class="icon" width="15px" height="15px"
+                    :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
+            </div>
+            <div class="left-bar" :class="{ collapsed: !isExpand }">
+                <searchBar :isExpand="isExpand"></searchBar>
             </div>
             <div class="main">
                 <div class="userList">
@@ -25,8 +29,11 @@
                                 <template v-if="index < userItem.domain.length - 1"> / </template>
                             </span>
                         </div>
+                        <div class="line"></div>
+                        <span class="userItem-introduction">{{ userItem.introduction }}</span>
                     </div>
-                    <button class="userItem-button" @click="handleButtonClick(userItem)">关注</button>
+                    <div></div>
+                    <!-- <button class="userItem-button" @click="handleButtonClick(userItem)">关注</button> -->
                     </div>
                 </div>
                 <div>
@@ -43,7 +50,8 @@ export default{
     data(){
         return{
             searchType:"User",
-            userList:[]
+            userList:[],
+            isExpand:true
         }
     },
     components:{
@@ -56,16 +64,22 @@ export default{
             this.userList = [
                 {id:"1", name:"off-fu", institution:"BeiHang University",
                 avatar:"./src/assets/avatar.jpg",
-                domain:["Cell biology","Biology","Large Language Model","DNA methylation","length test"]},
+                domain:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
+                introduction:"这是一段个人简介"},
                 {id:"2", name:"test user", institution:"BeiHang University",
                 avatar:"./src/assets/avatar.jpg",
-                domain:["Rag","VA"]},
+                domain:["Rag","VA"],
+                introduction:"这是一段个人简介"},
                 {id:"3", name:"just a name", institution:"BeiHang University",
                 avatar:"./src/assets/avatar.jpg",
-                domain:["LLM","DNA methylation"]}]
+                domain:["LLM","DNA methylation"],
+                introduction:"这是一段个人简介"},]
         },
         selectUser(user){
             console.log(user)
+        },
+        expandBar(){
+            this.isExpand = this.isExpand ? false : true
         }
     }
 }
@@ -84,19 +98,37 @@ export default{
     height: 100vh;
     display: flex;
     margin: 30px auto;
+    position: relative;
 }
 
 
 .left-bar{
     width: 20%;
     height: 90%;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.left-bar.collapsed {
+    width: 0;
 }
 
+.left-expand {
+    width: 20px;
+    height: 44px;
+    position: absolute;
+    background-color: #92bad6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    left: -20px;
+    top: 10px;
+}
 .main{
     width: 75%;
     height: auto;
     margin: 0 auto;
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 .userList {
     list-style: none;
@@ -105,17 +137,24 @@ export default{
 }
  
 .userItem {
+    
     display: flex;
     align-items: center;
     padding: 1%;
     border-bottom: 1px solid #eee;
     cursor: pointer;
+    position: relative;
+    border: 1px solid grey;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12);
+    border-radius: 20px;
+    margin-top: 2%;
 }
  
 .userItem-avatar {
-    width: 10%;
-    height: 10%;
+    width: 111px;
+    height: 100px;
     border-radius: 50%;
+    margin-top: -5%;
     margin-right: 5%;
     margin-left: 2%;
 }
@@ -150,5 +189,21 @@ export default{
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+.line {
+    width: 100%;
+    height: 1px;
+    border: 1px solid rgb(181, 180, 180);
+    margin: 15px auto;
+}
+.userItem-introduction {
+    margin: 5px auto;
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
 }
 </style>
