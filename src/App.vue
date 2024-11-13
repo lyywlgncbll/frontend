@@ -3,9 +3,10 @@ import Reader from './pages/Reader.vue';
 </script>
 
 <template>
+  <div id="app">
+    <router-view />
+  </div>
   <!-- <Reader></Reader> -->
-  <p>HelloWorld</p>
-  <router-link to="/reader">click</router-link>
 </template>
 
 <style scoped>

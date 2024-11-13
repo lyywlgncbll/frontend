@@ -1,16 +1,11 @@
-<script>
-// import * as mupdf from "mupdf";
+<script setup>
+import * as mupdf from "mupdf";
 
-// let document = new mupdf.Document.openDocument("~/assets/test/test.pdf", "application/pdf");
-// console.log(document);
-// export default {
-//     name : 'Reader',
-// }
+let document = new mupdf.Document.openDocument("~/assets/test/test.pdf", "application/pdf");
 </script>
 
 <template>
-    <p>reader</p>
-    
+  <p>reader</p>
 </template>
 
 <style scoped>
