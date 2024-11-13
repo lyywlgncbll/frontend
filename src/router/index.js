@@ -5,6 +5,7 @@ import {
 } from 'vue-router'
 
 import Index from '~/pages/index.vue'
+import Reader from '../pages/Reader.vue'
 
 import Article from '../components/Article.vue'
 import Login from "../pages/user/login.vue";
@@ -13,25 +14,35 @@ import ResetPassword from "~/pages/user/resetPassword.vue";
 
 const routes = [
     {
-    path: "/",
-    component: Index
-},
-{
-    path: "/article",
-    component: Article
-},{
-    path: "/login",
-    component: Login,
-    meta: { requiresGradient: true }
-},{
-    path: "/register",
-    component: Register,
-    meta: { requiresGradient: true }
-},{
-    path: "/resetPassword",
-    component: ResetPassword,
-    meta: { requiresGradient: true }
-}]
+        path: "/",
+        component: Index
+    },
+    {
+        path: "/reader",
+        name: "Reader",
+        component: Reader,
+    },
+    {
+        path: "/article",
+        component: Article
+    },
+    {
+        path: "/login",
+        component: Login,
+        meta: { requiresGradient: true }
+    },
+    {
+        path: "/register",
+        component: Register,
+        meta: { requiresGradient: true }
+    },
+    {
+        path: "/resetPassword",
+        component: ResetPassword,
+        meta: { requiresGradient: true }
+    }
+]
+
 
 
 

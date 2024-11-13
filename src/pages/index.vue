@@ -1,5 +1,12 @@
-<template>
-    <div>
+<script setup>
+</script>
 
-    </div>
+<template>
+  <p>Hello world</p>
 </template>
+
+<style scoped>
+.read-the-docs {
+  color: #888;
+}
+</style>

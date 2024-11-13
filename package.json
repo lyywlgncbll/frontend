@@ -11,6 +11,9 @@
   "dependencies": {
     "axios": "^1.7.7",
     "element-plus": "^2.7.3",
+    "pdfjs-dist": "^4.8.69",
+    "vite-plugin-top-level-await": "^1.4.4",
+    "vite-test1": "file:",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"
   },

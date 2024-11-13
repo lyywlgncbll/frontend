@@ -21,7 +21,7 @@ export default {
     <router-view/>
   </div>
 
-
+  <div>
     <!-- 渲染页面内容 -->
     <router-view />
   </div>
