@@ -41,8 +41,8 @@
     </div>
 </template>
 <script>
-    import SearchBox from '../components/SearchBox.vue';
-    import searchBar from '../components/searchBar.vue';
+    import SearchBox from '../../components/SearchBox.vue';
+    import searchBar from '../../components/searchBar.vue';
 export default{
     data(){
         return{
@@ -60,15 +60,15 @@ export default{
             console.log('search',keyword)
             this.userList = [
                 {id:"1", name:"off-fu", institution:"BeiHang University",
-                avatar:"./src/assets/avatar.jpg",
+                avatar:"/src/assets/avatar.jpg",
                 domain:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
                 introduction:"这是一段个人简介"},
                 {id:"2", name:"test user", institution:"BeiHang University",
-                avatar:"./src/assets/avatar.jpg",
+                avatar:"/src/assets/avatar.jpg",
                 domain:["Rag","VA"],
                 introduction:"这是一段个人简介"},
                 {id:"3", name:"just a name", institution:"BeiHang University",
-                avatar:"./src/assets/test.jpg",
+                avatar:"/src/assets/test.jpg",
                 domain:["LLM","DNA methylation"],
                 introduction:"这是一段个人简介"},]
         },

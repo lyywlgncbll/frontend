@@ -11,6 +11,7 @@ import Article from '../components/Article.vue'
 import Login from "../pages/user/login.vue";
 import Register from "../pages/user/register.vue";
 import ResetPassword from "~/pages/user/resetPassword.vue";
+import SearchUserResult from "../pages/search/SearchUser.vue"
 
 const routes = [
     {
@@ -40,6 +41,10 @@ const routes = [
         path: "/resetPassword",
         component: ResetPassword,
         meta: { requiresGradient: true }
+    },
+    {
+        path: "/search/searchUser/result",
+        component: SearchUserResult,
     }
 ]
 
