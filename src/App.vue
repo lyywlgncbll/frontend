@@ -1,11 +1,11 @@
 <script setup>
 import Nav from './components/Nav.vue';
-import index from './pages/index.vue';
+import searchResult from './pages/searchArticle.vue';
 </script>
 
 <template>
     <Nav></Nav>
-    <index></index>
+    <searchResult></searchResult>
 </template>
 
 <style scoped>

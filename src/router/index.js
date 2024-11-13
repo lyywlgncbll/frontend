@@ -4,12 +4,12 @@ import {
     createWebHashHistory
 } from 'vue-router'
 
-import Index from '~/pages/index.vue'
+import searchArticle from '~/pages/searchArticle.vue'
 
 
 const routes = [{
     path: "/",
-    component:Index
+    component:searchArticle
 }]
 
 

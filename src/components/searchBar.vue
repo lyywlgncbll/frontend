@@ -6,7 +6,7 @@
                 <span>
                     <img v-if="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
                         width="15px" height="15px">
-                    <img v-else="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
+                    <img v-else src="/src/assets/search/icon/down-expand.svg" alt=""
                         width="15px" height="15px" :style="{ transform: 'rotate(180deg)' }">
                 </span>
             </div>
@@ -14,10 +14,9 @@
             <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
                 <li v-for="(content, i) in item.contents" :key="i" class="content-item">
                     <label>
-                        <input type="checkbox" :value="content">
+                        <input type="checkbox" :value="content" @change="handleTimeSelection(content)">
                         <span>{{ content }}</span>
                     </label>
-
                 </li>
                 <div class="icon-container" v-show="item.contents.length > 3">
                     <img src="/src/assets/search/icon/expand.svg" class="icon">
@@ -28,28 +27,37 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
-const menuItems = ref([
-    { title: '时间', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '主题', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '来源', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '学科', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '作者', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '作者', contents: ['内容 1', '内容 2', '内容 3'] },
-]);
+import { defineProps, ref, defineEmits } from 'vue'
 
-const expandedIndexes = ref([]);
+// 定义 props 接收父组件传递的数据
+const props = defineProps({
+    isExpand: Boolean,
+    menuItems: {
+        type: Array,
+        required: true,
+    }
+})
+
+// 定义 emits，用于向父组件传递事件
+const emit = defineEmits(['timeSelected'])
+
+// 存储展开的菜单索引
+const expandedIndexes = ref([])
+
+// 切换菜单展开状态
 const toggleItem = (index) => {
     if (expandedIndexes.value.includes(index)) {
-        expandedIndexes.value = expandedIndexes.value.filter(i => i !== index);
+        expandedIndexes.value = expandedIndexes.value.filter(i => i !== index)
     } else {
-        expandedIndexes.value.push(index);
+        expandedIndexes.value.push(index)
     }
-};
+}
 
-const props = defineProps({
-  isExpand: Boolean, // 定义 props 的类型
-});
+// 处理时间选择的函数
+const handleTimeSelection = (selectedTime) => {
+    // 将选中的时间传递给父组件
+    emit('timeSelected', parseInt(selectedTime))
+}
 </script>
 
 <style scoped>
@@ -62,7 +70,7 @@ const props = defineProps({
     min-width: 200px;
 }
 
-.sidebar.collapsed{
+.sidebar.collapsed {
     transform: translateX(-100%);
 }
 

@@ -10,29 +10,25 @@
                 <p>点赞</p>
             </div>
         </div>
-        <div class="title">science in the age of LLMs</div>
-        <span class="author">sisyphus Chen & stephen Curry</span>
-        <span class="from">IEEE - 2019</span>
-        <div class="content">Intelligence — the ability to learn, reason and solve problems — is at the forefront of
-            behavioural genetic research. Intelligence is highly heritable and predicts important educational,
-            occupational and health outcomes better than any other trait. Recent genome-wide association studies have
-            successfully identified inherited genome sequence differences that account for 20% of the 50% heritability
-            of intelligence.
-        </div>
+        <div class="title">{{ searchItem.title }}</div>
+        <span class="author">{{ searchItem.author }}</span>
+        <span class="from">{{ searchItem.from }} - {{ searchItem.time }}</span>
+        <div class="content">{{ searchItem.content }}</div>
         <div class="line"></div>
         <div class="label">
-            <div class="label-item">深度学习</div>
-            <div class="label-item">deep learning</div>
-            <div class="label-item">machine learning</div>
+            <div class="label-item" v-for="(labelItem,index) in searchItem.label">{{ labelItem }}</div>
         </div>
-        <div class="cited-num">
-            被引次数：100 次
-        </div>
+        <div class="cited-num">被引次数：{{ searchItem.num }} 次</div>
     </div>
 </template>
 
 <script setup>
-
+const props = defineProps({
+    searchItem: {
+        type: Object,
+        required: true,
+    }
+})
 </script>
 
 <style scoped>
@@ -47,7 +43,8 @@
     right: 10px;
 }
 
-.cite,.patronise{
+.cite,
+.patronise {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,11 +55,13 @@
     background-color: #eff2f5;
 }
 
-.cite:hover,.patronise:hover{
+.cite:hover,
+.patronise:hover {
     background-color: #d7dfe6;
 }
 
-.cite p,.patronise p{
+.cite p,
+.patronise p {
     font-size: 13px;
     color: grey;
 }
@@ -147,7 +146,7 @@
     background-color: #0969da;
 }
 
-.cited-num{
+.cited-num {
     width: 200px;
     font-size: 14px;
     color: grey;
