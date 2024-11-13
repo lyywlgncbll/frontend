@@ -1,12 +1,58 @@
 <script>
 import NavigationBar from "~/components/bar/navigation-bar.vue";
-import {defineComponent} from "vue";
+import {defineComponent, ref,inject} from "vue";
+import {useRouter} from "vue-router";
+import axios from 'axios';
+import {LOGIN_API} from "~/utils/request.js";
 
 export default defineComponent({
   components:{
-    NavigationBar
+    NavigationBar,
+    axios
   },
+
+  setup() {
+    const router = useRouter();
+    // let globalUsername = inject('Username');
+    const tableData = ref([]);
+    const username = ref('');
+    const password = ref('');
+
+    // 登录提交方法
+    // 登录提交方法
+    const submitLogin = async () => {
+      try {
+        axios.get(LOGIN_API, {
+          params: {
+            username: username.value,
+            password: password.value
+          }
+        }).then(response => {
+          if (response.data === 'success'){
+            // globalUsername=username.value;
+            // localStorage.setItem('username', globalUsername);
+            console.log(response.data);
+            router.push('/about');
+          }
+        });
+      } catch (error) {
+        console.error('Login failed:', error);
+      }
+
+    };
+
+
+    return {
+      router,
+      tableData,
+      username,
+      password,
+      submitLogin,
+    };
+  }
+
 });
+
 
 </script>
 
