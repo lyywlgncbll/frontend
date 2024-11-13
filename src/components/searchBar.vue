@@ -52,6 +52,8 @@ const filters = ref({
     time: [],
     theme: [],
     source: [],
+    institution: [],
+    domain: []
 })
 // 处理筛选条件选择的函数
 const handleSelection = (categoryId, value, event) => {

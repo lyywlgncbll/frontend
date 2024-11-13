@@ -1,7 +1,7 @@
 <template>
-    <div id="SearchBox">
+    <!-- <div id="SearchBox">
         <SearchBox @search="search" placeholder="输入学者关键字" :SearchType="searchType" width="300px"/>
-    </div>
+    </div> -->
     <div id="search-body">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
@@ -9,13 +9,13 @@
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand"></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="updatedMenuItems" @filtersChanged="applyFilters" ></searchBar>
             </div>
             <div class="main">
                 <div class="userList">
                     <div
                     class="userItem"
-                    v-for="userItem in userList"
+                    v-for="userItem in filterUserList"
                     :key="userItem.id"
                     >
                     <img  @click="selectUser(userItem)":src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
@@ -47,36 +47,72 @@ export default{
     data(){
         return{
             searchType:"User",
-            userList:[],
-            isExpand:true
-        }
-    },
-    components:{
-        SearchBox,
-        searchBar
-    },
-    methods:{
-        async search(keyword){
-            console.log('search',keyword)
-            this.userList = [
-                {id:"1", name:"off-fu", institution:"BeiHang University",
+            searchUserList:[{id:"1", name:"off-fu", institution:"BeiHang University",
                 avatar:"/src/assets/avatar.jpg",
                 domain:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
                 introduction:"这是一段个人简介"},
-                {id:"2", name:"test user", institution:"BeiHang University",
+                {id:"2", name:"test user", institution:"TsingHua University",
                 avatar:"/src/assets/avatar.jpg",
                 domain:["Rag","VA"],
                 introduction:"这是一段个人简介"},
                 {id:"3", name:"just a name", institution:"BeiHang University",
                 avatar:"/src/assets/test.jpg",
                 domain:["LLM","DNA methylation"],
-                introduction:"这是一段个人简介"},]
+                introduction:"这是一段个人简介"},],
+            filterUserList:[],
+            isExpand:true,
+            menuItems:[
+                { id: 'institution', title: '机构', contents: ['BeiHang University','TsingHua University'] },
+                { id: 'domain', title: '领域', contents: ['Cell biology', 'VA', 'DNA methylation'] },
+                ],
+            filters:{
+                time: [],
+                theme: [],
+                source: [],
+                institution: [],
+                domain: []
+            }
+        }
+    },
+    components:{
+        SearchBox,
+        searchBar
+    },
+    computed:{
+        filterUserList(){
+            return this.searchUserList.filter(item => {
+                return Object.keys(this.filters).every(categoryId => {
+                const filterValues = this.filters[categoryId] || [] // 默认值为空数组
+                    if (filterValues.length === 0) return true // 条件为空时不过滤
+                    if (categoryId === 'institution') return filterValues.includes(item.institution)
+                    if (categoryId === 'domain') return filterValues.some(label => item.domain.includes(label))
+                    return true
+                })
+            })
+        },
+        updatedMenuItems(){
+            return this.menuItems.map(menuItem => {
+            const contents = new Set() // 使用 Set 来确保唯一值
+            this.searchUserList.forEach(item => {
+            if (menuItem.id === 'institution' && item.institution) contents.add(item.institution)
+            if (menuItem.id === 'domain' && item.domain) item.domain.forEach(domain => contents.add(domain))
+        })
+        return { ...menuItem, contents: Array.from(contents) }
+    })
+    }
+    },
+    methods:{
+        async search(keyword){
+            console.log('search',keyword)
         },
         selectUser(user){
             console.log(user)
         },
         expandBar(){
             this.isExpand = this.isExpand ? false : true
+        },
+        applyFilters(newFilters){
+            this.filters = newFilters
         }
     }
 }
