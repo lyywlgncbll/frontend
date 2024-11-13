@@ -1,7 +1,13 @@
 <script setup>
-import * as mupdf from "mupdf";
+import * as pdfjs from "pdfjs-dist";
+const pdfPath = "/src/assets/test/test.pdf"
+const loadingTask = pdfjs.getDocument(pdfPath)
+loadingTask.promise
+  .then(function (doc) {
+    const numPages = doc.numPages
+    console.log("numPages: " + numPages)
+  })
 
-let document = new mupdf.Document.openDocument("~/assets/test/test.pdf", "application/pdf");
 </script>
 
 <template>
