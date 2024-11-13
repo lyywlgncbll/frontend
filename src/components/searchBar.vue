@@ -1,6 +1,6 @@
 <template>
     <div :class="{ sidebar: true, collapsed: !isExpand }">
-        <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
+        <div v-for="(item, index) in menuItems" :key="item.id" class="menu-item">
             <div class="menu-title" @click="toggleItem(index)">
                 {{ item.title }}
                 <span>
@@ -14,13 +14,10 @@
             <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
                 <li v-for="(content, i) in item.contents" :key="i" class="content-item">
                     <label>
-                        <input type="checkbox" :value="content" @change="handleTimeSelection(content)">
+                        <input type="checkbox" :value="content" @change="handleSelection(item.id, content, $event)">
                         <span>{{ content }}</span>
                     </label>
                 </li>
-                <div class="icon-container" v-show="item.contents.length > 3">
-                    <img src="/src/assets/search/icon/expand.svg" class="icon">
-                </div>
             </ul>
         </div>
     </div>
@@ -29,7 +26,6 @@
 <script setup>
 import { defineProps, ref, defineEmits } from 'vue'
 
-// 定义 props 接收父组件传递的数据
 const props = defineProps({
     isExpand: Boolean,
     menuItems: {
@@ -38,10 +34,7 @@ const props = defineProps({
     }
 })
 
-// 定义 emits，用于向父组件传递事件
-const emit = defineEmits(['timeSelected'])
 
-// 存储展开的菜单索引
 const expandedIndexes = ref([])
 
 // 切换菜单展开状态
@@ -53,10 +46,21 @@ const toggleItem = (index) => {
     }
 }
 
-// 处理时间选择的函数
-const handleTimeSelection = (selectedTime) => {
-    // 将选中的时间传递给父组件
-    emit('timeSelected', parseInt(selectedTime))
+const emit = defineEmits(['filtersChanged'])
+// 存储所有筛选条件
+const filters = ref({
+    time: [],
+    theme: [],
+    source: [],
+})
+// 处理筛选条件选择的函数
+const handleSelection = (categoryId, value, event) => {
+    if (event.target.checked) {
+        filters.value[categoryId].push(value)
+    } else {
+        filters.value[categoryId] = filters.value[categoryId].filter(v => v !== value)
+    }
+    emit('filtersChanged', filters.value)
 }
 </script>
 
@@ -67,7 +71,7 @@ const handleTimeSelection = (selectedTime) => {
     margin: 0 auto;
     position: relative;
     transition: all 0.3s ease;
-    min-width: 200px;
+    min-width: 150px;
 }
 
 .sidebar.collapsed {
@@ -90,6 +94,7 @@ const handleTimeSelection = (selectedTime) => {
     padding: 10px;
     font-weight: bold;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .menu-title:hover {
@@ -97,7 +102,7 @@ const handleTimeSelection = (selectedTime) => {
 }
 
 .menu-content {
-    overflow: hidden;
+    overflow-y: scroll;
     background-color: #f0f8ff;
     height: 0;
     transition: all 1s;
@@ -114,6 +119,7 @@ const handleTimeSelection = (selectedTime) => {
     align-items: center;
     padding: 2px 15px;
     margin: 5px auto;
+    white-space: nowrap;
 }
 
 .content-item input {
@@ -126,6 +132,7 @@ const handleTimeSelection = (selectedTime) => {
     font-size: 15px;
     cursor: pointer;
     color: #333;
+    white-space: nowrap;
 }
 
 .expand {

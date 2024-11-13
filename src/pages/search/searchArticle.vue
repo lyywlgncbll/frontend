@@ -6,11 +6,12 @@
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @timeSelected="filterItemsByTime"></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @filtersChanged="applyFilters"></searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <searchItem v-for="(searchItem, index) in filteredItems" :searchItem="searchItem" :key="index"></searchItem>
+                <searchItem v-for="(searchItem, index) in filteredItems" :searchItem="searchItem" :key="index">
+                </searchItem>
             </div>
         </div>
     </div>
@@ -30,11 +31,9 @@ const expandBar = () => {
 }
 
 const menuItems = ref([
-    { title: '时间', contents: ['1999', '1999', '1998', '1997'] },
-    { title: '主题', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '来源', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '学科', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '作者', contents: ['内容 1', '内容 2', '内容 3'] },
+    { id: 'time', title: '时间', contents: [1999, 1998, 1997,2024,2025] },
+    { id: 'theme', title: '主题', contents: ['深度学习', '机器学习', '人工智能'] },
+    { id: 'source', title: '来源', contents: ['IEEE', 'Nature'] }
 ])
 
 const searchItems = ref([
@@ -45,7 +44,7 @@ const searchItems = ref([
         time: 1999,
         content: "Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.",
         label: [
-            "deep learning",
+            "机器学习",
             "深度学习",
         ],
         num: 100,
@@ -57,6 +56,53 @@ const searchItems = ref([
         time: 1998,
         content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
         label: [
+            "人工智能",
+            "深度学习",
+        ],
+        num: 100,
+    },
+    {
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 1997,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
+            "人工智能",
+        ],
+        num: 100,
+    },
+    {
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 1997,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
+            "deep learning",
+            "hhhhhhhh",
+        ],
+        num: 100,
+    },
+    {
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 2024,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
+            "deep learning",
+            "hhhhhhhh",
+        ],
+        num: 100,
+    },
+    {
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 2025,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
             "deep learning",
             "hhhhhhhh",
         ],
@@ -64,18 +110,30 @@ const searchItems = ref([
     },
 ])
 
-// 选中的时间
-const selectedTime = ref(null)
+// 存储筛选条件
+const filters = ref({
+    time: [],
+    theme: [],
+    source: [],
+})
 
 // 过滤 searchItems 的计算属性
 const filteredItems = computed(() => {
-    if (selectedTime.value === null) return searchItems.value
-    return searchItems.value.filter(item => item.time === selectedTime.value)
+    return searchItems.value.filter(item => {
+        return Object.keys(filters.value).every(categoryId => {
+            const filterValues = filters.value[categoryId] || [] // 默认值为空数组
+            if (filterValues.length === 0) return true // 条件为空时不过滤
+            if (categoryId === 'time') return filterValues.includes(item.time)
+            if (categoryId === 'source') return filterValues.includes(item.from)
+            if (categoryId === 'theme') return filterValues.some(label => item.label.includes(label))
+            return true
+        })
+    })
 })
 
-// 处理从 searchBar 中传递的时间
-const filterItemsByTime = (time) => {
-    selectedTime.value = time
+// 处理从 searchBar 中传递的 filters 对象
+const applyFilters = (newFilters) => {
+    filters.value = newFilters
 }
 </script>
 
