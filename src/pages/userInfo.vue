@@ -90,7 +90,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
   
   <style scoped>
   .page {
-    padding: 20px;
+    padding: 40px;
     background-color: aliceblue;
     width: 100vw;
     height: 100%;
@@ -105,9 +105,13 @@ import Tabs from "../components/UserInfo/Tabs.vue";
     gap: 30px;
     align-items: stretch;
   }
+  .pagetabs{
+    align-items: stretch;
+  }
   .pagewriters{
     background-color: white;
     width: 40vw;
+    align-items: stretch;
   }
   </style>
   

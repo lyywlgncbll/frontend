@@ -19,28 +19,7 @@
       authors: {
         type: Array,
         required: true,
-        default: () => [
-          {
-            name: "Xiaotian Hu",
-            university: "Nanchang University",
-            avatar: "path/to/avatar1.jpg"
-          },
-          {
-            name: "Zengqi Huang",
-            university: "Nanchang University",
-            avatar: "path/to/avatar2.jpg"
-          },
-          {
-            name: "Yiwan Chen",
-            university: "Jiangxi Normal University",
-            avatar: "path/to/avatar3.jpg"
-          },
-          {
-            name: "Juan Long",
-            university: "Nanchang University",
-            avatar: "path/to/avatar4.jpg"
-          }
-        ]
+        default: () => [],
       }
     }
   };
@@ -60,6 +39,8 @@
     font-weight: bold;
     color: #333;
     margin-bottom: 10px;
+    padding: 5px;
+    border-bottom: 2px solid #e0e0e0;
   }
   
   .author-item {
