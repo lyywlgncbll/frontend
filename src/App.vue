@@ -18,10 +18,6 @@ export default {
     <div id="BG">
       <gradient-background v-if="$route.meta.requiresGradient"/>
     </div>
-    <router-view/>
-  </div>
-
-  <div>
     <!-- 渲染页面内容 -->
     <router-view />
   </div>
