@@ -4,18 +4,56 @@ import {
     createWebHistory
 } from 'vue-router'
 
+import searchArticle from '~/pages/search/searchArticle.vue'
 import Index from '~/pages/index.vue'
 import Article from '../pages/Article.vue'
+import Reader from '../pages/Reader.vue'
+
+import Article from '../components/Article.vue'
+import Login from "../pages/user/login.vue";
+import Register from "../pages/user/register.vue";
+import ResetPassword from "~/pages/user/resetPassword.vue";
+import SearchUserResult from "../pages/search/SearchUser.vue"
 
 const routes = [
     {
-    path: "/",
-    component: Index
-},
-{
-    path: "/article",
-    component: Article
-}]
+        path: "/",
+        component: Index
+    },
+    {
+        path: "/reader",
+        name: "Reader",
+        component: Reader,
+    },
+    {
+        path: "/article",
+        component: Article
+    },
+    {
+        path: "/login",
+        component: Login,
+        meta: { requiresGradient: true }
+    },
+    {
+        path: "/register",
+        component: Register,
+        meta: { requiresGradient: true }
+    },
+    {
+        path: "/resetPassword",
+        component: ResetPassword,
+        meta: { requiresGradient: true }
+    },
+    {
+        path: "/search/searchUser/result",
+        component: SearchUserResult,
+    },
+    {
+        path: "/search/searchArticle/result",
+        component: searchArticle,
+    }
+]
+
 
 
 
