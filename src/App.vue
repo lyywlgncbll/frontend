@@ -1,5 +1,5 @@
 <script setup>
-import Article from './components/Article.vue';
+import Article from './pages/Article.vue';
 </script>
 
 <template>

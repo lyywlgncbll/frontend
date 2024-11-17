@@ -5,7 +5,7 @@ import {
 } from 'vue-router'
 
 import Index from '~/pages/index.vue'
-import Article from '../components/Article.vue'
+import Article from '../pages/Article.vue'
 
 const routes = [
     {
