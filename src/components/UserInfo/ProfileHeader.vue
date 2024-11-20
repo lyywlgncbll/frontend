@@ -10,7 +10,8 @@
         </span>
       </p>
     </div>
-    <button @click="editProfile" class="edit-button">编辑</button>
+    <button v-if="!editable" @click="editProfile" class="edit-button">编辑</button>
+    <button v-else @click="editProfile" class="save-button">保存</button>
   </div>
 </template>
 
@@ -18,6 +19,10 @@
 export default {
   name: "ProfileHeader",
   props: {
+    editable: {
+            type: Boolean,
+            default: false, // 默认非编辑状态
+    },
     avatar: {
       type: String,
       required: true,
@@ -93,6 +98,15 @@ export default {
   cursor: pointer;
   font-size: 14px;
   color: #333;
+  border-radius: 4px;
+}
+.save-button {
+  background-color: green;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
   border-radius: 4px;
 }
 </style>

@@ -5,7 +5,7 @@
         :name="user.name"
         :institution="user.institution"
         :researchAreas="user.researchAreas"
-        :isEditable="isEditable"
+        :editable="isEditable"
         @editProfile="handleEditProfile"
       />
       <div class="detail">
@@ -189,8 +189,6 @@ import Tabs from "../components/UserInfo/Tabs.vue";
           console.error('请求失败:', error);
         });
       },
-
-
       //获取别的页面跳转过来的claim
       getParams(){
         this.claim=this.$route.params.claim;
