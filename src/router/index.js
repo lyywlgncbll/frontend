@@ -9,7 +9,6 @@ import Index from '~/pages/index.vue'
 import Article from '../pages/Article.vue'
 import Reader from '../pages/Reader.vue'
 
-import Article from '../components/Article.vue'
 import Login from "../pages/user/login.vue";
 import Register from "../pages/user/register.vue";
 import ResetPassword from "~/pages/user/resetPassword.vue";

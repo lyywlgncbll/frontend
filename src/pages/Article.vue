@@ -4,11 +4,11 @@
     <h1 class="paper-title">{{ paper.title }}</h1>
 
     <!-- 元数据 -->
-    <h2 class="section-title">Metadata</h2>
+    <h2 class="section-title">论文信息</h2>
     <el-row class="paper-metadata" gutter="20">
       <!-- 作者 -->
       <el-col :span="12">
-        <el-descriptions title="Authors" border>
+        <el-descriptions title="作者" border>
           <el-descriptions-item>
             <el-button
               v-for="author in paper.authors"
@@ -25,7 +25,7 @@
 
       <!-- 关键词 -->
       <el-col :span="12">
-        <el-descriptions title="Keywords" border>
+        <el-descriptions title="关键词" border>
           <el-descriptions-item>
             <el-button
               v-for="keyword in paper.keywords"
@@ -44,7 +44,7 @@
     <!-- 发表日期 -->
     <el-row class="paper-date" gutter="20">
       <el-col :span="24">
-        <el-descriptions title="Published Date" border>
+        <el-descriptions title="发布日期" border>
           <el-descriptions-item>
             {{ paper.publishedDate }}
           </el-descriptions-item>
@@ -53,11 +53,11 @@
     </el-row>
 
     <!-- 摘要 -->
-    <h2 class="section-title">Abstract</h2>
+    <h2 class="section-title">论文概述</h2>
     <p>{{ paper.abstract }}</p>
 
     <!-- 引用数据 -->
-    <h2 class="section-title">References</h2>
+    <h2 class="section-title">论文引用</h2>
     <el-row class="paper-references">
       <el-col :span="24">
         <el-descriptions title="Citations" border>

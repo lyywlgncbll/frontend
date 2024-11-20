@@ -1,5 +1,11 @@
-<script setup>
-import Article from './pages/Article.vue';
+<script>
+import GradientBackground from "./components/background/gradient-background.vue";
+export default {
+  name:"App",
+  components:{
+    GradientBackground
+  }
+}
 </script>
 
 <template>
