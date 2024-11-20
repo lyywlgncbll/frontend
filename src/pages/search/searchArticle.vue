@@ -6,7 +6,7 @@
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @filtersChanged="applyFilters"></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="updatedMenuItems" @filtersChanged="applyFilters"></searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
@@ -31,9 +31,9 @@ const expandBar = () => {
 }
 
 const menuItems = ref([
-    { id: 'time', title: '时间', contents: [1999, 1998, 1997,2024,2025] },
-    { id: 'theme', title: '主题', contents: ['深度学习', '机器学习', '人工智能'] },
-    { id: 'source', title: '来源', contents: ['IEEE', 'Nature'] }
+    { id: 'time', title: '时间', contents: [] },
+    { id: 'theme', title: '主题', contents: [] },
+    { id: 'source', title: '来源', contents: [] }
 ])
 
 const searchItems = ref([
@@ -131,10 +131,24 @@ const filteredItems = computed(() => {
     })
 })
 
+
 // 处理从 searchBar 中传递的 filters 对象
 const applyFilters = (newFilters) => {
     filters.value = newFilters
 }
+
+// 更新 menuItems 的 contents
+const updatedMenuItems = computed(() => {
+    return menuItems.value.map(menuItem => {
+        const contents = new Set() // 使用 Set 来确保唯一值
+        searchItems.value.forEach(item => {
+            if (menuItem.id === 'time' && item.time) contents.add(item.time)
+            if (menuItem.id === 'source' && item.from) contents.add(item.from)
+            if (menuItem.id === 'theme' && item.label) item.label.forEach(label => contents.add(label))
+        })
+        return { ...menuItem, contents: Array.from(contents) }
+    })
+})
 </script>
 
 <style scoped>

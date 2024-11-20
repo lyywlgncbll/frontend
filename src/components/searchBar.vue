@@ -6,8 +6,8 @@
                 <span>
                     <img v-if="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
                         width="15px" height="15px">
-                    <img v-else src="/src/assets/search/icon/down-expand.svg" alt=""
-                        width="15px" height="15px" :style="{ transform: 'rotate(180deg)' }">
+                    <img v-else src="/src/assets/search/icon/down-expand.svg" alt="" width="15px" height="15px"
+                        :style="{ transform: 'rotate(180deg)' }">
                 </span>
             </div>
 
