@@ -5,6 +5,7 @@
         :name="user.name"
         :institution="user.institution"
         :researchAreas="user.researchAreas"
+        :isEditable="isEditable"
         @editProfile="handleEditProfile"
       />
       <div class="detail">
@@ -13,12 +14,12 @@
               />
               <div class="tabdetail">
                 <div v-if="activeTab === 0">
-                  <button @click="sendVerification">点击我发送邮件</button>
-                  <button @click="sendCreateData">点击我发送注册信息</button>
-                  <button @click="sendLoginRequest">点击我发送登录请求</button>
-                  <button @click="sendGetMyInfo">点击我获取用户信息</button>
                   <div v-if="this.claim === null">
-                    <p>我是认领门户</p>
+                    <References :references="references" :editable="isEditable"/>
+                    <button @click="sendVerification">点击我发送邮件</button>
+                    <button @click="sendCreateData">点击我发送注册信息</button>
+                    <button @click="sendLoginRequest">点击我发送登录请求</button>
+                    <button @click="sendGetMyInfo">点击我获取用户信息</button>
                   </div>
                   <div v-else>
                     <p>我是发表文献</p>
@@ -35,7 +36,7 @@
               </div>
         </div>
         <div class="pagewriters">
-          <AuthorList :authors="authorlist.authorData" />
+          <AuthorList :authors="authorData" />
         </div>
       </div>
     </div>
@@ -47,6 +48,7 @@ import default_pic from "../assets/default.png";
 import avatarImage from "../assets/example_avatar.png";
 import AuthorList from "../components/UserInfo/AuthorList.vue";
 import ProfileHeader from "../components/UserInfo/ProfileHeader.vue";
+import References from '../components/UserInfo/References.vue';
 import Tabs from "../components/UserInfo/Tabs.vue";
   export default {
     name: "Index",
@@ -54,9 +56,11 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       ProfileHeader,
       Tabs,
       AuthorList,
+      References,
     },
     data() {
       return {
+        isEditable: false,
         authorization:'',
         claim:null,
         user: {
@@ -67,41 +71,58 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         },
         tabs:['认领门户','增值服务'],
         activeTab:0,
-        authorlist:{
-          authorData: [
+        authorData: [
+          {
+            name: "Xiaotian Hu",
+            university: "Nanchang University",
+            avatar: default_pic
+          },
+          {
+            name: "Zengqi Huang",
+            university: "Nanchang University",
+            avatar: default_pic
+          },
+          {
+            name: "Yiwan Chen",
+            university: "Jiangxi Normal University",
+            avatar: default_pic
+          },
+          {
+            name: "Juan Long",
+            university: "Nanchang University",
+            avatar: default_pic
+          }
+        ],
+        references:[
         {
-          name: "Xiaotian Hu",
-          university: "Nanchang University",
-          avatar: default_pic
-        },
-        {
-          name: "Zengqi Huang",
-          university: "Nanchang University",
-          avatar: default_pic
-        },
-        {
-          name: "Yiwan Chen",
-          university: "Jiangxi Normal University",
-          avatar: default_pic
-        },
-        {
-          name: "Juan Long",
-          university: "Nanchang University",
-          avatar: default_pic
-        }
-      ]
-        },
-      
-        
+            title: "Understanding the Mechanism between Antisolvent Dripping and Additive Doping Strategies on the Passivation Effects in Perovskite Solar Cells.",
+            authors: "Juan Long, Wangping Sheng, Runying Dai, Zengqi Huang, Jia Yang, Jiaqi Zhang, Xiang Li, Licheng Tan, Yiwang Chen, Yiwang Chen",
+            journal: "American Chemical Society 12, 56151-56160",
+            date: "2020-12-02",
+            citations: 9
+          },
+          {
+            title: "PyTorch Metric Learning.",
+            authors: "Kevin Musgrave, Serge J. Belongie, Ser-Nam Lim",
+            journal: "",
+            date: "2020-08-20",
+            citations: 22
+          }
+        ],
       };
     },
     methods: {
+      //处理编辑
       handleEditProfile() {
         console.log("Edit profile clicked");
+        this.isEditable = !this.isEditable; 
       },
+      //处理切换子页面
       handleTabChange(index){
         this.activeTab = index;
       },
+
+      //登录用户相关，测试用，可以删除
       sendVerification() {
         axios.post('http://localhost:8080/user/reg/verify', null, {
           headers: {
@@ -168,6 +189,9 @@ import Tabs from "../components/UserInfo/Tabs.vue";
           console.error('请求失败:', error);
         });
       },
+
+
+      //获取别的页面跳转过来的claim
       getParams(){
         this.claim=this.$route.params.claim;
       }
