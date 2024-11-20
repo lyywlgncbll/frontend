@@ -43,10 +43,18 @@
 
     <!-- 发表日期 -->
     <el-row class="paper-date" gutter="20">
-      <el-col :span="24">
+      <el-col :span="12">
         <el-descriptions title="发布日期" border>
           <el-descriptions-item>
             {{ paper.publishedDate }}
+          </el-descriptions-item>
+        </el-descriptions>
+      </el-col>
+
+      <el-col :span="12">
+        <el-descriptions title="语言" border>
+          <el-descriptions-item>
+            {{ paper.language }}
           </el-descriptions-item>
         </el-descriptions>
       </el-col>
@@ -60,7 +68,7 @@
     <h2 class="section-title">论文引用</h2>
     <el-row class="paper-references">
       <el-col :span="24">
-        <el-descriptions title="Citations" border>
+        <el-descriptions title="引用" border>
           <el-descriptions-item>
             <ul>
               <li v-for="(reference, index) in paper.references" :key="index">
@@ -102,6 +110,7 @@ export default {
           "Johnson, A. (2022). Ethics in AI Systems. Ethics in Technology Review.",
           "Lee, K. et al. (2021). Machine Learning Algorithms. AI and Machine Learning Journal."
         ],
+        language: "English"
       },
     };
   },

@@ -13,7 +13,8 @@ import Login from "../pages/user/login.vue";
 import Register from "../pages/user/register.vue";
 import ResetPassword from "~/pages/user/resetPassword.vue";
 import SearchUserResult from "../pages/search/SearchUser.vue"
-
+import TransferResult from "../pages/transfer/transferResult.vue";
+import TransferRequest from "../pages/transfer/transferRequest.vue"
 const routes = [
     {
         path: "/",
@@ -50,6 +51,14 @@ const routes = [
     {
         path: "/search/searchArticle/result",
         component: searchArticle,
+    },
+    {
+        path: "/transfer/transferResult",
+        component: TransferResult,
+    },
+    {
+        path: "/transfer/transferRequest",
+        component: TransferRequest,
     }
 ]
 
