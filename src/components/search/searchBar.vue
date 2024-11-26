@@ -14,7 +14,7 @@
             <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
                 <li v-for="(content, i) in item.contents" :key="i" class="content-item">
                     <label>
-                        <input type="checkbox" :value="content" @change="handleSelection(item.id, content, $event)">
+                        <input type="checkbox" :value="content">
                         <span>{{ content }}</span>
                     </label>
                 </li>
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, defineEmits } from 'vue'
+import {ref} from 'vue'
 
 const props = defineProps({
     isExpand: Boolean,
@@ -46,22 +46,6 @@ const toggleItem = (index) => {
     }
 }
 
-const emit = defineEmits(['filtersChanged'])
-// 存储所有筛选条件
-const filters = ref({
-    time: [],
-    theme: [],
-    source: [],
-})
-// 处理筛选条件选择的函数
-const handleSelection = (categoryId, value, event) => {
-    if (event.target.checked) {
-        filters.value[categoryId].push(value)
-    } else {
-        filters.value[categoryId] = filters.value[categoryId].filter(v => v !== value)
-    }
-    emit('filtersChanged', filters.value)
-}
 </script>
 
 <style scoped>

@@ -9,6 +9,9 @@
                 <img src="/src/assets/search/icon/patronise.svg" alt="patronise" width="20px" height="20px">
                 <p>点赞</p>
             </div>
+            <div class="claim" @click="openForm">
+                <p>认领</p>
+            </div>
         </div>
         <div class="title">{{ searchItem.title }}</div>
         <span class="author">{{ searchItem.author }}</span>
@@ -16,19 +19,28 @@
         <div class="content">{{ searchItem.content }}</div>
         <div class="line"></div>
         <div class="label">
-            <div class="label-item" v-for="(labelItem,index) in searchItem.label">{{ labelItem }}</div>
+            <div class="label-item" v-for="(labelItem, index) in searchItem.label">{{ labelItem }}</div>
         </div>
         <div class="cited-num">被引次数：{{ searchItem.num }} 次</div>
     </div>
+
 </template>
 
 <script setup>
+import { ref } from 'vue';
 const props = defineProps({
     searchItem: {
         type: Object,
         required: true,
-    }
+    },
 })
+
+
+const emit = defineEmits(['openClaimForm']);
+const openForm = () => {
+    emit('openClaimForm',props.searchItem.id); 
+};
+
 </script>
 
 <style scoped>
@@ -44,7 +56,8 @@ const props = defineProps({
 }
 
 .cite,
-.patronise {
+.patronise,
+.claim {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -53,6 +66,13 @@ const props = defineProps({
     border: 1px solid #d1d9e0;
     padding: 5px;
     background-color: #eff2f5;
+    width: 60px;
+}
+
+.claim {
+    background-color: #1599db;
+    color: white;
+
 }
 
 .cite:hover,
@@ -60,10 +80,25 @@ const props = defineProps({
     background-color: #d7dfe6;
 }
 
+.claim:hover {
+    background-color: #0687d7;
+}
+
+.cite p,
+.patronise p,
+.claim p {
+    font-size: 13px;
+}
+
 .cite p,
 .patronise p {
-    font-size: 13px;
     color: grey;
+}
+
+.claim p {
+    color: white;
+    font-weight: bold;
+    letter-spacing: 2px;
 }
 
 
@@ -153,4 +188,5 @@ const props = defineProps({
     margin-left: auto;
     text-align: right;
 }
+
 </style>

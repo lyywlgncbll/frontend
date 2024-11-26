@@ -41,8 +41,8 @@
     </div>
 </template>
 <script>
-    import SearchBox from '../../components/SearchBox.vue';
-    import searchBar from '../../components/searchBar.vue';
+    import SearchBox from '../../components/search/SearchBox.vue';
+    import searchBar from '../../components/search/searchBar.vue';
 export default{
     data(){
         return{

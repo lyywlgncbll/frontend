@@ -5,22 +5,30 @@
                 <img src="/src/assets/search/icon/down-expand.svg" class="icon" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
+            <div class="confirm">
+                确认
+            </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="updatedMenuItems" @filtersChanged="applyFilters"></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="menuItems"></searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <searchItem v-for="(searchItem, index) in filteredItems" :searchItem="searchItem" :key="index">
+                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index" @openClaimForm="showClaimForm">
                 </searchItem>
             </div>
         </div>
+    </div>
+
+    <div class="form" v-if="isShow">
+        <ClaimForm  :claimData="selectedClaimData"></ClaimForm>
     </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
-import searchBar from '/src/components/searchBar.vue';
-import searchItem from '/src/components/searchItem.vue';
+import ClaimForm from '/src/components/search/ClaimForm.vue';
+import searchBar from '/src/components/search/searchBar.vue';
+import searchItem from '/src/components/search/searchItem.vue';
 
 //侧边栏是否展开
 const isExpand = ref(true)
@@ -31,13 +39,14 @@ const expandBar = () => {
 }
 
 const menuItems = ref([
-    { id: 'time', title: '时间', contents: [] },
+    { id: 'time', title: '时间', contents: [1999,1998,1997] },
     { id: 'theme', title: '主题', contents: [] },
     { id: 'source', title: '来源', contents: [] }
 ])
 
 const searchItems = ref([
-    {
+    {   
+        id:"sadasdsadsadsad",
         title: 'sciend in the age of LLMs',
         author: 'sisythus',
         from: 'IEEE',
@@ -50,6 +59,7 @@ const searchItems = ref([
         num: 100,
     },
     {
+        id:"sadcccccadsad",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -62,6 +72,7 @@ const searchItems = ref([
         num: 100,
     },
     {
+        id:"seeeeeeeeeesad",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -73,6 +84,7 @@ const searchItems = ref([
         num: 100,
     },
     {
+        id:"seeejjjjjjjjd",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -85,6 +97,7 @@ const searchItems = ref([
         num: 100,
     },
     {
+        id:"seeeeooooooooo",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -97,6 +110,7 @@ const searchItems = ref([
         num: 100,
     },
     {
+        id:"lllllllllllllllll",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -110,45 +124,15 @@ const searchItems = ref([
     },
 ])
 
-// 存储筛选条件
-const filters = ref({
-    time: [],
-    theme: [],
-    source: [],
-})
-
-// 过滤 searchItems 的计算属性
-const filteredItems = computed(() => {
-    return searchItems.value.filter(item => {
-        return Object.keys(filters.value).every(categoryId => {
-            const filterValues = filters.value[categoryId] || [] // 默认值为空数组
-            if (filterValues.length === 0) return true // 条件为空时不过滤
-            if (categoryId === 'time') return filterValues.includes(item.time)
-            if (categoryId === 'source') return filterValues.includes(item.from)
-            if (categoryId === 'theme') return filterValues.some(label => item.label.includes(label))
-            return true
-        })
-    })
-})
 
 
-// 处理从 searchBar 中传递的 filters 对象
-const applyFilters = (newFilters) => {
-    filters.value = newFilters
-}
+//表单
+const isShow = ref(false);
 
-// 更新 menuItems 的 contents
-const updatedMenuItems = computed(() => {
-    return menuItems.value.map(menuItem => {
-        const contents = new Set() // 使用 Set 来确保唯一值
-        searchItems.value.forEach(item => {
-            if (menuItem.id === 'time' && item.time) contents.add(item.time)
-            if (menuItem.id === 'source' && item.from) contents.add(item.from)
-            if (menuItem.id === 'theme' && item.label) item.label.forEach(label => contents.add(label))
-        })
-        return { ...menuItem, contents: Array.from(contents) }
-    })
-})
+const showClaimForm = (claimData) => {
+    isShow.value = !isShow.value; 
+};
+
 </script>
 
 <style scoped>
@@ -186,9 +170,27 @@ const updatedMenuItems = computed(() => {
     top: 10px;
 }
 
-.left-expand:hover {
+.confirm{
+    font-size: 11px;
+    text-align: center;
+    width: 20px;
+    height: 44px;
+    position: absolute;
+    background-color: #92bad6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    left: -20px;
+    top: 70px;
+    color: white;
+}
+
+.left-expand:hover,.confirm:hover {
     background-color: #85a9c2;
 }
+
+
 
 .main {
     width: 75%;
@@ -199,5 +201,16 @@ const updatedMenuItems = computed(() => {
 
 .main.collapsed {
     width: 90%;
+}
+
+.form{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    height: 600px;
+    width: 500px;
+    background-color: whitesmoke;
+    margin: 0 auto;
 }
 </style>
