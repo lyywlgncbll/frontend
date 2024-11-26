@@ -1,7 +1,7 @@
 <template>
-    <!-- <div id="SearchBox">
+    <div id="SearchBox">
         <SearchBox @search="search" placeholder="输入学者关键字" :SearchType="searchType" width="300px"/>
-    </div> -->
+    </div>
     <div id="search-body">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
@@ -21,20 +21,26 @@
                     <img  @click="selectUser(userItem)":src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
                     <div class="userItem-info">
                         <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
+                        <span class="userItem-mail">{{ userItem.mail }}</span>
                         <span class="userItem-institution">{{ userItem.institution }}</span>
                         <div>
-                            <span v-for="(domainItem, index) in userItem.domain" :key="index">
-                                <span class="userItem-domain">{{ domainItem }}</span>
-                                <template v-if="index < userItem.domain.length - 1"> / </template>
+                            <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
+                                <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
+                                <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
                             </span>
                         </div>
                         <div class="line"></div>
-                        <span class="userItem-introduction">{{ userItem.introduction }}</span>
+                        <span class="userItem-description">{{ userItem.description }}</span>
                     </div>
-                    <div></div>
                     </div>
                 </div>
-                <div>       
+                <div style="text-align: center; margin-top: 1%;">
+                    <pageComponent
+                    class="pageComponent"
+                    v-model:currentPage="currentPage"
+                    v-model:totalPage="totalPage"
+                    @update:currentPage="updatePage"
+                    />
                 </div>
             </div>
         </div>
@@ -43,40 +49,56 @@
 <script>
     import SearchBox from '../../components/SearchBox.vue';
     import searchBar from '../../components/searchBar.vue';
+    import pageComponent from '../../components/pageComponent.vue';
+    import {useRouter} from "vue-router";
+    import axios from 'axios';
+    import {USERSEARCH_API} from "~/utils/request.js";
+    import PageComponent from '../../components/pageComponent.vue';
 export default{
     data(){
         return{
             searchType:"User",
-            searchUserList:[{id:"1", name:"off-fu", institution:"BeiHang University",
+            keyword:"",
+            searchUserList:[
+                {id:"1", name:"off-fu", institution:"BeiHang University",
+                mail:"123456@qq.com",
                 avatar:"/src/assets/avatar.jpg",
-                domain:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
-                introduction:"这是一段个人简介"},
+                fieldsOfStudy:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
+                description:"这是一段个人简介"},
                 {id:"2", name:"test user", institution:"TsingHua University",
+                mail:"123456@qq.com",
                 avatar:"/src/assets/avatar.jpg",
-                domain:["Rag","VA"],
-                introduction:"这是一段个人简介"},
+                fieldsOfStudy:["Rag","VA"],
+                description:"这是一段个人简介"},
                 {id:"3", name:"just a name", institution:"BeiHang University",
+                mail:"123456@qq.com",
                 avatar:"/src/assets/test.jpg",
-                domain:["LLM","DNA methylation"],
-                introduction:"这是一段个人简介"},],
+                fieldsOfStudy:["LLM","DNA methylation"],
+                description:"这是一段个人简介"},
+            ],
             filterUserList:[],
             isExpand:true,
             menuItems:[
                 { id: 'institution', title: '机构', contents: ['BeiHang University','TsingHua University'] },
-                { id: 'domain', title: '领域', contents: ['Cell biology', 'VA', 'DNA methylation'] },
+                { id: 'fieldsOfStudy', title: '领域', contents: ['Cell biology', 'VA', 'DNA methylation'] },
                 ],
             filters:{
                 time: [],
                 theme: [],
                 source: [],
                 institution: [],
-                domain: []
-            }
+                fieldsOfStudy: []
+            },
+            currentPage:1,
+            totalPage:100,
+            pageSize:1,
         }
     },
     components:{
         SearchBox,
-        searchBar
+        searchBar,
+        axios,
+        pageComponent
     },
     computed:{
         filterUserList(){
@@ -85,7 +107,7 @@ export default{
                 const filterValues = this.filters[categoryId] || [] // 默认值为空数组
                     if (filterValues.length === 0) return true // 条件为空时不过滤
                     if (categoryId === 'institution') return filterValues.includes(item.institution)
-                    if (categoryId === 'domain') return filterValues.some(label => item.domain.includes(label))
+                    if (categoryId === 'fieldsOfStudy') return filterValues.some(label => item.fieldsOfStudy.includes(label))
                     return true
                 })
             })
@@ -95,7 +117,7 @@ export default{
             const contents = new Set() // 使用 Set 来确保唯一值
             this.searchUserList.forEach(item => {
             if (menuItem.id === 'institution' && item.institution) contents.add(item.institution)
-            if (menuItem.id === 'domain' && item.domain) item.domain.forEach(domain => contents.add(domain))
+            if (menuItem.id === 'fieldsOfStudy' && item.fieldsOfStudy) item.fieldsOfStudy.forEach(fieldsOfStudy => contents.add(fieldsOfStudy))
         })
         return { ...menuItem, contents: Array.from(contents) }
     })
@@ -103,16 +125,52 @@ export default{
     },
     methods:{
         async search(keyword){
-            console.log('search',keyword)
+            this.keyword = keyword;
+            try {
+                axios.get(USERSEARCH_API, {
+                params: {
+                    keyword: keyword,
+                    pageSize: this.pageSize,
+                    page: 1
+                }
+                }).then(response => {
+                if (response.status === 200){
+                    this.searchUserList = response.data.view;
+                    this.currentPage = response.data.currentPage;
+                    this.totalPage = response.data.totalPage;
+                }
+                });
+            } catch (error) {
+                console.error('Search failed:', error);
+            }
         },
         selectUser(user){
             console.log(user)
+            //TODO 跳转到特定用户主页
         },
         expandBar(){
             this.isExpand = this.isExpand ? false : true
         },
         applyFilters(newFilters){
             this.filters = newFilters
+        },
+        updatePage(page){
+            try {
+                axios.get(USERSEARCH_API, {
+                params: {
+                    keyword: this.keyword,
+                    pageSize: this.pageSize,
+                    page: page
+                }
+                }).then(response => {
+                if (response.status === 200){
+                    this.searchUserList = response.data.view;
+                    this.currentPage = response.data.currentPage;
+                }
+                });
+            } catch (error) {
+                console.error('Search failed:', error);
+            }
         }
     }
 }
@@ -208,7 +266,11 @@ export default{
     font-size: 100%;
     margin-top: 1%;
 }
-.userItem-domain{
+.userItem-mail{
+    font-size: 95%;
+    color: rgba(139, 158, 166, 0.822);
+}
+.userItem-fieldsOfStudy{
     font-size: 100%;
     color: rgba(7, 143, 201, 0.822);
 }
@@ -218,7 +280,7 @@ export default{
     border: 1px solid rgb(181, 180, 180);
     margin: 15px auto;
 }
-.userItem-introduction {
+.userItem-description {
     margin: 5px auto;
     width: 100%;
     height: 50px;
