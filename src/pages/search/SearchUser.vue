@@ -15,10 +15,10 @@
                 <div class="userList">
                     <div
                     class="userItem"
-                    v-for="userItem in filterUserList"
+                    v-for="userItem in searchUserList"
                     :key="userItem.id"
                     >
-                    <img  @click="selectUser(userItem)":src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
+                    <img  @click="selectUser(userItem)" :src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
                     <div class="userItem-info">
                         <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
                         <span class="userItem-mail">{{ userItem.mail }}</span>
@@ -52,7 +52,7 @@
     import pageComponent from '../../components/pageComponent.vue';
     import {useRouter} from "vue-router";
     import axios from 'axios';
-    import {USERSEARCH_API} from "~/utils/request.js";
+    import {USERSEARCH_API ,USERAVATOR_API} from "~/utils/request.js";
     import PageComponent from '../../components/pageComponent.vue';
 export default{
     data(){
@@ -124,10 +124,20 @@ export default{
     }
     },
     methods:{
+        async updateAllAvatars() {
+            console.log(this.searchUserList)
+            console.log("start")
+            const promises = this.searchUserList.map(async (user) => {
+                const avatar = await this.fetchAvatar(user.id);
+                if (avatar) {
+                    user.avatar = avatar;
+                }
+            })
+        },
         async search(keyword){
             this.keyword = keyword;
-            try {
-                axios.get(USERSEARCH_API, {
+             try {
+                await axios.get(USERSEARCH_API, {
                 params: {
                     keyword: keyword,
                     pageSize: this.pageSize,
@@ -138,16 +148,29 @@ export default{
                     this.searchUserList = response.data.view;
                     this.currentPage = response.data.currentPage;
                     this.totalPage = response.data.totalPage;
-                }
+                } 
+                }).then(()=>{
+                    this.updateAllAvatars();
                 });
             } catch (error) {
                 console.error('Search failed:', error);
             }
         },
-        selectUser(user){
-            console.log(user)
-            //TODO 跳转到特定用户主页
+        async fetchAvatar(userId) {
+            console.log("start2")
+            try {
+                const response = await axios.get(USERAVATOR_API, {
+                params: {
+                    id: userId,
+                }
+                });
+                return `data:image/png;base64,${response.data}`;
+            } catch (error) {
+                console.error(`Failed to fetch avatar for user ${userId}:`, error);
+                return null;
+            }
         },
+    
         expandBar(){
             this.isExpand = this.isExpand ? false : true
         },
@@ -167,10 +190,15 @@ export default{
                     this.searchUserList = response.data.view;
                     this.currentPage = response.data.currentPage;
                 }
+                }).then(()=>{
+                    this.updateAllAvatars();
                 });
             } catch (error) {
                 console.error('Search failed:', error);
             }
+        },
+        selectUser(userItem){
+            console.log(userItem);
         }
     }
 }
