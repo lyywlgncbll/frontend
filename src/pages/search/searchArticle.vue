@@ -9,18 +9,24 @@
                 确认
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems"></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter"></searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index" @openClaimForm="showClaimForm">
+                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
+                    @openClaimForm="showClaimForm">
                 </searchItem>
+                <div style="text-align: center; margin-top: 1%;">
+                    <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
+                        @update:currentPage="updatePage"></pageComponent>
+                </div>
             </div>
         </div>
+
     </div>
 
     <div class="form" v-if="isShow">
-        <ClaimForm  :claimData="selectedClaimData"></ClaimForm>
+        <ClaimForm :claimData="selectedClaimData"></ClaimForm>
     </div>
 </template>
 
@@ -29,24 +35,23 @@ import { ref, computed } from 'vue';
 import ClaimForm from '/src/components/search/ClaimForm.vue';
 import searchBar from '/src/components/search/searchBar.vue';
 import searchItem from '/src/components/search/searchItem.vue';
+import pageComponent from '/src/components/pageComponent.vue';
 
 //侧边栏是否展开
 const isExpand = ref(true)
-
-//展开或收起
 const expandBar = () => {
     isExpand.value = !isExpand.value
 }
 
 const menuItems = ref([
-    { id: 'time', title: '时间', contents: [1999,1998,1997] },
+    { id: 'time', title: '时间', contents: [1999, 1998, 1997] },
     { id: 'theme', title: '主题', contents: [] },
     { id: 'source', title: '来源', contents: [] }
 ])
 
 const searchItems = ref([
-    {   
-        id:"sadasdsadsadsad",
+    {
+        id: "sadasdsadsadsad",
         title: 'sciend in the age of LLMs',
         author: 'sisythus',
         from: 'IEEE',
@@ -59,7 +64,7 @@ const searchItems = ref([
         num: 100,
     },
     {
-        id:"sadcccccadsad",
+        id: "sadcccccadsad",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -72,7 +77,7 @@ const searchItems = ref([
         num: 100,
     },
     {
-        id:"seeeeeeeeeesad",
+        id: "seeeeeeeeeesad",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -84,7 +89,7 @@ const searchItems = ref([
         num: 100,
     },
     {
-        id:"seeejjjjjjjjd",
+        id: "seeejjjjjjjjd",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -97,7 +102,7 @@ const searchItems = ref([
         num: 100,
     },
     {
-        id:"seeeeooooooooo",
+        id: "seeeeooooooooo",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -110,7 +115,7 @@ const searchItems = ref([
         num: 100,
     },
     {
-        id:"lllllllllllllllll",
+        id: "lllllllllllllllll",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
@@ -124,15 +129,22 @@ const searchItems = ref([
     },
 ])
 
-
-
 //表单
 const isShow = ref(false);
-
 const showClaimForm = (claimData) => {
-    isShow.value = !isShow.value; 
+    isShow.value = !isShow.value;
 };
 
+//分页
+const currentPage = ref(1)
+const totalPage = ref(100)
+const pageSize = ref(1)
+
+//筛选
+const selectedTags = ref({})
+const handleFilter = (selections) => {
+    selectedTags.value = selections
+}
 </script>
 
 <style scoped>
@@ -170,7 +182,7 @@ const showClaimForm = (claimData) => {
     top: 10px;
 }
 
-.confirm{
+.confirm {
     font-size: 11px;
     text-align: center;
     width: 20px;
@@ -186,7 +198,8 @@ const showClaimForm = (claimData) => {
     color: white;
 }
 
-.left-expand:hover,.confirm:hover {
+.left-expand:hover,
+.confirm:hover {
     background-color: #85a9c2;
 }
 
@@ -203,8 +216,8 @@ const showClaimForm = (claimData) => {
     width: 90%;
 }
 
-.form{
-    position:absolute;
+.form {
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);

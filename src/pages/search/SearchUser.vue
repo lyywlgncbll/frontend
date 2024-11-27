@@ -1,6 +1,6 @@
 <template>
     <div id="SearchBox">
-        <SearchBox @search="search" placeholder="输入学者关键字" :SearchType="searchType" width="300px"/>
+        <SearchBox @search="search" placeholder="输入学者关键字" :SearchType="searchType" width="300px" />
     </div>
     <div id="search-body">
         <div id="mid">
@@ -9,71 +9,70 @@
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="updatedMenuItems" @filtersChanged="applyFilters" ></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="updatedMenuItems" @filtersChanged="applyFilters">
+                </searchBar>
             </div>
             <div class="main">
                 <div class="userList">
-                    <div
-                    class="userItem"
-                    v-for="userItem in filterUserList"
-                    :key="userItem.id"
-                    >
-                    <img  @click="selectUser(userItem)":src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
-                    <div class="userItem-info">
-                        <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
-                        <span class="userItem-mail">{{ userItem.mail }}</span>
-                        <span class="userItem-institution">{{ userItem.institution }}</span>
-                        <div>
-                            <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
-                                <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
-                                <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
-                            </span>
+                    <div class="userItem" v-for="userItem in filterUserList" :key="userItem.id">
+                        <img @click="selectUser(userItem)" :src="userItem.avatar" :alt="userItem.name"
+                            class="userItem-avatar">
+                        <div class="userItem-info">
+                            <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
+                            <span class="userItem-mail">{{ userItem.mail }}</span>
+                            <span class="userItem-institution">{{ userItem.institution }}</span>
+                            <div>
+                                <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
+                                    <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
+                                    <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
+                                </span>
+                            </div>
+                            <div class="line"></div>
+                            <span class="userItem-description">{{ userItem.description }}</span>
                         </div>
-                        <div class="line"></div>
-                        <span class="userItem-description">{{ userItem.description }}</span>
-                    </div>
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 1%;">
-                    <pageComponent
-                    class="pageComponent"
-                    v-model:currentPage="currentPage"
-                    v-model:totalPage="totalPage"
-                    @update:currentPage="updatePage"
-                    />
+                    <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
+                        @update:currentPage="updatePage" />
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
-    import SearchBox from '../../components/SearchBox.vue';
-    import searchBar from '../../components/searchBar.vue';
-    import pageComponent from '../../components/pageComponent.vue';
-    import {useRouter} from "vue-router";
-    import axios from 'axios';
-    import {USERSEARCH_API} from "~/utils/request.js";
-    import PageComponent from '../../components/pageComponent.vue';
-export default{
-    data(){
-        return{
-            searchType:"User",
-            keyword:"",
-            searchUserList:[
-                {id:"1", name:"off-fu", institution:"BeiHang University",
-                mail:"123456@qq.com",
-                avatar:"/src/assets/avatar.jpg",
-                fieldsOfStudy:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
-                description:"这是一段个人简介"},
-                {id:"2", name:"test user", institution:"TsingHua University",
-                mail:"123456@qq.com",
-                avatar:"/src/assets/avatar.jpg",
-                fieldsOfStudy:["Rag","VA"],
-                description:"这是一段个人简介"},
-                {id:"3", name:"just a name", institution:"BeiHang University",
-                mail:"123456@qq.com",
-                avatar:"/src/assets/test.jpg",
-                fieldsOfStudy:["LLM","DNA methylation"],
+import SearchBox from '/src/components/search/SearchBox.vue';
+import searchBar from '/src/components/search/searchBar.vue';
+import pageComponent from '../../components/pageComponent.vue';
+import { useRouter } from "vue-router";
+import axios from 'axios';
+import { USERSEARCH_API } from "~/utils/request.js";
+import PageComponent from '/src/components/pageComponent.vue';
+export default {
+    data() {
+        return {
+            searchType: "User",
+            keyword: "",
+            searchUserList: [
+                {
+                    id: "1", name: "off-fu", institution: "BeiHang University",
+                    mail: "123456@qq.com",
+                    avatar: "/src/assets/avatar.jpg",
+                    fieldsOfStudy: ["Cell biology", "Biology", "Large Language Model", "DNA methylation", "length test"],
+                    description: "这是一段个人简介"
+                },
+                {
+                    id: "2", name: "test user", institution: "TsingHua University",
+                    mail: "123456@qq.com",
+                    avatar: "/src/assets/avatar.jpg",
+                    fieldsOfStudy: ["Rag", "VA"],
+                    description: "这是一段个人简介"
+                },
+                {
+                    id: "3", name: "just a name", institution: "BeiHang University",
+                    mail: "123456@qq.com",
+                    avatar: "/src/assets/test.jpg",
+                    fieldsOfStudy: ["LLM", "DNA methylation"],
                 description:"这是一段个人简介"},
             ],
             filterUserList:[],
@@ -181,11 +180,12 @@ export default{
     margin-left: 40%;
     top: 20px;
 }
+
 #search-body {
     margin: 0 50px;
 }
 
-#mid{
+#mid {
     height: 100vh;
     display: flex;
     margin: 30px auto;
@@ -193,12 +193,13 @@ export default{
 }
 
 
-.left-bar{
+.left-bar {
     width: 20%;
     height: 90%;
     transition: all 0.3s ease;
     overflow: hidden;
 }
+
 .left-bar.collapsed {
     width: 0;
 }
@@ -215,20 +216,22 @@ export default{
     left: -20px;
     top: 10px;
 }
-.main{
+
+.main {
     width: 75%;
     height: auto;
     margin: 0 auto;
     /* border: 1px solid black; */
 }
+
 .userList {
     list-style: none;
     padding: 0;
     margin: 0;
 }
- 
+
 .userItem {
-    
+
     display: flex;
     align-items: center;
     padding: 1%;
@@ -239,7 +242,7 @@ export default{
     border-radius: 20px;
     margin-top: 2%;
 }
- 
+
 .userItem-avatar {
     width: 100px;
     height: 100px;
@@ -249,37 +252,42 @@ export default{
     margin-left: 2%;
     cursor: pointer;
 }
- 
+
 .userItem-info {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
- 
+
 .userItem-name {
     font-size: 125%;
     font-weight: bold;
     margin-top: 1%;
     cursor: pointer;
 }
+
 .userItem-institution {
     font-size: 100%;
     margin-top: 1%;
 }
-.userItem-mail{
+
+.userItem-mail {
     font-size: 95%;
     color: rgba(139, 158, 166, 0.822);
 }
-.userItem-fieldsOfStudy{
+
+.userItem-fieldsOfStudy {
     font-size: 100%;
     color: rgba(7, 143, 201, 0.822);
 }
+
 .line {
     width: 100%;
     height: 1px;
     border: 1px solid rgb(181, 180, 180);
     margin: 15px auto;
 }
+
 .userItem-description {
     margin: 5px auto;
     width: 100%;
