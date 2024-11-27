@@ -14,21 +14,21 @@
             </div>
             <div class="main">
                 <div class="userList">
-                    <div class="userItem" v-for="userItem in filterUserList" :key="userItem.id">
-                        <img @click="selectUser(userItem)" :src="userItem.avatar" :alt="userItem.name"
-                            class="userItem-avatar">
-                        <div class="userItem-info">
-                            <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
-                            <span class="userItem-mail">{{ userItem.mail }}</span>
-                            <span class="userItem-institution">{{ userItem.institution }}</span>
-                            <div>
-                                <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
-                                    <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
-                                    <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
-                                </span>
-                            </div>
-                            <div class="line"></div>
-                            <span class="userItem-description">{{ userItem.description }}</span>
+                    <div
+                    class="userItem"
+                    v-for="userItem in searchUserList"
+                    :key="userItem.id"
+                    >
+                    <img  @click="selectUser(userItem)" :src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
+                    <div class="userItem-info">
+                        <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
+                        <span class="userItem-mail">{{ userItem.mail }}</span>
+                        <span class="userItem-institution">{{ userItem.institution }}</span>
+                        <div>
+                            <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
+                                <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
+                                <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -41,38 +41,32 @@
     </div>
 </template>
 <script>
-import SearchBox from '/src/components/search/SearchBox.vue';
-import searchBar from '/src/components/search/searchBar.vue';
-import pageComponent from '../../components/pageComponent.vue';
-import { useRouter } from "vue-router";
-import axios from 'axios';
-import { USERSEARCH_API } from "~/utils/request.js";
-import PageComponent from '/src/components/pageComponent.vue';
-export default {
-    data() {
-        return {
-            searchType: "User",
-            keyword: "",
-            searchUserList: [
-                {
-                    id: "1", name: "off-fu", institution: "BeiHang University",
-                    mail: "123456@qq.com",
-                    avatar: "/src/assets/avatar.jpg",
-                    fieldsOfStudy: ["Cell biology", "Biology", "Large Language Model", "DNA methylation", "length test"],
-                    description: "这是一段个人简介"
-                },
-                {
-                    id: "2", name: "test user", institution: "TsingHua University",
-                    mail: "123456@qq.com",
-                    avatar: "/src/assets/avatar.jpg",
-                    fieldsOfStudy: ["Rag", "VA"],
-                    description: "这是一段个人简介"
-                },
-                {
-                    id: "3", name: "just a name", institution: "BeiHang University",
-                    mail: "123456@qq.com",
-                    avatar: "/src/assets/test.jpg",
-                    fieldsOfStudy: ["LLM", "DNA methylation"],
+    import SearchBox from '/src/components/search/SearchBox.vue';
+    import searchBar from '/src/components/search/searchBar.vue';
+    import pageComponent from '/src/components/pageComponent.vue';
+    import {useRouter} from "vue-router";
+    import axios from 'axios';
+    import {USERSEARCH_API ,USERAVATOR_API} from "~/utils/request.js";
+export default{
+    data(){
+        return{
+            searchType:"User",
+            keyword:"",
+            searchUserList:[
+                {id:"1", name:"off-fu", institution:"BeiHang University",
+                mail:"123456@qq.com",
+                avatar:"/src/assets/avatar.jpg",
+                fieldsOfStudy:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
+                description:"这是一段个人简介"},
+                {id:"2", name:"test user", institution:"TsingHua University",
+                mail:"123456@qq.com",
+                avatar:"/src/assets/avatar.jpg",
+                fieldsOfStudy:["Rag","VA"],
+                description:"这是一段个人简介"},
+                {id:"3", name:"just a name", institution:"BeiHang University",
+                mail:"123456@qq.com",
+                avatar:"/src/assets/test.jpg",
+                fieldsOfStudy:["LLM","DNA methylation"],
                 description:"这是一段个人简介"},
             ],
             filterUserList:[],
@@ -123,10 +117,20 @@ export default {
     }
     },
     methods:{
+        async updateAllAvatars() {
+            console.log(this.searchUserList)
+            console.log("start")
+            const promises = this.searchUserList.map(async (user) => {
+                const avatar = await this.fetchAvatar(user.id);
+                if (avatar) {
+                    user.avatar = avatar;
+                }
+            })
+        },
         async search(keyword){
             this.keyword = keyword;
-            try {
-                axios.get(USERSEARCH_API, {
+             try {
+                await axios.get(USERSEARCH_API, {
                 params: {
                     keyword: keyword,
                     pageSize: this.pageSize,
@@ -137,16 +141,29 @@ export default {
                     this.searchUserList = response.data.view;
                     this.currentPage = response.data.currentPage;
                     this.totalPage = response.data.totalPage;
-                }
+                } 
+                }).then(()=>{
+                    this.updateAllAvatars();
                 });
             } catch (error) {
                 console.error('Search failed:', error);
             }
         },
-        selectUser(user){
-            console.log(user)
-            //TODO 跳转到特定用户主页
+        async fetchAvatar(userId) {
+            console.log("start2")
+            try {
+                const response = await axios.get(USERAVATOR_API, {
+                params: {
+                    id: userId,
+                }
+                });
+                return `data:image/png;base64,${response.data}`;
+            } catch (error) {
+                console.error(`Failed to fetch avatar for user ${userId}:`, error);
+                return null;
+            }
         },
+    
         expandBar(){
             this.isExpand = this.isExpand ? false : true
         },
@@ -166,10 +183,15 @@ export default {
                     this.searchUserList = response.data.view;
                     this.currentPage = response.data.currentPage;
                 }
+                }).then(()=>{
+                    this.updateAllAvatars();
                 });
             } catch (error) {
                 console.error('Search failed:', error);
             }
+        },
+        selectUser(userItem){
+            console.log(userItem);
         }
     }
 }

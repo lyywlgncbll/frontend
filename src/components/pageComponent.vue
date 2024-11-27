@@ -89,20 +89,21 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .pageComponent {
   display:inline-flex;
   align-items: center;
 }
 .changePageButton{
+  margin-right: 1%;
 }
 .changePageButtonIcon{
   width: 15px;
   height: 15px;
 }
 .pagesButton{
-  margin-left: -1%;
-  margin-right: -1%;
+  margin-left: 0%;
+  margin-right: 0%;
 }
 p {
   display: inline;
