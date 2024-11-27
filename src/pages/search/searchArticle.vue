@@ -5,11 +5,12 @@
                 <img src="/src/assets/search/icon/down-expand.svg" class="icon" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
-            <div class="confirm">
+            <div class="confirm" @click="sendFilter">
                 确认
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter"></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter" ref="searchBar">
+                </searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
@@ -25,9 +26,14 @@
 
     </div>
 
-    <div class="form" v-if="isShow">
-        <ClaimForm :claimData="selectedClaimData"></ClaimForm>
+    <div class="background" v-if="isShow">
+        <div class="form">
+            <div class="title">认领学术成果</div>
+            <div class="close" @click="closeClaimForm">x</div>
+            <ClaimForm :formId="formId" :formTitle="formTitle" :formAuthor="formAuthor"></ClaimForm>
+        </div>
     </div>
+
 </template>
 
 <script setup>
@@ -131,9 +137,18 @@ const searchItems = ref([
 
 //表单
 const isShow = ref(false);
-const showClaimForm = (claimData) => {
-    isShow.value = !isShow.value;
-};
+const formId = ref(null);
+const formAuthor = ref(null)
+const formTitle = ref(null)
+const showClaimForm = (id, title, author) => {
+    isShow.value = true
+    formId.value = id
+    formTitle.value = title
+    formAuthor.value = author
+}
+const closeClaimForm = () => {
+    isShow.value = false
+}
 
 //分页
 const currentPage = ref(1)
@@ -145,6 +160,10 @@ const selectedTags = ref({})
 const handleFilter = (selections) => {
     selectedTags.value = selections
 }
+const sendFilter = () => {
+
+}
+
 </script>
 
 <style scoped>
@@ -203,8 +222,6 @@ const handleFilter = (selections) => {
     background-color: #85a9c2;
 }
 
-
-
 .main {
     width: 75%;
     height: 100%;
@@ -216,14 +233,45 @@ const handleFilter = (selections) => {
     width: 90%;
 }
 
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
 .form {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    height: 600px;
-    width: 500px;
-    background-color: whitesmoke;
+    height: 500px;
+    width: 400px;
+    background-color: white;
     margin: 0 auto;
+}
+
+.form .title {
+    font-size: 25px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.form .close {
+    font-size: 22px;
+    font-weight: 500;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    color: grey;
 }
 </style>

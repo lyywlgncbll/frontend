@@ -14,90 +14,94 @@
             </div>
             <div class="main">
                 <div class="userList">
-                    <div
-                    class="userItem"
-                    v-for="userItem in searchUserList"
-                    :key="userItem.id"
-                    >
-                    <img  @click="selectUser(userItem)" :src="userItem.avatar" :alt="userItem.name" class="userItem-avatar">
-                    <div class="userItem-info">
-                        <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
-                        <span class="userItem-mail">{{ userItem.mail }}</span>
-                        <span class="userItem-institution">{{ userItem.institution }}</span>
-                        <div>
-                            <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
-                                <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
-                                <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
-                            </span>
+                    <div class="userItem" v-for="userItem in searchUserList" :key="userItem.id">
+                        <img @click="selectUser(userItem)" :src="userItem.avatar" :alt="userItem.name"
+                            class="userItem-avatar">
+                        <div class="userItem-info">
+                            <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
+                            <span class="userItem-mail">{{ userItem.mail }}</span>
+                            <span class="userItem-institution">{{ userItem.institution }}</span>
+                            <div>
+                                <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
+                                    <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
+                                    <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div style="text-align: center; margin-top: 1%;">
-                    <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
-                        @update:currentPage="updatePage" />
+                    <div style="text-align: center; margin-top: 1%;">
+                        <pageComponent class="pageComponent" v-model:currentPage="currentPage"
+                            v-model:totalPage="totalPage" @update:currentPage="updatePage" />
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
-    import SearchBox from '/src/components/search/SearchBox.vue';
-    import searchBar from '/src/components/search/searchBar.vue';
-    import pageComponent from '/src/components/pageComponent.vue';
-    import {useRouter} from "vue-router";
-    import axios from 'axios';
-    import {USERSEARCH_API ,USERAVATOR_API} from "~/utils/request.js";
-export default{
-    data(){
-        return{
-            searchType:"User",
-            keyword:"",
-            searchUserList:[
-                {id:"1", name:"off-fu", institution:"BeiHang University",
-                mail:"123456@qq.com",
-                avatar:"/src/assets/avatar.jpg",
-                fieldsOfStudy:["Cell biology","Biology","Large Language Model","DNA methylation","length test"],
-                description:"这是一段个人简介"},
-                {id:"2", name:"test user", institution:"TsingHua University",
-                mail:"123456@qq.com",
-                avatar:"/src/assets/avatar.jpg",
-                fieldsOfStudy:["Rag","VA"],
-                description:"这是一段个人简介"},
-                {id:"3", name:"just a name", institution:"BeiHang University",
-                mail:"123456@qq.com",
-                avatar:"/src/assets/test.jpg",
-                fieldsOfStudy:["LLM","DNA methylation"],
-                description:"这是一段个人简介"},
+import SearchBox from '/src/components/search/SearchBox.vue';
+import searchBar from '/src/components/search/searchBar.vue';
+import pageComponent from '/src/components/pageComponent.vue';
+import { useRouter } from "vue-router";
+import axios from 'axios';
+import { USERSEARCH_API, USERAVATOR_API } from "~/utils/request.js";
+export default {
+    data() {
+        return {
+            searchType: "User",
+            keyword: "",
+            searchUserList: [
+                {
+                    id: "1", name: "off-fu", institution: "BeiHang University",
+                    mail: "123456@qq.com",
+                    avatar: "/src/assets/avatar.jpg",
+                    fieldsOfStudy: ["Cell biology", "Biology", "Large Language Model", "DNA methylation", "length test"],
+                    description: "这是一段个人简介"
+                },
+                {
+                    id: "2", name: "test user", institution: "TsingHua University",
+                    mail: "123456@qq.com",
+                    avatar: "/src/assets/avatar.jpg",
+                    fieldsOfStudy: ["Rag", "VA"],
+                    description: "这是一段个人简介"
+                },
+                {
+                    id: "3", name: "just a name", institution: "BeiHang University",
+                    mail: "123456@qq.com",
+                    avatar: "/src/assets/test.jpg",
+                    fieldsOfStudy: ["LLM", "DNA methylation"],
+                    description: "这是一段个人简介"
+                },
             ],
-            filterUserList:[],
-            isExpand:true,
-            menuItems:[
-                { id: 'institution', title: '机构', contents: ['BeiHang University','TsingHua University'] },
+            filterUserList: [],
+            isExpand: true,
+            menuItems: [
+                { id: 'institution', title: '机构', contents: ['BeiHang University', 'TsingHua University'] },
                 { id: 'fieldsOfStudy', title: '领域', contents: ['Cell biology', 'VA', 'DNA methylation'] },
-                ],
-            filters:{
+            ],
+            filters: {
                 time: [],
                 theme: [],
                 source: [],
                 institution: [],
                 fieldsOfStudy: []
             },
-            currentPage:1,
-            totalPage:100,
-            pageSize:1,
+            currentPage: 1,
+            totalPage: 100,
+            pageSize: 1,
         }
     },
-    components:{
+    components: {
         SearchBox,
         searchBar,
         axios,
         pageComponent
     },
-    computed:{
-        filterUserList(){
+    computed: {
+        filterUserList() {
             return this.searchUserList.filter(item => {
                 return Object.keys(this.filters).every(categoryId => {
-                const filterValues = this.filters[categoryId] || [] // 默认值为空数组
+                    const filterValues = this.filters[categoryId] || [] // 默认值为空数组
                     if (filterValues.length === 0) return true // 条件为空时不过滤
                     if (categoryId === 'institution') return filterValues.includes(item.institution)
                     if (categoryId === 'fieldsOfStudy') return filterValues.some(label => item.fieldsOfStudy.includes(label))
@@ -105,18 +109,18 @@ export default{
                 })
             })
         },
-        updatedMenuItems(){
+        updatedMenuItems() {
             return this.menuItems.map(menuItem => {
-            const contents = new Set() // 使用 Set 来确保唯一值
-            this.searchUserList.forEach(item => {
-            if (menuItem.id === 'institution' && item.institution) contents.add(item.institution)
-            if (menuItem.id === 'fieldsOfStudy' && item.fieldsOfStudy) item.fieldsOfStudy.forEach(fieldsOfStudy => contents.add(fieldsOfStudy))
-        })
-        return { ...menuItem, contents: Array.from(contents) }
-    })
-    }
+                const contents = new Set() // 使用 Set 来确保唯一值
+                this.searchUserList.forEach(item => {
+                    if (menuItem.id === 'institution' && item.institution) contents.add(item.institution)
+                    if (menuItem.id === 'fieldsOfStudy' && item.fieldsOfStudy) item.fieldsOfStudy.forEach(fieldsOfStudy => contents.add(fieldsOfStudy))
+                })
+                return { ...menuItem, contents: Array.from(contents) }
+            })
+        }
     },
-    methods:{
+    methods: {
         async updateAllAvatars() {
             console.log(this.searchUserList)
             console.log("start")
@@ -127,22 +131,22 @@ export default{
                 }
             })
         },
-        async search(keyword){
+        async search(keyword) {
             this.keyword = keyword;
-             try {
+            try {
                 await axios.get(USERSEARCH_API, {
-                params: {
-                    keyword: keyword,
-                    pageSize: this.pageSize,
-                    page: 1
-                }
+                    params: {
+                        keyword: keyword,
+                        pageSize: this.pageSize,
+                        page: 1
+                    }
                 }).then(response => {
-                if (response.status === 200){
-                    this.searchUserList = response.data.view;
-                    this.currentPage = response.data.currentPage;
-                    this.totalPage = response.data.totalPage;
-                } 
-                }).then(()=>{
+                    if (response.status === 200) {
+                        this.searchUserList = response.data.view;
+                        this.currentPage = response.data.currentPage;
+                        this.totalPage = response.data.totalPage;
+                    }
+                }).then(() => {
                     this.updateAllAvatars();
                 });
             } catch (error) {
@@ -153,9 +157,9 @@ export default{
             console.log("start2")
             try {
                 const response = await axios.get(USERAVATOR_API, {
-                params: {
-                    id: userId,
-                }
+                    params: {
+                        id: userId,
+                    }
                 });
                 return `data:image/png;base64,${response.data}`;
             } catch (error) {
@@ -163,34 +167,34 @@ export default{
                 return null;
             }
         },
-    
-        expandBar(){
+
+        expandBar() {
             this.isExpand = this.isExpand ? false : true
         },
-        applyFilters(newFilters){
+        applyFilters(newFilters) {
             this.filters = newFilters
         },
-        updatePage(page){
+        updatePage(page) {
             try {
                 axios.get(USERSEARCH_API, {
-                params: {
-                    keyword: this.keyword,
-                    pageSize: this.pageSize,
-                    page: page
-                }
+                    params: {
+                        keyword: this.keyword,
+                        pageSize: this.pageSize,
+                        page: page
+                    }
                 }).then(response => {
-                if (response.status === 200){
-                    this.searchUserList = response.data.view;
-                    this.currentPage = response.data.currentPage;
-                }
-                }).then(()=>{
+                    if (response.status === 200) {
+                        this.searchUserList = response.data.view;
+                        this.currentPage = response.data.currentPage;
+                    }
+                }).then(() => {
                     this.updateAllAvatars();
                 });
             } catch (error) {
                 console.error('Search failed:', error);
             }
         },
-        selectUser(userItem){
+        selectUser(userItem) {
             console.log(userItem);
         }
     }

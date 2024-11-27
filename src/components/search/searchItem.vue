@@ -38,7 +38,7 @@ const props = defineProps({
 
 const emit = defineEmits(['openClaimForm']);
 const openForm = () => {
-    emit('openClaimForm',props.searchItem.id); 
+    emit('openClaimForm',props.searchItem.id,props.searchItem.title,props.searchItem.author); 
 };
 
 </script>

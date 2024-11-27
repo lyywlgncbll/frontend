@@ -47,7 +47,7 @@ const toggleItem = (index) => {
 
 const selectedItems = ref(
     props.menuItems.reduce((acc, item) => {
-        acc[item.id] = [] 
+        acc[item.id] = []
         return acc
     }, {})
 )
