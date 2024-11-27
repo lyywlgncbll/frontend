@@ -8,8 +8,11 @@
                 <img src="/src/assets/search/icon/down-expand.svg" class="icon" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
+            <div class="confirm" @click="sendFilter">
+                确认
+            </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="updatedMenuItems" @filtersChanged="applyFilters">
+                <searchBar :isExpand="isExpand" :menuItems="menuItem" @selectionChanged="handleFilter">
                 </searchBar>
             </div>
             <div class="main">
@@ -21,14 +24,18 @@
                             <span @click="selectUser(userItem)" class="userItem-name">{{ userItem.name }}</span>
                             <span class="userItem-mail">{{ userItem.mail }}</span>
                             <span class="userItem-institution">{{ userItem.institution }}</span>
-                            <div>
+                            <div style="display: block;">
                                 <span v-for="(fieldsOfStudyItem, index) in userItem.fieldsOfStudy" :key="index">
                                     <span class="userItem-fieldsOfStudy">{{ fieldsOfStudyItem }}</span>
                                     <template v-if="index < userItem.fieldsOfStudy.length - 1"> / </template>
                                 </span>
                             </div>
+                            <div class="line"></div>
+                            <span class="userItem-description">{{ userItem.description }}</span>
                         </div>
+                        
                     </div>
+                    
                     <div style="text-align: center; margin-top: 1%;">
                         <pageComponent class="pageComponent" v-model:currentPage="currentPage"
                             v-model:totalPage="totalPage" @update:currentPage="updatePage" />
@@ -50,6 +57,7 @@ export default {
         return {
             searchType: "User",
             keyword: "",
+            selectedTags: {},
             searchUserList: [
                 {
                     id: "1", name: "off-fu", institution: "BeiHang University",
@@ -73,22 +81,13 @@ export default {
                     description: "这是一段个人简介"
                 },
             ],
-            filterUserList: [],
             isExpand: true,
             menuItems: [
-                { id: 'institution', title: '机构', contents: ['BeiHang University', 'TsingHua University'] },
                 { id: 'fieldsOfStudy', title: '领域', contents: ['Cell biology', 'VA', 'DNA methylation'] },
             ],
-            filters: {
-                time: [],
-                theme: [],
-                source: [],
-                institution: [],
-                fieldsOfStudy: []
-            },
             currentPage: 1,
-            totalPage: 100,
-            pageSize: 1,
+            totalPage: 7,
+            pageSize: 4,
         }
     },
     components: {
@@ -98,22 +97,10 @@ export default {
         pageComponent
     },
     computed: {
-        filterUserList() {
-            return this.searchUserList.filter(item => {
-                return Object.keys(this.filters).every(categoryId => {
-                    const filterValues = this.filters[categoryId] || [] // 默认值为空数组
-                    if (filterValues.length === 0) return true // 条件为空时不过滤
-                    if (categoryId === 'institution') return filterValues.includes(item.institution)
-                    if (categoryId === 'fieldsOfStudy') return filterValues.some(label => item.fieldsOfStudy.includes(label))
-                    return true
-                })
-            })
-        },
-        updatedMenuItems() {
+        menuItem() {
             return this.menuItems.map(menuItem => {
                 const contents = new Set() // 使用 Set 来确保唯一值
                 this.searchUserList.forEach(item => {
-                    if (menuItem.id === 'institution' && item.institution) contents.add(item.institution)
                     if (menuItem.id === 'fieldsOfStudy' && item.fieldsOfStudy) item.fieldsOfStudy.forEach(fieldsOfStudy => contents.add(fieldsOfStudy))
                 })
                 return { ...menuItem, contents: Array.from(contents) }
@@ -125,6 +112,7 @@ export default {
             console.log(this.searchUserList)
             console.log("start")
             const promises = this.searchUserList.map(async (user) => {
+                user.avatar = '/src/assets/default.png' 
                 const avatar = await this.fetchAvatar(user.id);
                 if (avatar) {
                     user.avatar = avatar;
@@ -154,7 +142,6 @@ export default {
             }
         },
         async fetchAvatar(userId) {
-            console.log("start2")
             try {
                 const response = await axios.get(USERAVATOR_API, {
                     params: {
@@ -163,7 +150,6 @@ export default {
                 });
                 return `data:image/png;base64,${response.data}`;
             } catch (error) {
-                console.error(`Failed to fetch avatar for user ${userId}:`, error);
                 return null;
             }
         },
@@ -196,6 +182,35 @@ export default {
         },
         selectUser(userItem) {
             console.log(userItem);
+        },
+        handleFilter(selections){
+            this.selectedTags = selections;
+        },
+        sendFilter(){
+            console.log(this.selectedTags.fieldsOfStudy)
+            // console.log(Object.entries(this.selectedTags.fieldsOfStudy))
+            try {
+                axios.get(USERSEARCH_API, {
+                    params: {
+                        keyword: this.keyword,
+                        pageSize: this.pageSize,
+                        page: 1,
+                        fieldFilters: this.selectedTags.fieldsOfStudy
+                    },
+                    paramsSerializer: (params) => {
+                        return new URLSearchParams(params).toString();
+                    },
+                }).then(response => {
+                    if (response.status === 200) {
+                        this.searchUserList = response.data.view;
+                        this.currentPage = response.data.currentPage;
+                    }
+                }).then(() => {
+                    this.updateAllAvatars();
+                });
+            } catch (error) {
+                console.error('Search failed:', error);
+            }
         }
     }
 }
@@ -217,8 +232,6 @@ export default {
     margin: 30px auto;
     position: relative;
 }
-
-
 .left-bar {
     width: 20%;
     height: 90%;
@@ -323,5 +336,20 @@ export default {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
+}
+.confirm {
+    font-size: 11px;
+    text-align: center;
+    width: 20px;
+    height: 44px;
+    position: absolute;
+    background-color: #92bad6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    left: -20px;
+    top: 70px;
+    color: white;
 }
 </style>
