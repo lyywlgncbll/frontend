@@ -14,7 +14,8 @@
             <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
                 <li v-for="(content, i) in item.contents" :key="i" class="content-item">
                     <label>
-                        <input type="checkbox" :value="content" @change="handleSelection(item.id, content, $event)">
+                        <input class="checkbox" type="checkbox" :value="content"
+                            @change="handleSelection(item.id, content, $event)">
                         <span>{{ content }}</span>
                     </label>
                 </li>
@@ -33,7 +34,7 @@ const props = defineProps({
         required: true,
     }
 })
-const emit = defineEmits(['selectionChanged'])
+const emit = defineEmits(['selectionChanged', 'clear'])
 
 //菜单展开
 const expandedIndexes = ref([])
@@ -60,6 +61,13 @@ const handleSelection = (key, content, event) => {
     emit('selectionChanged', selectedItems.value)
 }
 
+const clear = () => {
+    const inputs = document.getElementsByClassName('checkbox')
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].checked = false
+    }
+}
+emit('clear', clear)
 </script>
 
 <style scoped>

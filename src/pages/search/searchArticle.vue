@@ -8,12 +8,19 @@
             <div class="confirm" @click="sendFilter">
                 确认
             </div>
+            <div class="clear" @click="callClearMethod">
+                清除
+            </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter" ref="searchBar">
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter"
+                    @clear="receiveMethod">
                 </searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
+                <div class="nav">
+
+                </div>
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
@@ -28,9 +35,8 @@
 
     <div class="background" v-if="isShow">
         <div class="form">
-            <div class="title">认领学术成果</div>
             <div class="close" @click="closeClaimForm">x</div>
-            <ClaimForm :formId="formId" :formTitle="formTitle" :formAuthor="formAuthor"></ClaimForm>
+            <ClaimForm :formId="formId" :formTitle="formTitle"></ClaimForm>
         </div>
     </div>
 
@@ -51,8 +57,8 @@ const expandBar = () => {
 
 const menuItems = ref([
     { id: 'time', title: '时间', contents: [1999, 1998, 1997] },
-    { id: 'theme', title: '主题', contents: [] },
-    { id: 'source', title: '来源', contents: [] }
+    { id: 'theme', title: '领域', contents: ['deep','hhhhhhhh'] },
+    { id: 'source', title: '期刊', contents: [] }
 ])
 
 const searchItems = ref([
@@ -164,6 +170,17 @@ const sendFilter = () => {
 
 }
 
+//清除
+const clearMethod = ref(null)
+const receiveMethod = (method) => {
+    clearMethod.value = method
+}
+const callClearMethod = () => {
+    if (clearMethod.value) {
+        clearMethod.value();
+    }
+}
+
 </script>
 
 <style scoped>
@@ -217,8 +234,25 @@ const sendFilter = () => {
     color: white;
 }
 
+.clear{
+    font-size: 11px;
+    text-align: center;
+    width: 20px;
+    height: 44px;
+    position: absolute;
+    background-color: #92bad6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    left: -20px;
+    top: 130px;
+    color: white;
+}
+
 .left-expand:hover,
-.confirm:hover {
+.confirm:hover,
+.clear:hover {
     background-color: #85a9c2;
 }
 
@@ -231,6 +265,12 @@ const sendFilter = () => {
 
 .main.collapsed {
     width: 90%;
+}
+
+.nav {
+    width: 100%;
+    height: 40px;
+    border: 1px solid black;
 }
 
 .background {
@@ -251,25 +291,18 @@ const sendFilter = () => {
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    height: 500px;
-    width: 400px;
+    height: 400px;
+    width: 450px;
     background-color: white;
     margin: 0 auto;
-}
-
-.form .title {
-    font-size: 25px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    margin: 20px auto;
-    text-align: center;
+    border-radius: 10px;
 }
 
 .form .close {
     font-size: 22px;
     font-weight: 500;
     position: absolute;
-    top: 15px;
+    top: 8px;
     right: 20px;
     cursor: pointer;
     color: grey;

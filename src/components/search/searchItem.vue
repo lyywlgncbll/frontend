@@ -38,7 +38,7 @@ const props = defineProps({
 
 const emit = defineEmits(['openClaimForm']);
 const openForm = () => {
-    emit('openClaimForm',props.searchItem.id,props.searchItem.title,props.searchItem.author); 
+    emit('openClaimForm',props.searchItem.id,props.searchItem.title); 
 };
 
 </script>
@@ -106,6 +106,7 @@ const openForm = () => {
 .container {
     width: 100%;
     border: 1px solid grey;
+    border-radius: 15px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12);
     padding: 20px;
     position: relative;
