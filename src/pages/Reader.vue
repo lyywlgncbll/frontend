@@ -1,54 +1,136 @@
-<script setup>
-import * as pdfjs from "pdfjs-dist";
-pdfjs.GlobalWorkerOptions.workerSrc = './public/pdf.worker.mjs'
-const pdfPath = '/test/test.pdf'
-const loadingTask = pdfjs.getDocument(pdfPath)
-loadingTask.promise
-  .then(function (pdf) {
-    console.log("success loaded pdf")
-    var pageNumber = 1
-    pdf.getPage(pageNumber).then(function (page) {
-      console.log("success loaded page")
-      
+<template>
+  <div class="pdf-preview">
+    <div class="pdf-wrap">
+      <vue-pdf-embed :source="state.source" v-for="page in state.numPages" :key="page" :style="state.scale" class="vue-pdf-embed" :page="page" />
+    </div>
+  </div>
+  <div class="AI-reading" v-if="showAIReading">
+    <el-input
+    v-model="clipboardContent"
+    style="width: 100%"
+    :autosize="{ minRows: 2, maxRows: 6 }"
+    type="textarea"
+    placeholder="Please input"
+    suffix-icon="Search"
+    />
+  </div>
+</template>
+<script setup lang="ts">
+import axios from "axios";
+import { reactive, onMounted, computed, onUnmounted, ref } from "vue";
+import VuePdfEmbed from "vue-pdf-embed";
+import { createLoadingTask } from "vue3-pdfjs";
+const props = defineProps({
+  //for pdf render
+  pdfurl:{
+  type: String,
+  required: true
+  }
+})
+//for pdf render
+const state = reactive({
+  source: "/test/test.pdf",
+  pageNum: 1,
+  scale: 1,
+  numPages: 0,
+})
 
-      var viewport = page.getViewport({scale: 1})
-      var scale = window.innerHeight/viewport.height
-      console.log("scale: ", scale)
-      viewport = page.getViewport({scale: scale})
-
-      var canvas = document.getElementById("testCanvas")
-      var context = canvas.getContext('2d')
-      // console.log(viewport.height, window.innerHeight)
-      canvas.height = viewport.height
-      canvas.width = viewport.width
-
-      page.render({
-        canvasContext: context,
-        viewport: viewport,
-      }).promise.then(function () {
-        console.log('success rendered page')
+onMounted(() => {
+  //for pdf render
+  const loadingTask = createLoadingTask(state.source);
+  loadingTask.promise.then((pdf) => {
+    state.numPages = pdf.numPages
+    console.log(state)
+    pdf.getPage(3).then((page) => {
+      page.getTextContent().then((textContent) => {
+        console.log(textContent)
       })
     })
   })
+  //for AI reading
+  document.addEventListener("keydown", keyboardDownBack, true)
+});
 
+onUnmounted(() => {
+  //for AI reading
+  document.removeEventListener("keydown", keyboardDownBack, true)
+})
+
+// for AI reading
+const keyboardDownBack = (evt: KeyboardEvent) => {
+  if (evt.shiftKey && evt.ctrlKey && evt.key.toLowerCase() === 'f') {
+    evt.preventDefault();
+    return AIReading()
+  }
+
+}
+const showAIReading = ref(false)
+const AIReading = () => {
+  // console.log("press ctrl f")
+  showAIReading.value = true
+  // console.log("showAiReading: ", showAIReading)
+  readClipboard()
+}
+
+//for clipboard
+const clipboardContent = ref<string>("")
+
+const readClipboard = async () => {
+  try {
+    const text = await navigator.clipboard.readText()
+    clipboardContent.value = text
+    config.data.question = text
+    sendAIReadingRequest(config)
+  } catch (err) {
+    console.error("cannot read from clipboard: ", err);
+  }
+}
+
+// for AI reading
+const config = {
+  method: 'post',
+  url: `localhost:9091/api/qianfan/askonce`,
+  data: {
+    question: clipboardContent.value,
+  },
+}
+const sendAIReadingRequest = async (config:any) => {
+  try {
+    console.log("config: ", config)
+    const response = await axios(config)
+    console.log("response: ", response.data)
+  } catch (error) {
+    console.error("error: ", error);
+  }
+}
 </script>
-
-<template>
-  <div id="pdfView">
-    <canvas id="testCanvas"></canvas>
-  </div>
-</template>
-
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-#pdfView {
+<style lang="css" scoped>
+.pdf-preview {
   position: relative;
+  height: 100vh;
+  padding: 20px 0;
+  box-sizing: border-box;
+  background: rgb(66，66，66);
 }
-#testCanvas {
-  position: absolute;
+.vue-pdf-embed {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  border: 1px solid #e5e5e5;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.pdf-wrap {
+  overflow-y: auto;
+}
+
+.AI-reading {
+  position: fixed;
+  z-index: 100;
+  top: 10%;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translateX(-50%);
+  width: 40%;
 }
+
 </style>
