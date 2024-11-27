@@ -10,13 +10,8 @@
       <el-col :span="12">
         <el-descriptions title="作者" border>
           <el-descriptions-item>
-            <el-button
-              v-for="author in paper.authors"
-              :key="author"
-              class="author-button"
-              type="text"
-              @click="goToAuthorPage(author)"
-            >
+            <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
+              @click="goToAuthorPage(author)">
               {{ author }}
             </el-button>
           </el-descriptions-item>
@@ -27,13 +22,8 @@
       <el-col :span="12">
         <el-descriptions title="关键词" border>
           <el-descriptions-item>
-            <el-button
-              v-for="keyword in paper.keywords"
-              :key="keyword"
-              type="text"
-              class="keyword-button"
-              @click="goToKeywordPage(keyword)"
-            >
+            <el-button v-for="keyword in paper.keywords" :key="keyword" type="text" class="keyword-button"
+              @click="goToKeywordPage(keyword)">
               {{ keyword }}
             </el-button>
           </el-descriptions-item>
@@ -43,7 +33,7 @@
 
     <!-- 发表日期 -->
     <el-row class="paper-date" gutter="20">
-      <el-col :span="12">
+      <el-col :span="24">
         <el-descriptions title="发布日期" border>
           <el-descriptions-item>
             {{ paper.publishedDate }}
@@ -51,13 +41,13 @@
         </el-descriptions>
       </el-col>
 
-      <el-col :span="12">
+      <!-- <el-col :span="12">
         <el-descriptions title="语言" border>
           <el-descriptions-item>
             {{ paper.language }}
           </el-descriptions-item>
         </el-descriptions>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <!-- 摘要 -->
@@ -80,15 +70,47 @@
       </el-col>
     </el-row>
 
+    <h2 class="section-title">数据统计</h2>
+    <el-row>
+      <el-col :span="6">
+        <el-statistic title="总浏览量" :value=views />
+      </el-col>
+      <el-col :span="6">
+        <el-statistic title="总下载量" :value=downloads />
+      </el-col>
+    </el-row>
+
     <!-- 操作按钮 -->
     <el-row justify="center" class="actions">
-      <el-button type="primary" icon="el-icon-download" @click="downloadPaper">
+      <el-button type="primary" @click="downloadPaper">
+        <el-icon>
+          <Download />
+        </el-icon>
         Download PDF
       </el-button>
-      <el-button type="success" icon="el-icon-document" @click="preview">
+      <el-button type="success" @click="preview">
+        <el-icon>
+          <View />
+        </el-icon>
         Preview
       </el-button>
     </el-row>
+
+    <h2 class="section-title" style="justify-self: center;">论文推荐</h2>
+    <el-card class="recommendation-card">
+      <el-carousel :interval="5000" arrow="always">
+        <el-carousel-item v-for="(paper, index) in recommendations" :key="paper.id">
+          <div class="paper-item" style="justify-content: center; display: flex; align-items: center; flex-direction: column;">
+            <h3 style="margin-top: 5px; font-size: 30px;">{{ paper.title }}</h3>
+            <p style="margin-top: 5px;">{{ paper.author }}</p>
+            <p class="abstract" style="margin-top: 5px;">{{ paper.abstract }}</p>
+            <el-button type="primary" size="mini" @click="goToDetail(paper.link)" style="margin-top: 5px;">
+              View Details
+            </el-button>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
+    </el-card>
   </el-card>
 </template>
 
@@ -97,6 +119,7 @@
 export default {
   name: "PaperDetail",
   data() {
+    
     return {
       paper: {
         title: "A Comprehensive Study on Artificial Intelligence",
@@ -112,20 +135,67 @@ export default {
         ],
         language: "English"
       },
+      views: "101",
+      downloads: "1001",
+      recommendations: [
+        {
+          id: "1",
+          title: "Deep Learning in Neural Networks",
+          author: "Ian Goodfellow",
+          abstract:
+            "This paper provides a comprehensive introduction to deep learning and its applications.",
+          link: "/paper/1",
+        },
+        {
+          id: "2",
+          title: "A Survey on Reinforcement Learning",
+          author: "Richard Sutton",
+          abstract:
+            "A detailed survey of reinforcement learning methods and their recent advancements.",
+          link: "/paper/2",
+        },
+        {
+          id: "3",
+          title: "Graph Neural Networks: A Review",
+          author: "Yoshua Bengio",
+          abstract:
+            "This paper reviews the development and applications of graph neural networks.",
+          link: "/paper/3",
+        },
+      ]
     };
+  },
+  created() {
+    // 从 localStorage 中加载数据
+    this.views = localStorage.getItem("views") || 101; // 默认值101
+    this.downloads = localStorage.getItem("downloads") || 1001; // 默认值1001
+  },
+  watch: {
+    views(newVal) {
+      // 当 views 更新时，将新值存储到 localStorage
+      localStorage.setItem("views", newVal);
+    },
+    downloads(newVal) {
+      // 当 downloads 更新时，将新值存储到 localStorage
+      localStorage.setItem("downloads", newVal);
+    }
   },
   methods: {
     downloadPaper() {
+      this.downloads++;
       this.$message({
         message: "Downloading PDF...",
         type: "info",
       });
+      
     },
     preview() {
+      this.views++;
       this.$message({
         message: "Preview...",
         type: "success",
       });
+      window.location.href = "/reader";
     },
     goToAuthorPage(author) {
       this.$message({
@@ -201,4 +271,21 @@ export default {
   font-size: 14px;
 }
 
+.recommendations {
+  margin-top: 20px;
+}
+
+.recommendation-card {
+  width: 100%;
+}
+
+.paper-item {
+  text-align: left;
+  padding: 10px;
+}
+
+.abstract {
+  font-size: 12px;
+  color: gray;
+}
 </style>
