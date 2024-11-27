@@ -23,7 +23,7 @@ const props = defineProps({
 
 <template>
   <header>
-    <a :href="indexLink"><img src="src/assets/logo/CCBridge_White.svg" alt="" class="logo"></a>
+    <a :href="indexLink"><img src="../../assets/logo/CCBridge_White.svg" alt="" class="logo"></a>
     <nav>
       <ul class="nav_links">
         <li v-for="link in navLinks" :key="link">{{ link }}</li>

@@ -1,5 +1,5 @@
 <script>
-import NavigationBar from "~/components/bar/navigation-bar.vue";
+import NavigationBar from "~/components/bar/unlogged-navigation-bar.vue";
 import {defineComponent} from "vue";
 import { useRouter } from 'vue-router';
 import axios from 'axios';
