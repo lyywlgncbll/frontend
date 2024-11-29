@@ -1,24 +1,36 @@
 <script>
-import {ref} from "vue"
-import { Search } from '@element-plus/icons-vue'
+import { ref} from "vue"
+import searchBar from "~/components/bar/logged-nav/search-bar.vue";
+import PersonalAvatar from "~/components/bar/logged-nav/personal-avatar.vue";
+
 export default {
   computed: {
-    Search() {
-      return Search
-    }
+
   },
   components:{
-    Search
+    PersonalAvatar,
+    searchBar
+
   },
   data(){
-    const searchInput=ref('');
+
     return{
       indexLink: {
         type: String,
         default: '#/'
       },
-      searchInput,
-
+      options:[
+        {value:1, label:"高级搜索", action: this.advancedSearch},
+        {value:2, label:"学者搜索", action: this.scholarSearch}
+      ]
+    }
+  },
+  methods:{
+    advancedSearch(){
+      alert("跳转到高级搜索");
+    },
+    scholarSearch(){
+      alert("跳转到学者搜索");
     }
   }
 }
@@ -27,64 +39,94 @@ export default {
 
 <template>
   <header>
-    <nav class="nav-bar">
+    <nav id="bar-root" class="logged-nav-bar">
       <!--左边的logo-->
-      <a :href="indexLink"><img src="../../assets/logo/CCBridge_White.svg" alt="" class="logo"></a>
-      <!--搜索栏-->
-<!--      <el-input-->
-<!--          v-model="searchInput"-->
-<!--          style="width: 240px"-->
-<!--          size="large"-->
-<!--          placeholder="Please Input"-->
-<!--          :suffix-icon="Search"-->
-<!--      />-->
-      <el-input
-          v-model="searchInput"
-          style="max-width: 600px ;border: transparent"
-          placeholder="Type  /  to search"
-          class="input-with-select"
-      >
-        <template #prepend>
-          <el-select v-model="select" placeholder="Select" style="width: 115px;color: #4caf50" class="selector">
-            <el-option label="Restaurant" value="1" />
-            <el-option label="Order No." value="2" />
-            <el-option label="Tel" value="3" />
-          </el-select>
-        </template>
-        <template #append>
-          <el-button :icon="Search"/>
-        </template>
-      </el-input>
+      <a :href="indexLink"><img src="../../assets/logo/CCBridge.svg" alt="" class="logo"></a>
+      <div class="options">
+        <div
+          class="option"
+          v-for="option in options"
+          :key="option.value"
+          @click="option.action"
+          >{{option.label}}</div>
+      </div>
+      <search-bar class="search-bar"/>
+      <div class="border"></div>
+      <!--用户头像-->
+      <personal-avatar class="personal-avatar"/>
+
     </nav>
   </header>
 
 </template>
 
 <style scoped>
+@import "../../assets/theme-colors.css";
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background-color: transparent;
-}
-header.nav-bar{
-  display: flex;
-  flex-direction: row;
+  background-color: var(--bar-background-color);
 
+  //background-color: gray;
 }
-.input-with-select{
-  border: 1px solid #ccc; /* 添加边框 */
-  background-color: #f9f9f9; /* 设置背景颜色 */
-  border-radius: 0px; /* 添加圆角 */
-  //padding: 4px;
-  .selector{
-    background-color: black; /* 按钮背景色 */
-    color: blue; /* 按钮文字颜色 */
-    border-radius: 4px; /* 按钮圆角 */
-    //padding: 6px 12px;
-    :hover{
-      background-color: #66b1ff; /* 悬停状态背景色 */
+.logged-nav-bar{
+  background-color: var(--bar-background-color);
+  display: flex;
+  justify-content: space-between; /* 左右分布 */
+  align-items: center;
+  height: 60px;
+  border-bottom: var(--bar-border-color) solid 2px ;
+
+  .logo{
+    width: 100px;
+    height: auto;
+    margin-left: 20px;
+  }
+  .options {
+    position: absolute;
+    box-sizing: border-box; /* 确保 border 出现在内侧 */
+    left: 170px;
+    display: flex;
+    gap: 30px;
+    align-items: center; /* 垂直居中 */
+
+    .option {
+      cursor: pointer;
+      height: 35px;
+      width: 100px;
+      border-radius: 6px;
+      font-size: 13px;
+      //padding: 7px 12px;
+      color: var(--bar-font-color);
+      border: 1px solid var(--bar-border-color);
+      display: flex; /* 让 .option 使用 Flexbox 布局 */
+      align-items: center; /* 垂直居中 */
+      justify-content: center; /* 水平居中 */
+      transition: background-color 0.3s ease;
+    }
+    .option:hover{
+      background-color: var(--button-hover-color);
+      transition: background-color 0.3s ease;
     }
   }
+
+  .search-bar{
+    position: relative;
+    margin-right: 90px;
+  }
+
+  .border{
+    position: absolute;
+    right: 70px;
+    width: 2px;
+    height: 25px;
+    background-color: var(--bar-border-color);
+  }
+  .personal-avatar{
+    position: absolute;
+    right: 20px;
+  }
 }
+
 </style>

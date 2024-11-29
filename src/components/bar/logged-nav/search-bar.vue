@@ -8,7 +8,7 @@ export default {
         { value: "3", label: "摘要" },
         { value: "4", label: "领域" },
       ],
-      select: null, // 当前选中的值
+      select: 1, // 当前选中的值
       input: "", // 输入框内容
       optionsListActive: false, // 控制下拉列表的显示/隐藏
       inputFocused: false, // 检测是否键入了 `/`
@@ -30,7 +30,7 @@ export default {
       const selectedOption = this.options.find(
           (option) => option.value === this.select
       );
-      return selectedOption ? selectedOption.label : "请选择";
+      return selectedOption ? selectedOption.label : "篇名";
     },
 
   },
@@ -45,6 +45,16 @@ export default {
           this.inputFocused=true;
         }
       }
+      if (event.key === "Enter") {
+        if(this.inputFocused===true){
+          if(this.input.length===0){
+            alert("请输入内容")
+          }else{
+            alert("正在搜索");
+          }
+        }
+      }
+
     },
     toggleOptionsList() {
       // 切换下拉列表的显示/隐藏
@@ -76,23 +86,26 @@ export default {
 <template>
   <div class="input-with-select"
        ref="dropdownContainer"
-       :class="{ 'focused': inputFocused||input }">
+       :class="{ 'focused': inputFocused||input,'toggled':optionsListActive }"
+       id="bar-root">
     <!-- 自定义选择菜单 -->
     <div class="select-menu" @click="toggleOptionsList">
       <span class="selected-label">{{ selectedLabel }}</span>
       <i :class="['icon', optionsListActive ? 'up' : 'down']"></i>
     </div>
-
+    <img src="../../../assets/iconfonts/nav-bar/search1.svg" class="search-logo">
     <!-- 输入框 -->
     <input
         ref="searchInput"
         v-model="input"
         type="text"
-        placeholder="Type  /  to search"
+        placeholder="  Type  /  to search"
         class="custom-input"
         @focus="handleFocus"
         @blur="handleBlur"
     />
+
+
 
 
     <!-- 下拉选项列表 -->
@@ -113,18 +126,53 @@ export default {
 
 
 <style scoped>
+
+
+*::after {
+  box-sizing: border-box;
+}
 .input-with-select {
+  box-sizing: border-box; /* 确保 border 出现在内侧 */
   position: relative;
   display: flex;
-  //align-items: center;
-  //gap: 10px;
-  width: 400px;
-  margin: 20px auto;
+  width: 20vw;
+  min-width: 300px;
+  height: 35px;
+  //margin-top: 10px;
+  //margin-bottom: 10px;
+  margin-right: 20px;
   transition: width 0.3s ease; /* 为宽度变化添加平滑动画 */
-  //border: 1px solid #ccc;
-  //border-radius: 8px;
-  //padding: 10px;
-  //background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid var(--bar-border-color);
+  font-size: 13px;
+
+
+}
+
+/* 当输入框获取焦点时，扩展父容器宽度 */
+.input-with-select.focused {
+  transition: width 0.3s ease; /* 为宽度变化添加平滑动画 */
+  width: 35vw;
+  animation: border-breathing 2s infinite ease-in-out; /* 应用动画 */
+}
+.input-with-select.toggled{
+  border-bottom-left-radius: 0;
+  transition: border-bottom-width 0.3s ease;
+}
+@keyframes border-breathing {
+  0% {
+
+    border-color: black; /* 初始颜色 */
+    border-width: 1px; /* 初始宽度 */
+  }
+  50% {
+    border-color: var(--bar-border-color); /* 中间颜色 */
+    border-width: 1px; /* 扩大的宽度 */
+  }
+  100% {
+    border-color: black; /* 恢复初始颜色 */
+    border-width: 1px; /* 恢复初始宽度 */
+  }
 }
 
 /* 自定义选择菜单样式 */
@@ -132,12 +180,21 @@ export default {
   display: flex;
   align-items: center;
   cursor: pointer;
-  border: 1px solid #ccc;
+  border-right: 1px solid var(--bar-border-color);
   padding: 8px 12px;
-  border-bottom-left-radius: 4px;
-  border-top-left-radius: 4px;
-  background-color: white;
-
+  //border-bottom-left-radius: 6px;
+  //border-top-left-radius: 6px;
+  overflow: clip;
+  background-color: transparent;
+  transition: 0.3s ease;
+  color:var(--bar-font-color);
+  width: 25%;
+  max-width: 90px;
+  min-width: 80px;
+}
+.select-menu:hover{
+  transition: background-color 0.3s ease;
+  background-color: var(--button-hover-color);
 }
 
 .selected-label {
@@ -145,31 +202,43 @@ export default {
 }
 
 .icon {
-  border: solid #333;
-  border-width: 0 2px 2px 0;
+  border: solid #5b636d;
+  border-width: 0 1.5px 1.5px 0;
   display: inline-block;
-  padding: 3px;
+  padding: 2.5px;
+  //padding-top: -2px;
   transform: rotate(45deg);
   transition: transform 0.3s ease; /* 添加平滑过渡动画，控制 transform 旋转 */
+  margin-left: 10px;
 }
 
 .icon.up {
   transform: rotate(-135deg);
+}
+.search-logo{
+  //flex: 1;
+  width: 17px;
+  height: 17px;
+  margin-left: 9px;
+  //margin-right: 5px ;
+  margin-top:9px ;
+  fill: #5b636d;
+  //background-color: black;
 }
 
 /* 输入框样式 */
 .custom-input {
   flex: 1;
   padding: 8px;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  border-bottom-right-radius: 4px;
-  border-top-right-radius: 4px;
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 6px;
   outline: none;
   box-sizing: border-box; /* 确保 border 出现在内侧 */
   transition: width 0.3s ease; /* 为宽度变化添加平滑动画 */
-  //border-radius: 4px;
+  font-size: 13px;
+  color:#5b636d;
+  background-color: transparent;
+
 
 }
 
@@ -181,36 +250,43 @@ export default {
 .options-list {
   position: absolute;
   top: 100%;
-  left: 0;
-  width: 100%;
+  //left: 3px;
+  width: calc(25% + 1px);
+  max-width: 91px;
+  min-width: 81px;
+  //margin-top: 40px;
   background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid var(--bar-border-color) ;
+  border-top:transparent ;
+  margin-left: -1px;
+  margin-top: 1px;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
   max-height: 0; /* 默认最大高度为 0 */
   overflow: hidden; /* 隐藏超出范围的内容 */
   opacity: 0; /* 初始透明度为 0 */
-  transition: max-height 0.3s ease, opacity 0.3s ease; /* 添加动画过渡 */
+  transition: height 0.3s ease, opacity 0.3s ease; /* 添加动画过渡 */
   z-index: 1000;
 }
 
 .options-list.active {
-  max-height: 150px; /* 展开时的最大高度 */
+  max-height: 2000px; /* 展开时的最大高度 */
   opacity: 1; /* 展开时的透明度 */
 }
 
 .option {
+  text-align: center; /* 水平居中 */
   padding: 10px;
   cursor: pointer;
 }
 
-.option:hover,
+.option:hover{
+  background-color: var(--long-button-hover-color);
+  //color: white;
+}
 .option.selected {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--button-hover-color);
+  //color: white;
 }
-/* 当输入框获取焦点时，扩展父容器宽度 */
-.input-with-select.focused {
-  transition: width 0.3s ease; /* 为宽度变化添加平滑动画 */
-  width: 600px;
-}
+
 </style>

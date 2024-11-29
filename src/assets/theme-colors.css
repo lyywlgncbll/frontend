@@ -1,0 +1,9 @@
+#bar-root{
+    --bar-background-color:#f6f8fa;
+    --bar-border-color:#D1D9E0;
+    --long-button-hover-color:#F2F3F5;
+    --button-hover-color:#EAEDF0;
+    --bar-font-color:#5b636d;
+    font-size: 13px;
+}
+

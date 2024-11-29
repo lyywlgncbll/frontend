@@ -78,7 +78,7 @@ export default {
     />
     <!-- 搜索按钮   -->
     <button class="searchButton" @click="serachByLabel">
-      <img src="src/assets/search.svg" class="searchIcon">
+      <img src="../../assets/iconfonts/nav-bar/search.svg" class="searchIcon">
     </button>
     <div class="options-list" :class="{ 'active': optionsListActive }">
       <div class="option"

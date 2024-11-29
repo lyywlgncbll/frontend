@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import loggedNavBar from "~/components/bar/search-bar.vue";
+import loggedNavBar from "~/components/bar/logged-nav-bar.vue";
 import {defineComponent, ref,inject} from "vue";
 import {useRouter} from "vue-router";
 export default defineComponent({
