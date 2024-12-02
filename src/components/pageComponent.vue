@@ -1,6 +1,6 @@
 <template>
   <div :class="pageComponent">
-    <p style="width: 100px;">共 {{ totalPage }} 页</p>
+    <p style="width: 150px;">共 {{ totalPage }} 页</p>
     <!-- 上一页按钮 -->
     <el-button :disabled="currentPage === 1" @click="changePage(currentPage - 1)" :circle="true" type="primary"
       size="small" class="changePageButton">
@@ -55,15 +55,25 @@ export default {
   },
   methods: {
     generatePages() {
-      // 生成当前页前后两页的按钮，并确保不会越界
-      const range = 2;
-      const start = Math.max(1, this.currentPage - range);
-      const end = Math.min(this.totalPage, this.currentPage + range);
+      const totalToShow = 5; // 固定页码长度
+      const halfRange = Math.floor(totalToShow / 2);
+
+      let start = Math.max(1, this.currentPage - halfRange);
+      let end = Math.min(this.totalPage, this.currentPage + halfRange);
+
+      // 如果不足5个页码，调整起始点或结束点
+      if (end - start + 1 < totalToShow) {
+        if (start === 1) {
+          end = Math.min(this.totalPage, start + totalToShow - 1);
+        } else if (end === this.totalPage) {
+          start = Math.max(1, end - totalToShow + 1);
+        }
+      }
 
       this.pages = [];
       for (let i = start; i <= end; i++) {
         this.pages.push(i);
-      }
+      } 
     },
     changePage(page) {
       if (page < 1 || page > this.totalPage) return;
@@ -81,6 +91,7 @@ export default {
 
 .changePageButton {
   margin-right: 1%;
+  margin-left: 1%;
 }
 
 .changePageButtonIcon {
