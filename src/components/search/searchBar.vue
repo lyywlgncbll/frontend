@@ -71,6 +71,13 @@ emit('clear', clear)
 </script>
 
 <style scoped>
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .sidebar {
     width: 100%;
     padding: 10px;

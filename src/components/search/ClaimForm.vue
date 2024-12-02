@@ -70,36 +70,43 @@ const rules = ref({
 </script>
 
 <style scoped>
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .claim-form {
     max-width: 600px;
     width: 100%;
 }
 
 .title {
-  font-size: 30px;
-  font-weight: 530;
-  letter-spacing: -1px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding-left: 25px;
-  margin: 30px 0 20px 20px;
-  color: #1599db;
+    font-size: 30px;
+    font-weight: 530;
+    letter-spacing: -1px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 25px;
+    margin: 30px 0 20px 20px;
+    color: #1599db;
 }
 
 .title::before {
-  width: 18px;
-  height: 18px;
+    width: 18px;
+    height: 18px;
 }
 
 .title::before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  left: 0px;
-  background-color: #1599db;
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    left: 0px;
+    background-color: #1599db;
 }
 
 
@@ -126,7 +133,7 @@ const rules = ref({
     cursor: default;
 }
 
-.line{
+.line {
     height: .5px;
     width: 85%;
     background-color: #dadde1;
@@ -134,38 +141,38 @@ const rules = ref({
 }
 
 .submit-btn {
-  position: absolute;
-  border-radius: 30px;
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-  background-color: #1599db;
-  color: #FFF;
-  padding: 18px 65px;
-  display: inline-block;
-  font-size: 15px;
-  font-weight: bold;
-  letter-spacing: 10px;
-  right: -10px;
-  bottom: -15px;
-  cursor: pointer;
-  transition: all .25s ease;
-  
+    position: absolute;
+    border-radius: 30px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    background-color: #1599db;
+    color: #FFF;
+    padding: 18px 65px;
+    display: inline-block;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 10px;
+    right: -10px;
+    bottom: -15px;
+    cursor: pointer;
+    transition: all .25s ease;
+
 }
 
 .submit-btn:after {
-  position: absolute;
-  content: "";
-  right: 0px;
-  bottom: 58px;
-  width: 0;
-  height: 0;
-  border-left: 0px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #0687d7;
+    position: absolute;
+    content: "";
+    right: 0px;
+    bottom: 58px;
+    width: 0;
+    height: 0;
+    border-left: 0px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #0687d7;
 }
 
 .submit-btn:hover {
-  background-color: #0687d7;
-  
+    background-color: #0687d7;
+
 }
 </style>

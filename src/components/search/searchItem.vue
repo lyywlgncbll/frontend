@@ -38,12 +38,19 @@ const props = defineProps({
 
 const emit = defineEmits(['openClaimForm']);
 const openForm = () => {
-    emit('openClaimForm',props.searchItem.id,props.searchItem.title); 
+    emit('openClaimForm', props.searchItem.id, props.searchItem.title);
 };
 
 </script>
 
 <style scoped>
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 /* 装饰 */
 .tools {
     display: flex;
@@ -189,5 +196,4 @@ const openForm = () => {
     margin-left: auto;
     text-align: right;
 }
-
 </style>
