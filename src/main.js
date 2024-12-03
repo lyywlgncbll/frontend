@@ -9,5 +9,6 @@ const app = createApp(App)
 
 app.use(router)
 app.use(ElementPlus)
+
 import 'virtual:windi.css'
 app.mount('#app')

@@ -9,6 +9,7 @@ import Login from "../pages/user/login.vue";
 import Register from "../pages/user/register.vue";
 import ResetPassword from "~/pages/user/resetPassword.vue";
 import SelectCharacter from "~/pages/user/selectCharacter.vue";
+import HomePage from "~/pages/homePage/homePage.vue";
 
 const routes = [{
     path: "/",
@@ -29,6 +30,9 @@ const routes = [{
     path: "/selectCharacter",
     component: SelectCharacter,
     meta: {requiresGradient: true}
+},{
+    path: "/home",
+    component: HomePage,
 }]
 
 

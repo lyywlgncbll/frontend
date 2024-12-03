@@ -76,7 +76,7 @@ export default {
   justify-content: space-between; /* 左右分布 */
   align-items: center;
   height: 60px;
-  border-bottom: var(--bar-border-color) solid 2px ;
+  border-bottom: var(--bar-border-color) solid 1px ;
 
   .logo{
     width: 100px;

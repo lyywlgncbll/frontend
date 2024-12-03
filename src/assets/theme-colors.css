@@ -4,6 +4,16 @@
     --long-button-hover-color:#F2F3F5;
     --button-hover-color:#EAEDF0;
     --bar-font-color:#5b636d;
-    font-size: 13px;
+    font-size: 14px;
+}
+#page-root{
+    --page-border-color:#D1D9E0;
+    --page-button-color:#5b636d;
+    --page-button-border-color:#D1D9E0;
+    --page-button-hover-color:#393939;
+    --page-block-hover-color:#F2F3F4;
+    --page-barckground-color:#f6f8fa;
+    --page-font-color:#1F2328;
+    font-size: 14px;
 }
 

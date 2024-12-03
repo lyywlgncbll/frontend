@@ -144,7 +144,7 @@ export default {
   transition: width 0.3s ease; /* 为宽度变化添加平滑动画 */
   border-radius: 6px;
   border: 1px solid var(--bar-border-color);
-  font-size: 13px;
+  //font-size: 13px;
 
 
 }
@@ -235,7 +235,7 @@ export default {
   outline: none;
   box-sizing: border-box; /* 确保 border 出现在内侧 */
   transition: width 0.3s ease; /* 为宽度变化添加平滑动画 */
-  font-size: 13px;
+  //font-size: 13px;
   color:#5b636d;
   background-color: transparent;
 
