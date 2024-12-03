@@ -1,7 +1,14 @@
 <template>
   <div class="pdf-preview">
     <div class="pdf-wrap">
-      <vue-pdf-embed :source="state.source" v-for="page in state.numPages" :key="page" :style="state.scale" class="vue-pdf-embed" :page="page" />
+      <vue-pdf-embed 
+        class="vue-pdf-embed" 
+        :source="state.source" 
+        v-for="page in state.numPages" :key="page" 
+        :style="state.scale" 
+        :page="page" 
+        @loaded="afterPDFLoaded"
+      />
     </div>
   </div>
   <div class="AI-reading" v-if="showAIReading">
@@ -40,27 +47,32 @@ onMounted(() => {
   const loadingTask = createLoadingTask(state.source);
   loadingTask.promise.then((pdf) => {
     state.numPages = pdf.numPages
-    console.log(state)
-    pdf.getPage(3).then((page) => {
-      page.getTextContent().then((textContent) => {
-        console.log(textContent)
-      })
-    })
+    
   })
   //for AI reading
   document.addEventListener("keydown", keyboardDownBack, true)
+  
 });
 
 onUnmounted(() => {
   //for AI reading
   document.removeEventListener("keydown", keyboardDownBack, true)
+  // for history progress 
+  calReadingProgressRate()
 })
 
 // for AI reading
 const keyboardDownBack = (evt: KeyboardEvent) => {
   if (evt.shiftKey && evt.ctrlKey && evt.key.toLowerCase() === 'f') {
-    evt.preventDefault();
+    evt.preventDefault()
     return AIReading()
+  }
+
+  if (evt.shiftKey && evt.ctrlKey && evt.key.toLowerCase() === 'g') {
+    evt.preventDefault()
+    console.log(calReadingProgressRate())
+    // return calReadingProgressRate()
+    // scrollTo()
   }
 
 }
@@ -103,6 +115,29 @@ const sendAIReadingRequest = async (config:any) => {
     console.error("error: ", error);
   }
 }
+
+// for history progress
+const calReadingProgressRate = () => {
+  // const readProInner = document.querySelector('.pdf-preview')
+  const scrollHeight = document.documentElement.scrollHeight
+  const clientHeight = document.documentElement.clientHeight
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+  // console.log(scrollTop, scrollHeight, clientHeight)
+  return +(scrollTop/(scrollHeight-clientHeight)).toFixed(2)*100 + '%'
+}
+
+const afterPDFLoaded = () => {
+  scrollTo()
+}
+
+const scrollTo = () => {
+  window.scrollTo({
+      top: 2800,
+      left: 0,
+      behavior: 'smooth',
+    })
+}
+
 </script>
 <style lang="css" scoped>
 .pdf-preview {
