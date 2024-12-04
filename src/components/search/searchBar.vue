@@ -58,7 +58,6 @@ const handleSelection = (key, content, event) => {
     } else {
         selectedItems.value[key] = selectedItems.value[key].filter(item => item !== content)
     }
-    console.log(selectedItems.value);
     emit('selectionChanged', selectedItems.value)
 }
 
@@ -70,7 +69,6 @@ const clear = () => {
     for (let key in selectedItems.value) {
         selectedItems.value[key].length = 0
     }
-    console.log(selectedItems.value)
 }
 emit('clear', clear)
 </script>
