@@ -12,7 +12,7 @@
                 确认
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItem" @selectionChanged="handleFilter">
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter" @clear="receiveMethod">
                 </searchBar>
             </div>
             <div class="main">
@@ -51,13 +51,15 @@ import searchBar from '/src/components/search/searchBar.vue';
 import pageComponent from '/src/components/pageComponent.vue';
 import { useRouter } from "vue-router";
 import axios from 'axios';
-import { USERSEARCH_API, USERAVATOR_API } from "~/utils/request.js";
+import { USERSEARCH_API, USERAVATOR_API, USERFIELDS_API} from "~/utils/request.js";
 export default {
     data() {
         return {
             searchType: "User",
             keyword: "",
-            selectedTags: {},
+            selectedTags: {
+                fieldsOfStudy:[],
+            },
             searchUserList: [
                 {
                     id: "1", name: "off-fu", institution: "BeiHang University",
@@ -96,21 +98,24 @@ export default {
         axios,
         pageComponent
     },
-    computed: {
-        menuItem() {
-            return this.menuItems.map(menuItem => {
-                const contents = new Set() // 使用 Set 来确保唯一值
-                this.searchUserList.forEach(item => {
-                    if (menuItem.id === 'fieldsOfStudy' && item.fieldsOfStudy) item.fieldsOfStudy.forEach(fieldsOfStudy => contents.add(fieldsOfStudy))
-                })
-                return { ...menuItem, contents: Array.from(contents) }
-            })
-        }
-    },
     methods: {
+        async updateField(keyword){
+            console.log("start update")
+            try{
+                await axios.get(USERFIELDS_API, {
+                    params: {
+                        keyword: keyword,
+                    }
+                }).then(response => {
+                    if (response.status === 200) {
+                        this.menuItems[0].contents = response.data;
+                    }
+                });
+            }catch (error) {
+                console.error('Get fields failed:', error);
+            }
+        },
         async updateAllAvatars() {
-            console.log(this.searchUserList)
-            console.log("start")
             const promises = this.searchUserList.map(async (user) => {
                 user.avatar = '/src/assets/default.png' 
                 const avatar = await this.fetchAvatar(user.id);
@@ -121,6 +126,7 @@ export default {
         },
         async search(keyword) {
             this.keyword = keyword;
+            this.updateField(keyword);
             try {
                 await axios.get(USERSEARCH_API, {
                     params: {
@@ -153,7 +159,6 @@ export default {
                 return null;
             }
         },
-
         expandBar() {
             this.isExpand = this.isExpand ? false : true
         },
@@ -186,8 +191,17 @@ export default {
         handleFilter(selections){
             this.selectedTags = selections;
         },
+        clearMethod(){
+            
+        },
+        receiveMethod(method){
+            this.clearMethod = method
+        },
         sendFilter(){
-            console.log(this.selectedTags.fieldsOfStudy)
+            this.clearMethod();
+            if(this.selectedTags.fieldsOfStudy){
+                console.log(this.selectedTags.fieldsOfStudy)
+            }
             // console.log(Object.entries(this.selectedTags.fieldsOfStudy))
             try {
                 axios.get(USERSEARCH_API, {
