@@ -1,5 +1,5 @@
 <script>
-import NavigationBar from "~/components/bar/navigation-bar.vue";
+import NavigationBar from "~/components/bar/unlogged-nav-bar.vue";
 import {defineComponent} from "vue";
 
 export default defineComponent({

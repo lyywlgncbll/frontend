@@ -15,6 +15,8 @@ import ResetPassword from "~/pages/user/resetPassword.vue";
 import SearchUserResult from "../pages/search/SearchUser.vue"
 import TransferResult from "../pages/transfer/transferResult.vue";
 import TransferRequest from "../pages/transfer/transferRequest.vue"
+import SelectCharacter from "~/pages/user/selectCharacter.vue";
+import HomePage from "~/pages/homePage/homePage.vue";
 const routes = [
     {
         path: "/",
@@ -59,10 +61,15 @@ const routes = [
     {
         path: "/transfer/transferRequest",
         component: TransferRequest,
+    },{
+        path: "/selectCharacter",
+        component: SelectCharacter,
+        meta: {requiresGradient: true}
+    },{
+        path: "/home",
+        component: HomePage,
     }
 ]
-
-
 
 
 const router = createRouter({
