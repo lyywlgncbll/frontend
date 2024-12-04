@@ -100,7 +100,8 @@
     <el-card class="recommendation-card">
       <el-carousel :interval="5000" arrow="always">
         <el-carousel-item v-for="(paper, index) in recommendations" :key="paper.id">
-          <div class="paper-item" style="justify-content: center; display: flex; align-items: center; flex-direction: column;">
+          <div class="paper-item"
+            style="justify-content: center; display: flex; align-items: center; flex-direction: column;">
             <h3 style="margin-top: 5px; font-size: 30px;">{{ paper.title }}</h3>
             <p style="margin-top: 5px;">{{ paper.author }}</p>
             <p class="abstract" style="margin-top: 5px;">{{ paper.abstract }}</p>
@@ -116,10 +117,28 @@
 
 
 <script>
+import { createRouter, createWebHistory } from 'vue-router';
+import Reader from './Reader.vue';
+
+const routes = [
+  {
+    path: '/reader',
+    name: 'Reader',
+    component: Reader,
+    props: (route) => ({ url: route.query.url }), // 将 query 参数映射为 props
+  },
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
 export default {
+  router,
   name: "PaperDetail",
   data() {
-    
+
     return {
       paper: {
         title: "A Comprehensive Study on Artificial Intelligence",
@@ -162,7 +181,8 @@ export default {
             "This paper reviews the development and applications of graph neural networks.",
           link: "/paper/3",
         },
-      ]
+      ],
+      pdfUrl: "/test/test.pdf"
     };
   },
   created() {
@@ -187,7 +207,7 @@ export default {
         message: "Downloading PDF...",
         type: "info",
       });
-      
+
     },
     preview() {
       this.views++;
@@ -195,7 +215,10 @@ export default {
         message: "Preview...",
         type: "success",
       });
-      window.location.href = "/reader";
+      this.$router.push({
+        name: "Reader", // 路由名称，需在路由配置中定义
+        query: { url: this.paper.PDFUrl },
+      });
     },
     goToAuthorPage(author) {
       this.$message({
