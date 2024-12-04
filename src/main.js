@@ -12,5 +12,6 @@ for (const [key, component] of Object.entries(Icons)) {
 }
 app.use(router)
 app.use(ElementPlus)
+
 import 'virtual:windi.css'
 app.mount('#app')
