@@ -1,5 +1,5 @@
 <script>
-import NavigationBar from "~/components/bar/navigation-bar.vue";
+import NavigationBar from "~/components/bar/unlogged-nav-bar.vue";
 import {defineComponent, ref,inject} from "vue";
 import {useRouter} from "vue-router";
 import axios from 'axios';
@@ -15,37 +15,49 @@ export default defineComponent({
     const router = useRouter();
     // let globalUsername = inject('Username');
     const tableData = ref([]);
-    const username = ref('');
+    const mail = ref('');
     const password = ref('');
 
     // 登录提交方法
     // 登录提交方法
+    // const submitLogin = async () => {
+    //   try {
+    //     axios.post(LOGIN_API, {
+    //         username: username.value,
+    //         password: password.value
+    //     }).then(response => {
+    //       if (response.data === 'success'){
+    //         // globalUsername=username.value;
+    //         // localStorage.setItem('username', globalUsername);
+    //         console.log(response.data);
+    //         router.push('/about');
+    //       }
+    //     });
+    //   } catch (error) {
+    //     console.error('Login failed:', error);
+    //   }
+    //
+    // };
     const submitLogin = async () => {
       try {
-        axios.get(LOGIN_API, {
-          params: {
-            username: username.value,
-            password: password.value
-          }
-        }).then(response => {
-          if (response.data === 'success'){
-            // globalUsername=username.value;
-            // localStorage.setItem('username', globalUsername);
-            console.log(response.data);
-            router.push('/about');
-          }
+        const response = await axios.post(LOGIN_API, {
+          mail: mail.value,  // 使用 JSON 格式的数据
+          password: password.value
         });
+        if (response.data === 'success') {
+          console.log(response.data);
+          await router.push('/about');
+        }
       } catch (error) {
         console.error('Login failed:', error);
       }
-
     };
 
 
     return {
       router,
       tableData,
-      username,
+      mail,
       password,
       submitLogin,
     };
@@ -71,7 +83,7 @@ export default defineComponent({
     </div>
     <div class="form">
       <div class="input-wrapper">
-        <input type="text" placeholder="UserName" v-model="username">
+        <input type="text" placeholder="your email" v-model="mail">
       </div>
       <div class="input-wrapper">
         <input type="password" placeholder="Password" v-model="password">
