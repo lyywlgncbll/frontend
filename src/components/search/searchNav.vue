@@ -1,8 +1,18 @@
 <template>
     <div class="nav">
-        
+
         <div class="search">
-            <img src="/src/assets/search/icon/search1.svg">
+            <div class="option" @click="toggleDropdown">{{ selectedOption.name }}
+                <img src="/src/assets/search/icon/down-expand2.svg">
+            </div>
+            <ul class="option-menu" v-if="isOpen">
+                <li v-for="option in options" :key="option.value" @click="selectOption(option)" class="menu-item">
+                    {{ option.name }}
+                </li>
+            </ul>
+
+            <img src="/src/assets/search/icon/search1.svg" class="search-img">
+
             <input class="search-input" placeholder="Search" type="search"></input>
         </div>
 
@@ -19,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted,onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 onMounted(() => {
     document.addEventListener('click', closeDropdown)
@@ -34,7 +44,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown)
+    document.removeEventListener('click', closeDropdown)
 })
 
 //导航栏
@@ -45,7 +55,7 @@ const handleClick = (event) => {
     const slider = document.querySelector('.slide')
     const slider2 = document.querySelector('.slide2')
     const sliderWidth = slider.offsetWidth;
-    if (target.tagName == 'LI') {
+    if (target.tagName == 'LI' && !event.target.classList.contains('slide2')) {
 
     } else if (target.tagName == 'IMG') {
         target = target.closest('li');
@@ -63,7 +73,7 @@ const handleClick = (event) => {
     slider2.style.left = halfDifference + 'px'
 }
 const handleMouseOver = (event) => {
-    if (event.target.tagName == 'LI') {
+    if (event.target.tagName == 'LI' && !event.target.classList.contains('slide2')) {
         const target = event.target
         const slider = document.querySelector('.slide2')
         const targetWidth = target.offsetWidth;
@@ -81,23 +91,39 @@ const handleMouseOut = (event) => {
 }
 
 //下拉菜单
-const options = ['领域', '摘要', '标题']
-const selectedOption = ref('领域')
+const options = [
+    {
+        name: "标题",
+        value: 1
+    },
+    {
+        name: "摘要",
+        value: 2
+    },
+    {
+        name: "领域",
+        value: 3
+    },
+]
+const selectedOption = ref({
+    name: "标题",
+    value: 1
+})
 const isOpen = ref(false)
 
 const selectOption = (option) => {
-  selectedOption.value = option
-  isOpen.value = false
+    selectedOption.value = option
+    isOpen.value = false
 }
 
 const toggleDropdown = () => {
-  isOpen.value = !isOpen.value
+    isOpen.value = !isOpen.value
 }
 
 const closeDropdown = (event) => {
-  if (!event.target.closest('.relative')) {
-    isOpen.value = false
-  }
+    if (!event.target.closest('.option')) {
+        isOpen.value = false
+    }
 }
 </script>
 
@@ -124,11 +150,66 @@ const closeDropdown = (event) => {
     position: relative;
 }
 
+.search .option {
+    position: relative;
+    width: 80px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f3f4;
+    font-size: 14px;
+    color: #454546;
+    margin-right: 10px;
+    border-radius: 5px;
+    transition: .3s ease;
+}
+
+.search .option img {
+    width: 13px;
+    height: 13px;
+    margin-left: 5px;
+}
+
+.search .option:hover {
+    background-color: #ddddde;
+    cursor: pointer;
+}
+
+.option-menu {
+    width: 90px;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 45px;
+    background-color: #f3f3f4;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.menu-item {
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+    padding: 3px 0;
+    margin: 3px auto;
+    color: #454546;
+}
+
+.menu-item:hover {
+    cursor: pointer;
+    background-color: white;
+}
+
 .search-input {
     width: 100%;
     height: 40px;
     line-height: 28px;
-    padding: 0 2.5rem;
+    padding: 0 1rem;
+    padding-right: 2.5rem;
     border: 2px solid transparent;
     border-radius: 8px;
     outline: none;
@@ -137,12 +218,14 @@ const closeDropdown = (event) => {
     transition: .3s ease;
 }
 
-.search img {
+.search .search-img {
     position: absolute;
     right: 1rem;
     fill: #9e9ea7;
-    width: 1rem;
-    height: 1rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 2;
 }
 
 .search-input:focus {
