@@ -2,59 +2,149 @@
     <div id="search-body">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
-                <img src="/src/assets/search/icon/down-expand.svg" class="icon" width="15px" height="15px"
+                <img src="/src/assets/search/icon/down-expand.svg" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
+            <div class="confirm" @click="sendFilter">
+                确认
+            </div>
+            <div class="clear" @click="callClearMethod">
+                清除
+            </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @timeSelected="filterItemsByTime"></searchBar>
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter"
+                    @clear="receiveMethod">
+                </searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <searchItem v-for="(searchItem, index) in filteredItems" :searchItem="searchItem" :key="index"></searchItem>
+                <div class="nav">
+                    <div class="search">
+                        <img src="/src/assets/search/icon/search1.svg">
+                        <input class="search-input" placeholder="Search" type="search"></input>
+                    </div>
+
+                    <ul class="sort" @mouseover="handleMouseOver" @mouseout="handleMouseOut" @click="handleClick">
+                        <li>综合</li>
+                        <li class="sort-year">年份 <img src="/src/assets/search/icon/down-expand.svg"
+                                :style="{ transform: yearRotate ? 'rotate(180deg)' : 'rotate(0deg)' }"></li>
+                        <li class="sort-cite">引用 <img src="/src/assets/search/icon/down-expand.svg"
+                                :style="{ transform: citeRotate ? 'rotate(180deg)' : 'rotate(0deg)' }"></li>
+                        <li class="slide"></li>
+                        <li class="slide2"></li>
+                    </ul>
+                </div>
+                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
+                    @openClaimForm="showClaimForm">
+                </searchItem>
+                <div style="text-align: center; margin-top: 1%;">
+                    <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
+                        @update:currentPage="updatePage"></pageComponent>
+                </div>
             </div>
         </div>
+
     </div>
+
+    <div class="background" v-if="isShow">
+        <div class="form">
+            <div class="close" @click="closeClaimForm">x</div>
+            <ClaimForm :formId="formId" :formTitle="formTitle"></ClaimForm>
+        </div>
+    </div>
+
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import searchBar from '/src/components/searchBar.vue';
-import searchItem from '/src/components/searchItem.vue';
+import { ref, computed, onMounted } from 'vue';
+import ClaimForm from '/src/components/search/ClaimForm.vue';
+import searchBar from '/src/components/search/searchBar.vue';
+import searchItem from '/src/components/search/searchItem.vue';
+import pageComponent from '/src/components/pageComponent.vue';
 
 //侧边栏是否展开
 const isExpand = ref(true)
-
-//展开或收起
 const expandBar = () => {
     isExpand.value = !isExpand.value
 }
 
 const menuItems = ref([
-    { title: '时间', contents: ['1999', '1999', '1998', '1997'] },
-    { title: '主题', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '来源', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '学科', contents: ['内容 1', '内容 2', '内容 3'] },
-    { title: '作者', contents: ['内容 1', '内容 2', '内容 3'] },
+    { id: 'time', title: '时间', contents: [1999, 1998, 1997] },
+    { id: 'theme', title: '领域', contents: ['deep', 'hhhhhhhh'] },
+    { id: 'source', title: '期刊', contents: [] }
 ])
 
 const searchItems = ref([
     {
+        id: "sadasdsadsadsad",
         title: 'sciend in the age of LLMs',
         author: 'sisythus',
         from: 'IEEE',
         time: 1999,
         content: "Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.",
         label: [
-            "deep learning",
+            "机器学习",
             "深度学习",
         ],
         num: 100,
     },
     {
+        id: "sadcccccadsad",
         title: 'Neurobiology of intelligence: science and ethics',
         author: 'sisythus',
         from: 'Nature',
         time: 1998,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
+            "人工智能",
+            "深度学习",
+        ],
+        num: 100,
+    },
+    {
+        id: "seeeeeeeeeesad",
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 1997,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
+            "人工智能",
+        ],
+        num: 100,
+    },
+    {
+        id: "seeejjjjjjjjd",
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 1997,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
+            "deep learning",
+            "hhhhhhhh",
+        ],
+        num: 100,
+    },
+    {
+        id: "seeeeooooooooo",
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 2024,
+        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
+        label: [
+            "deep learning",
+            "hhhhhhhh",
+        ],
+        num: 100,
+    },
+    {
+        id: "lllllllllllllllll",
+        title: 'Neurobiology of intelligence: science and ethics',
+        author: 'sisythus',
+        from: 'Nature',
+        time: 2025,
         content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
         label: [
             "deep learning",
@@ -64,22 +154,111 @@ const searchItems = ref([
     },
 ])
 
-// 选中的时间
-const selectedTime = ref(null)
-
-// 过滤 searchItems 的计算属性
-const filteredItems = computed(() => {
-    if (selectedTime.value === null) return searchItems.value
-    return searchItems.value.filter(item => item.time === selectedTime.value)
-})
-
-// 处理从 searchBar 中传递的时间
-const filterItemsByTime = (time) => {
-    selectedTime.value = time
+//表单
+const isShow = ref(false);
+const formId = ref(null);
+const formAuthor = ref(null)
+const formTitle = ref(null)
+const showClaimForm = (id, title, author) => {
+    isShow.value = true
+    formId.value = id
+    formTitle.value = title
+    formAuthor.value = author
 }
+const closeClaimForm = () => {
+    isShow.value = false
+}
+
+//分页
+const currentPage = ref(1)
+const totalPage = ref(100)
+const pageSize = ref(1)
+
+//筛选
+const selectedTags = ref({})
+const handleFilter = (selections) => {
+    selectedTags.value = selections
+}
+const sendFilter = () => {
+
+}
+
+//清除
+const clearMethod = ref(null)
+const receiveMethod = (method) => {
+    clearMethod.value = method
+}
+const callClearMethod = () => {
+    if (clearMethod.value) {
+        clearMethod.value();
+    }
+}
+
+onMounted(() => {
+    const target = document.querySelector('.nav li')
+    const slider = document.querySelector('.slide')
+    const slider2 = document.querySelector('.slide2')
+    const targetWidth = target.offsetWidth;
+    const sliderWidth = slider.offsetWidth;
+    const halfDifference = target.offsetLeft - (sliderWidth - targetWidth) / 2
+    slider.style.left = halfDifference + 'px'
+    slider2.style.left = -50 + 'px'
+})
+//导航栏
+const yearRotate = ref(false)
+const citeRotate = ref(false)
+const handleClick = (event) => {
+    let target = event.target
+    const slider = document.querySelector('.slide')
+    const slider2 = document.querySelector('.slide2')
+    const sliderWidth = slider.offsetWidth;
+    if (target.tagName == 'LI') {
+
+    } else if (target.tagName == 'IMG') {
+        target = target.closest('li');
+        if (target.classList.contains('sort-year')) {
+            yearRotate.value = !yearRotate.value
+        } else {
+            citeRotate.value = !citeRotate.value
+        }
+    } else {
+        return
+    }
+    const targetWidth = target.offsetWidth;
+    const halfDifference = target.offsetLeft - (sliderWidth - targetWidth) / 2
+    slider.style.left = halfDifference + 'px'
+    slider2.style.left = halfDifference + 'px'
+}
+
+const handleMouseOver = (event) => {
+    if (event.target.tagName == 'LI') {
+        const target = event.target
+        const slider = document.querySelector('.slide2')
+        const targetWidth = target.offsetWidth;
+        const sliderWidth = slider.offsetWidth;
+        const halfDifference = target.offsetLeft - (sliderWidth - targetWidth) / 2
+        slider.style.left = halfDifference + 'px'
+        slider.style.opacity = 1
+    }
+}
+
+const handleMouseOut = (event) => {
+    if (event.target.tagName == 'LI') {
+        const slider = document.querySelector('.slide2')
+        slider.style.opacity = 0
+    }
+}
+
 </script>
 
 <style scoped>
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 #search-body {
     margin: 0 50px;
 }
@@ -114,7 +293,41 @@ const filterItemsByTime = (time) => {
     top: 10px;
 }
 
-.left-expand:hover {
+.confirm {
+    font-size: 11px;
+    text-align: center;
+    width: 20px;
+    height: 44px;
+    position: absolute;
+    background-color: #92bad6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    left: -20px;
+    top: 70px;
+    color: white;
+}
+
+.clear {
+    font-size: 11px;
+    text-align: center;
+    width: 20px;
+    height: 44px;
+    position: absolute;
+    background-color: #92bad6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    left: -20px;
+    top: 130px;
+    color: white;
+}
+
+.left-expand:hover,
+.confirm:hover,
+.clear:hover {
     background-color: #85a9c2;
 }
 
@@ -127,5 +340,140 @@ const filterItemsByTime = (time) => {
 
 .main.collapsed {
     width: 90%;
+}
+
+.nav {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.search {
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px;
+    line-height: 28px;
+    padding: 0 1rem;
+    padding-left: 2.5rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    outline: none;
+    background-color: #f3f3f4;
+    color: #0d0c22;
+    transition: .3s ease;
+}
+
+.search img {
+    position: absolute;
+    left: 1rem;
+    fill: #9e9ea7;
+    width: 1rem;
+    height: 1rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: rgba(76, 171, 234, 0.4);
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(76, 179, 234, 0.1);
+}
+
+.search-input::placeholder {
+    color: #9e9ea7;
+}
+
+.nav .sort {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    border: 1px solid #85a9c2;
+    border-radius: 5px;
+    position: relative;
+}
+
+.nav .sort li:not(.slide, .slide2) {
+    height: 100%;
+    width: 60px;
+    padding: 5px;
+    margin: 0 15px;
+    cursor: pointer;
+    text-align: center;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav .sort li img {
+    width: 13px;
+    height: 13px;
+    margin-left: 5px;
+    transition: .5s;
+}
+
+.nav .sort .slide {
+    position: relative;
+    height: 80%;
+    width: 70px;
+    position: absolute;
+    border-radius: 15px;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
+    background-color: rgba(88, 181, 243, 0.5);
+    z-index: 1;
+}
+
+.nav .sort .slide2 {
+    height: 80%;
+    width: 70px;
+    position: absolute;
+    border-radius: 15px;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
+    background-color: rgba(143, 204, 245, 0.5);
+    opacity: 0;
+    z-index: 1;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    height: 400px;
+    width: 450px;
+    background-color: white;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.form .close {
+    font-size: 22px;
+    font-weight: 500;
+    position: absolute;
+    top: 8px;
+    right: 20px;
+    cursor: pointer;
+    color: grey;
 }
 </style>

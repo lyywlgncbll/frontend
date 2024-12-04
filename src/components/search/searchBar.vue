@@ -1,35 +1,32 @@
 <template>
     <div :class="{ sidebar: true, collapsed: !isExpand }">
-        <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
+        <div v-for="(item, index) in menuItems" :key="item.id" class="menu-item">
             <div class="menu-title" @click="toggleItem(index)">
                 {{ item.title }}
                 <span>
                     <img v-if="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
                         width="15px" height="15px">
-                    <img v-else src="/src/assets/search/icon/down-expand.svg" alt=""
-                        width="15px" height="15px" :style="{ transform: 'rotate(180deg)' }">
+                    <img v-else src="/src/assets/search/icon/down-expand.svg" alt="" width="15px" height="15px"
+                        :style="{ transform: 'rotate(180deg)' }">
                 </span>
             </div>
 
             <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
                 <li v-for="(content, i) in item.contents" :key="i" class="content-item">
                     <label>
-                        <input type="checkbox" :value="content" @change="handleTimeSelection(content)">
+                        <input class="checkbox" type="checkbox" :value="content"
+                            @change="handleSelection(item.id, content, $event)">
                         <span>{{ content }}</span>
                     </label>
                 </li>
-                <div class="icon-container" v-show="item.contents.length > 3">
-                    <img src="/src/assets/search/icon/expand.svg" class="icon">
-                </div>
             </ul>
         </div>
     </div>
 </template>
 
 <script setup>
-import { defineProps, ref, defineEmits } from 'vue'
+import { ref } from 'vue'
 
-// 定义 props 接收父组件传递的数据
 const props = defineProps({
     isExpand: Boolean,
     menuItems: {
@@ -37,14 +34,10 @@ const props = defineProps({
         required: true,
     }
 })
+const emit = defineEmits(['selectionChanged', 'clear'])
 
-// 定义 emits，用于向父组件传递事件
-const emit = defineEmits(['timeSelected'])
-
-// 存储展开的菜单索引
+//菜单展开
 const expandedIndexes = ref([])
-
-// 切换菜单展开状态
 const toggleItem = (index) => {
     if (expandedIndexes.value.includes(index)) {
         expandedIndexes.value = expandedIndexes.value.filter(i => i !== index)
@@ -53,21 +46,45 @@ const toggleItem = (index) => {
     }
 }
 
-// 处理时间选择的函数
-const handleTimeSelection = (selectedTime) => {
-    // 将选中的时间传递给父组件
-    emit('timeSelected', parseInt(selectedTime))
+const selectedItems = ref(
+    props.menuItems.reduce((acc, item) => {
+        acc[item.id] = []
+        return acc
+    }, {})
+)
+const handleSelection = (key, content, event) => {
+    if (event.target.checked) {
+        selectedItems.value[key].push(content)
+    } else {
+        selectedItems.value[key] = selectedItems.value[key].filter(item => item !== content)
+    }
+    emit('selectionChanged', selectedItems.value)
 }
+
+const clear = () => {
+    const inputs = document.getElementsByClassName('checkbox')
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].checked = false
+    }
+}
+emit('clear', clear)
 </script>
 
 <style scoped>
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .sidebar {
     width: 100%;
     padding: 10px;
     margin: 0 auto;
     position: relative;
     transition: all 0.3s ease;
-    min-width: 200px;
+    min-width: 150px;
 }
 
 .sidebar.collapsed {
@@ -90,6 +107,7 @@ const handleTimeSelection = (selectedTime) => {
     padding: 10px;
     font-weight: bold;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .menu-title:hover {
@@ -97,7 +115,7 @@ const handleTimeSelection = (selectedTime) => {
 }
 
 .menu-content {
-    overflow: hidden;
+    overflow-y: scroll;
     background-color: #f0f8ff;
     height: 0;
     transition: all 1s;
@@ -114,6 +132,7 @@ const handleTimeSelection = (selectedTime) => {
     align-items: center;
     padding: 2px 15px;
     margin: 5px auto;
+    white-space: nowrap;
 }
 
 .content-item input {
@@ -126,6 +145,7 @@ const handleTimeSelection = (selectedTime) => {
     font-size: 15px;
     cursor: pointer;
     color: #333;
+    white-space: nowrap;
 }
 
 .expand {
