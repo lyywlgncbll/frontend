@@ -4,16 +4,17 @@ import {defineComponent} from "vue";
 import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
 import {Histogram} from "@element-plus/icons-vue";
 import UserHistory from "~/components/home-page/userHistory.vue";
-import DailyStatsChart from "~/components/home-page/dailyStatusChart.vue";
+import DailyStatsChart from "~/components/home-page/dailyStatisChart.vue";
+import PaperDetails from "~/components/home-page/paperIntros.vue";
 
 export default defineComponent({
-  components: {DailyStatsChart, UserHistory, Histogram, LoggedNavBar},
+  components: {PaperDetails, DailyStatsChart, UserHistory, Histogram, LoggedNavBar},
   data(){
     return{
       userHistory: [
         {title: "深度学习在计算机视觉中的应用", progress: 70,},
         {title: "自然语言处理的最新进展", progress: 30,},
-        {title: "区块链技术与应用", progress: 100,},
+        {title: "区块链技术与应用", progress: 10,},
         { title: "深度学习在计算机视觉中的应用", progress: 82 },
         { title: "区块链技术与应用", progress: 54 },
         { title: "人工智能在医疗中的应用", progress: 100 },
@@ -29,11 +30,16 @@ export default defineComponent({
 <template>
   <div id="page-root" class="home-page">
     <logged-nav-bar class="nav-bar"/>
-    <div class="left-component">
-      <UserHistory :history-data="userHistory" class="userHistory"/>
-    </div>
-    <div class="right-component">
-      <daily-stats-chart class="chart"/>
+    <div class="components">
+      <div class="left-component">
+        <UserHistory :history-data="userHistory" class="userHistory"/>
+      </div>
+      <div class="middle-component">
+        <paper-details class="papers"/>
+      </div>
+      <div class="right-component">
+        <daily-stats-chart class="chart"/>
+      </div>
     </div>
 
   </div>
@@ -52,15 +58,22 @@ export default defineComponent({
 }
 
 .nav-bar{
-  position: absolute;
+  position: fixed;
   z-index: 100;
+  height: auto;
   left: 0;
   right: 0;
 }
+.components{
+  display: flex;
+  flex-direction: row;
+}
 .left-component{
+  position: fixed;
+  z-index: 50;
   padding-top: 60px;
   width: 20vw;
-  max-width: 380px;
+  max-width: 350px;
   min-width: 330px;
   height: 100vh;
   border-right: 1px solid var(--page-border-color);
@@ -70,8 +83,20 @@ export default defineComponent({
     max-height: 100vh;
   }
 }
+.middle-component{
+  //position: relative;
+  z-index: 50;
+  padding-top: 60px;
+  height: 100vh;
+  flex-grow: 1;
+  //max-width: 40vw;
+  margin-left: calc(360px);
+  margin-right:calc(3vw + 390px);
+  //overflow:scroll;
+}
 .right-component{
-  position: absolute;
+  z-index: 50;
+  position: fixed;
   right: 3vw;
   padding-top: 60px;
   width: 25vw;

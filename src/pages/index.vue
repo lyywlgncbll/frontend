@@ -1,6 +1,6 @@
 <template>
     <div class="test">
-      <logged-nav-bar/>
+      <paper-details />
     </div>
 </template>
 
@@ -8,8 +8,10 @@
 import loggedNavBar from "~/components/bar/logged-nav-bar.vue";
 import {defineComponent, ref,inject} from "vue";
 import {useRouter} from "vue-router";
+import PaperDetails from "~/components/home-page/paperIntros.vue";
 export default defineComponent({
   components:{
+    PaperDetails,
     loggedNavBar
   }
 })

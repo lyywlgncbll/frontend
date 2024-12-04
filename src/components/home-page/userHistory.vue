@@ -13,7 +13,7 @@ export default defineComponent({
   methods:{
     getProgressBarColor(progress) {
       // 计算灰色的强度，progress 越大，灰度越低
-      const gray = Math.floor(192 - (progress * 1.92));  // 192 为灰色，随着进度增加，颜色变暗，逐渐趋近黑色
+      const gray = Math.floor(200 - (progress * 1.92));  // 192 为灰色，随着进度增加，颜色变暗，逐渐趋近黑色
 
       // 返回渐变色，灰度值在 192 到 0 之间变化
       return `rgb(${gray}, ${gray}, ${gray})`;
@@ -130,6 +130,7 @@ export default defineComponent({
 
 .history-item {
   display: flex;
+  min-height: 75px;
   height: 75px;
   //min-height: auto;
   justify-content: space-between;
@@ -146,8 +147,9 @@ export default defineComponent({
 
 .history-item:hover {
   height: 112px;
+  min-height: 112px;
   background-color: var(--page-block-hover-color);
-  transition: height 0.3s ease, background-color 0.3s ease;
+  transition: height 0.3s ease, min-height 0.3s ease, background-color 0.3s ease;
   .action-button{
     width: auto;
     height: auto;
