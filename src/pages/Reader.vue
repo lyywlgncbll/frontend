@@ -27,6 +27,7 @@ import axios from "axios";
 import { reactive, onMounted, computed, onUnmounted, ref } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
 import { createLoadingTask } from "vue3-pdfjs";
+import { QIANFAN_ASKONCE } from "../utils/request"
 const props = defineProps({
   //for pdf render
   pdfurl:{
@@ -101,7 +102,7 @@ const readClipboard = async () => {
 // for AI reading
 const config = {
   method: 'post',
-  url: `localhost:9091/api/qianfan/askonce`,
+  url: QIANFAN_ASKONCE,
   data: {
     question: clipboardContent.value,
   },
@@ -123,7 +124,7 @@ const calReadingProgressRate = () => {
   const clientHeight = document.documentElement.clientHeight
   const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
   // console.log(scrollTop, scrollHeight, clientHeight)
-  return +(scrollTop/(scrollHeight-clientHeight)).toFixed(2)*100 + '%'
+  return +(scrollTop/(scrollHeight-clientHeight)).toFixed(2)*100
 }
 
 const afterPDFLoaded = () => {
@@ -132,7 +133,7 @@ const afterPDFLoaded = () => {
 
 const scrollTo = () => {
   window.scrollTo({
-      top: 2800,
+      top: 0,
       left: 0,
       behavior: 'smooth',
     })
