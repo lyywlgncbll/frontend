@@ -9,7 +9,6 @@
 </style>
 
 <script setup>
-
 import userInfo from "./pages/userInfo.vue";
 
 </script>
