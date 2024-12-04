@@ -20,7 +20,9 @@
     "postcss-preset-env": "^10.1.1",
     "sass": "^1.81.0",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.2"
+    "vue-pdf-embed": "^1.1.6",
+    "vue-router": "^4.3.2",
+    "vue3-pdfjs": "^0.1.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
