@@ -135,4 +135,5 @@ public/test
 src/assets/test
 
 # package-lock.json
+/package-lock.json
 package-lock.json
