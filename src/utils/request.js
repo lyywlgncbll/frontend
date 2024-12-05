@@ -8,3 +8,4 @@ export const QIANFAN_ASKONCE = `${BASE_URL}/api/qianfan/askonce`
 export const USERSEARCH_API = `${BASE_URL}/user/search`;
 export const USERFIELDS_API = `${BASE_URL}/user/search/fields`
 export const USERAVATOR_API = `${BASE_URL}/user/avator/get`
+export const ARTICLESEARCH_API = `${BASE_URL}/api/academic/searchPublications`

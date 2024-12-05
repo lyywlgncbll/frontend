@@ -1,31 +1,16 @@
 <template>
     <div :class="{ sidebar: true, collapsed: !isExpand }">
-        <div v-for="(item, index) in menuItems" :key="item.id" class="menu-item">
-            <div class="menu-title" @click="toggleItem(index)">
-                {{ item.title }}
-                <span>
-                    <img v-if="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
-                        width="15px" height="15px">
-                    <img v-else src="/src/assets/search/icon/down-expand.svg" alt="" width="15px" height="15px"
-                        :style="{ transform: 'rotate(180deg)' }">
-                </span>
-            </div>
-
-            <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
-                <li v-for="(content, i) in item.contents" :key="i" class="content-item">
-                    <label>
-                        <input class="checkbox" type="checkbox" :value="content"
-                            @change="handleSelection(item.id, content, $event)">
-                        <span>{{ content }}</span>
-                    </label>
-                </li>
-            </ul>
-        </div>
+        <timeFilter :isExpand="isExpand" :item="menuItems[0]" @yearChanged="handleYearChanged"></timeFilter>
+        <fieldFilter :isExpand="isExpand" :item="menuItems[1]" @fieldChanged="handleFieldChanged"></fieldFilter>
+        <fieldFilter :isExpand="isExpand" :item="menuItems[2]" @fieldChanged="handleJournalChanged"></fieldFilter>
+        <fieldFilter :isExpand="isExpand" :item="menuItems[3]" @fieldChanged="handleAuthorChanged"></fieldFilter>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { handleError, ref } from 'vue'
+import timeFilter from '@/components/search/filter/timeFilter.vue'
+import fieldFilter from '@/components/search/filter/fieldFilter.vue'
 
 const props = defineProps({
     isExpand: Boolean,
@@ -34,43 +19,26 @@ const props = defineProps({
         required: true,
     }
 })
-const emit = defineEmits(['selectionChanged', 'clear'])
 
-//菜单展开
-const expandedIndexes = ref([])
-const toggleItem = (index) => {
-    if (expandedIndexes.value.includes(index)) {
-        expandedIndexes.value = expandedIndexes.value.filter(i => i !== index)
-    } else {
-        expandedIndexes.value.push(index)
-    }
+const filter = ref({
+    'years': [],
+    'fields': [],
+    'journals': [],
+    'authors': []
+})
+const handleYearChanged = (selectedTimes) => {
+    filter.value.years = selectedTimes
+}
+const handleFieldChanged = (selectedFields) => {
+    filter.value.fields = selectedFields
+}
+const handleJournalChanged = (selectedJournal) => {
+    filter.value.journals = selectedJournal
+}
+const handleAuthorChanged = (selectedAuthor) => {
+    filter.value.authors = selectedAuthor
 }
 
-const selectedItems = ref(
-    props.menuItems.reduce((acc, item) => {
-        acc[item.id] = []
-        return acc
-    }, {})
-)
-const handleSelection = (key, content, event) => {
-    if (event.target.checked) {
-        selectedItems.value[key].push(content)
-    } else {
-        selectedItems.value[key] = selectedItems.value[key].filter(item => item !== content)
-    }
-    emit('selectionChanged', selectedItems.value)
-}
-
-const clear = () => {
-    const inputs = document.getElementsByClassName('checkbox')
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].checked = false
-    }
-    for (let key in selectedItems.value) {
-        selectedItems.value[key].length = 0
-    }
-}
-emit('clear', clear)
 </script>
 
 <style scoped>
@@ -88,6 +56,9 @@ emit('clear', clear)
     position: relative;
     transition: all 0.3s ease;
     min-width: 150px;
+    border: 1px solid #d1d9e0;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
 .sidebar.collapsed {
@@ -95,39 +66,69 @@ emit('clear', clear)
 }
 
 .menu-item {
-    margin-bottom: 12px;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
     overflow: hidden;
-    box-shadow: 0px 3px 5px -4px;
+
+    .line {
+        margin: 10px auto;
+        width: 100%;
+        border: #f1f0f0 1px solid;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #cecdcd;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #aaa9a9;
+    }
 }
 
 .menu-title {
-    background-color: #bee1f6;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    font-weight: bold;
+    font-size: 16px;
     cursor: pointer;
     white-space: nowrap;
 }
 
-.menu-title:hover {
-    background-color: #9ecae9;
-}
-
 .menu-content {
     overflow-y: scroll;
-    background-color: #f0f8ff;
     height: 0;
     transition: all 1s;
     padding: 0 10px;
     position: relative;
+
+    li:nth-child(1) {
+        margin-top: 15px;
+    }
+
+    input[type="text"] {
+        width: 80%;
+        height: 30px;
+        padding: 5px;
+        margin: 3px auto;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        outline: none;
+    }
 }
 
-.menu-content li:nth-child(1) {
-    margin-top: 15px;
+.menu-content.expand {
+    height: 120px;
+    padding: 0 10px;
 }
 
 .content-item {
@@ -136,24 +137,19 @@ emit('clear', clear)
     padding: 2px 15px;
     margin: 5px auto;
     white-space: nowrap;
-}
 
-.content-item input {
-    margin-right: 8px;
-    cursor: pointer;
-}
+    input {
+        margin-right: 8px;
+        cursor: pointer;
+    }
 
-.content-item span {
-    text-align: center;
-    font-size: 15px;
-    cursor: pointer;
-    color: #333;
-    white-space: nowrap;
-}
-
-.expand {
-    height: 130px;
-    padding: 0 10px;
+    span {
+        text-align: center;
+        font-size: 15px;
+        cursor: pointer;
+        color: #333;
+        white-space: nowrap;
+    }
 }
 
 .icon-container {
@@ -166,10 +162,10 @@ emit('clear', clear)
     left: 50%;
     transform: translateX(-50%);
     cursor: pointer;
-}
 
-.icon {
-    height: 12px;
-    width: 12px;
+    .icon {
+        height: 12px;
+        width: 12px;
+    }
 }
 </style>

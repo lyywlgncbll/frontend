@@ -14,14 +14,14 @@
             </div>
         </div>
         <div class="title">{{ searchItem.title }}</div>
-        <span class="author">{{ searchItem.author }}</span>
-        <span class="from">{{ searchItem.from }} - {{ searchItem.time }}</span>
-        <div class="content">{{ searchItem.content }}</div>
+        <span class="author" v-for="author in searchItem.authors.slice(0, 3)">{{ author }}</span>
+        <span class="from">{{ searchItem.journal }} - {{ searchItem.year }}</span>
+        <div class="content">{{ searchItem.abstract }}</div>
         <div class="line"></div>
         <div class="label">
-            <div class="label-item" v-for="(labelItem, index) in searchItem.label">{{ labelItem }}</div>
+            <div class="label-item" v-for="(field, index) in searchItem.fields">{{ field }}</div>
         </div>
-        <div class="cited-num">被引次数：{{ searchItem.num }} 次</div>
+        <div class="cited-num">被引次数：{{ searchItem.citationCount }} 次</div>
     </div>
 
 </template>
@@ -118,6 +118,11 @@ const openForm = () => {
     padding: 20px;
     position: relative;
     margin: 20px auto;
+    transition: all 0.3s ease;
+}
+
+.container:hover{
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .title {
@@ -135,9 +140,8 @@ const openForm = () => {
 }
 
 .author {
-    padding-right: 10px;
+    padding: 0 10px;
     color: #0c7af7;
-    text-decoration: underline;
     cursor: pointer;
     border-right: 2px solid rgb(139, 139, 139);
 }
@@ -156,6 +160,8 @@ const openForm = () => {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
+    font-style: italic;
+    color: #777;
 }
 
 .line {

@@ -84,15 +84,15 @@ export default defineComponent({
   }
 }
 .middle-component{
-  //position: relative;
+  /* position: relative; */
   z-index: 50;
   padding-top: 60px;
   height: 100vh;
   flex-grow: 1;
-  //max-width: 40vw;
+/* /max-width: 40vw; */
   margin-left: calc(360px);
   margin-right:calc(3vw + 390px);
-  //overflow:scroll;
+  /* overflow:scroll;  */
 }
 .right-component{
   z-index: 50;
@@ -105,7 +105,7 @@ export default defineComponent({
   height: 100vh;
   display: flex;
   flex-direction: column;
-  //background-color: var(--page-barckground-color);
+  /* //background-color: var(--page-barckground-color); */
   .chart{
     height: 20vh;
   }

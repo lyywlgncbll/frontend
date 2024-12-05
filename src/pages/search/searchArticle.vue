@@ -1,27 +1,25 @@
 <template>
+    <logged-nav-bar class="nav-bar" />
     <div id="search-body">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
                 <img src="/src/assets/search/icon/down-expand.svg" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
-            <div class="confirm" @click="sendFilter">
+            <!-- <div class="confirm" @click="sendFilter">
                 确认
-            </div>
-            <div class="clear" @click="callClearMethod">
-                清除
-            </div>
+            </div> -->
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter"
-                    @clear="receiveMethod">
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
                 </searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <SearchNav></SearchNav>
+                <searchNav></searchNav>
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
+                <div class="null" v-if="searchItems.length == 0">未搜索到结果</div>
                 <div style="text-align: center; margin-top: 1%;">
                     <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
                         @update:currentPage="updatePage"></pageComponent>
@@ -41,12 +39,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import ClaimForm from '/src/components/search/ClaimForm.vue';
 import searchBar from '/src/components/search/searchBar.vue';
 import searchItem from '/src/components/search/searchItem.vue';
 import pageComponent from '/src/components/pageComponent.vue';
-import SearchNav from '/src/components/search/SearchNav.vue';
+import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
+import searchNav from '@/components/search/searchNav.vue';
+import axios from 'axios';
+import { ARTICLESEARCH_API } from '@/utils/request.js'
 //侧边栏是否展开
 const isExpand = ref(true)
 const expandBar = () => {
@@ -54,90 +55,13 @@ const expandBar = () => {
 }
 
 const menuItems = ref([
-    { id: 'time', title: '时间', contents: [1999, 1998, 1997] },
-    { id: 'theme', title: '领域', contents: ['deep', 'hhhhhhhh'] },
-    { id: 'source', title: '期刊', contents: [] }
+    { id: 'years', title: '时间', contents: [] },
+    { id: 'fields', title: '领域', contents: [] },
+    { id: 'journals', title: '期刊', contents: [] },
+    { id: 'authors', title: '作者', contents: [] }
 ])
 
-const searchItems = ref([
-    {
-        id: "sadasdsadsadsad",
-        title: 'sciend in the age of LLMs',
-        author: 'sisythus',
-        from: 'IEEE',
-        time: 1999,
-        content: "Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.",
-        label: [
-            "机器学习",
-            "深度学习",
-        ],
-        num: 100,
-    },
-    {
-        id: "sadcccccadsad",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 1998,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "人工智能",
-            "深度学习",
-        ],
-        num: 100,
-    },
-    {
-        id: "seeeeeeeeeesad",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 1997,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "人工智能",
-        ],
-        num: 100,
-    },
-    {
-        id: "seeejjjjjjjjd",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 1997,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "deep learning",
-            "hhhhhhhh",
-        ],
-        num: 100,
-    },
-    {
-        id: "seeeeooooooooo",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 2024,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "deep learning",
-            "hhhhhhhh",
-        ],
-        num: 100,
-    },
-    {
-        id: "lllllllllllllllll",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 2025,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "deep learning",
-            "hhhhhhhh",
-        ],
-        num: 100,
-    },
-])
+const searchItems = ref([])
 
 //表单
 const isShow = ref(false);
@@ -157,27 +81,73 @@ const closeClaimForm = () => {
 //分页
 const currentPage = ref(1)
 const totalPage = ref(100)
-const pageSize = ref(1)
+const pageSize = ref(7)
 
-//筛选
-const selectedTags = ref({})
+//获取筛选数据
 const handleFilter = (selections) => {
-    selectedTags.value = selections
+    years.value = selections.years
+    journals.value = selections.journals
+    fields.value = selections.fields
 }
-const sendFilter = () => {
 
-}
+const searchContent = ref("english")
+const isFiltered = ref(false)
+const option = ref(1)
+const sortBy = ref(1)
+const years = ref([])
+const journals = ref([])
+const fields = ref([])
+const search = async () => {
+    try {
+        await axios.post('/api/academic/searchPublications', {
+            searchContent: searchContent.value,
+            isFiltered: true,
+            option: 1,
+            sortBy: 1,
+            pageSize: pageSize.value,
+            currentPage: currentPage.value,
+        }).then(response => {
+            if (response.status == 200) {
+                console.log(response.data);
+                menuItems.value[0].contents = response.data.years
+                menuItems.value[1].contents = response.data.fields
+                menuItems.value[2].contents = response.data.journals
+                searchItems.value = response.data.papers
+            }
+        })
 
-//清除
-const clearMethod = ref(null)
-const receiveMethod = (method) => {
-    clearMethod.value = method
-}
-const callClearMethod = () => {
-    if (clearMethod.value) {
-        clearMethod.value();
+    } catch (error) {
+        console.error('Error fetching data:', error)
     }
 }
+
+const advancedSearch = async () => {
+    try {
+        await axios.post('/api/academic/searchPublications', {
+            searchContent: searchContent.value,
+            isFiltered: true,
+            option: option.value,
+            sortBy: sortBy.value,
+            pageSize: pageSize.value,
+            currentPage: currentPage.value,
+            years: years.value,
+            journals: journals.value,
+            fields: fields.value
+        }).then(response => {
+            if (response.status == 200) {
+                console.log(response.data);
+                searchItems.value = response.data.papers
+            }
+        })
+
+    } catch (error) {
+        console.error('Error fetching data:', error)
+    }
+}
+
+onMounted(() => {
+    search()
+})
 </script>
 
 <style scoped>
@@ -190,19 +160,21 @@ const callClearMethod = () => {
 
 #search-body {
     margin: 0 50px;
+
 }
 
 #mid {
-    height: 100vh;
     display: flex;
     margin: 30px auto;
     position: relative;
 }
 
 .left-bar {
+    margin-top: 20px;
     width: 20%;
-    transition: all 0.3s ease;
     overflow: hidden;
+    height: 100%;
+    transition: all .1s ease;
 }
 
 .left-bar.collapsed {
@@ -213,13 +185,13 @@ const callClearMethod = () => {
     width: 20px;
     height: 44px;
     position: absolute;
-    background-color: #92bad6;
+    background-color: #92979e;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    left: -20px;
-    top: 10px;
+    left: -21px;
+    top: 21px;
 }
 
 .confirm {
@@ -228,36 +200,19 @@ const callClearMethod = () => {
     width: 20px;
     height: 44px;
     position: absolute;
-    background-color: #92bad6;
+    background-color: #92979e;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    left: -20px;
+    left: -21px;
     top: 70px;
     color: white;
 }
 
-.clear {
-    font-size: 11px;
-    text-align: center;
-    width: 20px;
-    height: 44px;
-    position: absolute;
-    background-color: #92bad6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    left: -20px;
-    top: 130px;
-    color: white;
-}
-
 .left-expand:hover,
-.confirm:hover,
-.clear:hover {
-    background-color: #85a9c2;
+.confirm:hover {
+    background-color: #6f6f6f;
 }
 
 .main {
@@ -265,10 +220,16 @@ const callClearMethod = () => {
     height: 100%;
     margin: 0 auto;
     transition: all 0.3 ease;
-}
 
-.main.collapsed {
-    width: 90%;
+    .null {
+        width: 100%;
+        height: 70vh;
+        text-align: center;
+    }
+
+    &.collapsed {
+        width: 90%;
+    }
 }
 
 .background {
@@ -282,27 +243,27 @@ const callClearMethod = () => {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
 
-.form {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    height: 400px;
-    width: 450px;
-    background-color: white;
-    margin: 0 auto;
-    border-radius: 10px;
-}
+    .form {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        height: 400px;
+        width: 450px;
+        background-color: white;
+        margin: 0 auto;
+        border-radius: 10px;
 
-.form .close {
-    font-size: 22px;
-    font-weight: 500;
-    position: absolute;
-    top: 8px;
-    right: 20px;
-    cursor: pointer;
-    color: grey;
+        .close {
+            font-size: 22px;
+            font-weight: 500;
+            position: absolute;
+            top: 8px;
+            right: 20px;
+            cursor: pointer;
+            color: grey;
+        }
+    }
 }
 </style>
