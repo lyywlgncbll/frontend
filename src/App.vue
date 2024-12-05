@@ -33,5 +33,4 @@ export default {
 </style>
 
 <script setup>
-
 </script>

@@ -8,7 +8,10 @@ import searchArticle from '~/pages/search/searchArticle.vue'
 import Index from '~/pages/index.vue'
 import Article from '../pages/Article.vue'
 import Reader from '../pages/Reader.vue'
-
+import AdminInfo from '../pages/adminPages/adminInfo.vue'
+import Audit from '../components/AdminInfo/audit.vue'
+import PlatformOverview from '../components/AdminInfo/platform-overview.vue'
+import Scholars from '../components/AdminInfo/scholars.vue'
 import Login from "../pages/user/login.vue";
 import Register from "../pages/user/register.vue";
 import ResetPassword from "~/pages/user/resetPassword.vue";
@@ -68,7 +71,21 @@ const routes = [
     },{
         path: "/home",
         component: HomePage,
-    }
+    },{
+        path: "/admin",
+        component: AdminInfo,
+        children: [
+            {
+                path: "/admin/audit",
+                component: Audit,
+            },{
+                path: "/admin/platformOverview",
+                component: PlatformOverview,
+            },{
+                path: "/admin/scholars",
+                component: Scholars,
+            }]                  
+    },
 ]
 
 
