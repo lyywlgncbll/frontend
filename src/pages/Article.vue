@@ -1,4 +1,5 @@
 <template>
+  <logged-nav-bar class="nav-bar" />
   <el-card class="paper-detail">
 
     <!-- 标题 -->
@@ -59,7 +60,7 @@
     <el-row class="paper-abstract">
       <el-col :span="24">
         <el-skeleton v-if="isLoading" :rows="3" animated></el-skeleton>
-        <p v-else>{{ paper.abstract }}</p>
+        <p v-else class="abstract">{{ paper.abstract }}</p>
       </el-col>
     </el-row>
 
@@ -72,7 +73,8 @@
           <el-descriptions-item>
             <ul>
               <li v-for="(reference, index) in paper.references" :key="index">
-                {{ reference }}
+                <el-link v-if="reference.isReachable">{{ reference.title }}</el-link>
+                <el-link v-else disabled>{{ reference.title }}</el-link>
               </li>
             </ul>
           </el-descriptions-item>
@@ -128,6 +130,8 @@
 
 <script>
 import { createRouter, createWebHistory } from 'vue-router';
+import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
+import { ARTICLE_API } from "~/utils/request.js"
 import Reader from './Reader.vue';
 import axios from 'axios';
 
@@ -144,10 +148,16 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-
+//const id = "https://openalex.org/W1481824024"
 export default {
   router,
   name: "PaperDetail",
+  props: {
+    id: {
+      type: String,
+      reequired: true
+    }
+  },
   data() {
 
     return {
@@ -159,11 +169,19 @@ export default {
           "This paper explores the latest advancements in artificial intelligence (AI), covering topics such as neural networks, natural language processing, and the ethical implications of AI systems.",
         keywords: ["AI", "Neural Networks", "Ethics", "NLP", "Machine Learning", "AI", "Neural Networks", "Ethics", "NLP", "Machine Learning"],
         references: [
-          "Doe, J., Smith, J. (2023). A Study on Neural Networks. Journal of AI Research.",
-          "Johnson, A. (2022). Ethics in AI Systems. Ethics in Technology Review.",
-          "Lee, K. et al. (2021). Machine Learning Algorithms. AI and Machine Learning Journal."
+          {
+            id: "1",
+            title: "A Study on Neural Networks",
+            authors: ["Doe, J.", "Smith, J."],
+            isReachable: true,
+          },
+          {
+            id: "2",
+            title: "Ethics in AI Systems",
+            authors: ["Johnson, A."],
+            isReachable: false,
+          },
         ],
-        language: "English",
         pdfUrl: "/test/test.pdf"
       },
       views: "101",
@@ -194,7 +212,7 @@ export default {
           link: "/paper/3",
         },
       ],
-      isLoading: false
+      isLoading: true,
     };
   },
   created() {
@@ -216,12 +234,17 @@ export default {
   methods: {
     async fetchData() {
       try {
-        const response = await axios.get();
-        this.paper = response.data;
+        console.log(this.id)
+        const response = await axios.get(ARTICLE_API, {
+          params:{
+            publicationId: this.id
+          }
+        });
+        this.paper = this.transformBackendDataToPaper(response.data);
+        this.isLoading = false;
       } catch (error) {
         console.log("error");
       } finally {
-        //this.isLoading = false;
       }
     },
     downloadPaper() {
@@ -240,7 +263,7 @@ export default {
       });
       this.$router.push({
         name: "Reader", // 路由名称，需在路由配置中定义
-        query: { url: this.paper.PDFUrl },
+        query: { url: this.paper.pdfUrl },
       });
     },
     goToAuthorPage(author) {
@@ -255,6 +278,25 @@ export default {
         type: "info",
       });
     },
+    transformBackendDataToPaper(backendData) {
+      // 将后端数据转换为前端 paper 数据格式
+      const paper = {
+        title: backendData.title,
+        authors: backendData.authors,
+        publishedDate: `${backendData.publishedYear}-01-01`, // 默认设置为每年 1 月 1 日
+        abstract: backendData.abstract,
+        keywords: backendData.keywords,
+        references: backendData.references.map((ref, index) => ({
+          id: ref.id, // 生成 ID
+          title: ref.title,
+          authors: [], // 无法从后端 JSON 获取，默认设置为空
+          isReachable: ref.isReachable, // 假设所有文献都可访问，后续可以根据业务逻辑调整
+        })),
+        pdfUrl: backendData.pdfurl,
+      };
+
+      return paper;
+    }
   },
 };
 
@@ -341,12 +383,21 @@ export default {
 }
 
 .abstract {
-  font-size: 12px;
-  color: gray;
+  font-size: 16px;
+
 }
 
 .published-date {
   color: gray;
   font-weight: bold;
+}
+
+
+.nav-bar {
+  position: fixed;
+  z-index: 100;
+  height: auto;
+  left: 0;
+  right: 0;
 }
 </style>
