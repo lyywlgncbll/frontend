@@ -10,9 +10,9 @@
             type="text" 
             v-model="searchQuery" 
             class="modal-input" 
-            placeholder="请输入对象名称" 
-            @input="filterClaims"
-          />
+            placeholder="请输入对象名称"
+            />
+
           
           <!-- 搜索按钮 -->
           <button @click="filterClaims" class="search-button">搜索</button>
@@ -23,7 +23,9 @@
               <li v-for="(claim, index) in filteredClaims" :key="index" class="claim-item">
                 <span>{{ claim.name }}</span>
                 <span :class="['status', claim.status]">{{ claim.status }}</span>
-                <button @click="selectClaim(claim)" class="select-button">选择</button>
+                <button @click="selectClaim(claim)" class="select-button">
+                    {{ claim.isSelected ? '已选择' : '选择' }}
+                </button>
               </li>
             </ul>
           </div>
@@ -90,10 +92,10 @@
   
         // 假设的所有对象数据
         allClaims: [
-          { name: '对象1', status: '已处理' },
-          { name: '对象2', status: '未处理' },
-          { name: '对象3', status: '已处理' },
-          { name: '对象4', status: '未处理' }
+            { name: '对象1', status: '已处理', isSelected: false },
+            { name: '对象2', status: '未处理', isSelected: false },
+            { name: '对象3', status: '已处理', isSelected: false },
+            { name: '对象4', status: '未处理', isSelected: false }
         ],
   
         // 当前搜索查询
@@ -133,8 +135,8 @@
   
       // 选择认领对象
       selectClaim(claim) {
-        this.searchQuery = claim.name; // 填充输入框为选中的对象
-        this.filteredClaims = []; // 清空搜索结果
+        claim.isSelected = !claim.isSelected; // 填充输入框为选中的对象
+        this.searchQuery = claim.isSelected ? claim.name : '';
       },
   
       // 提交认领请求
@@ -160,6 +162,10 @@
           this.isSubmitting = false;
           this.closeClaimModal(); // 关闭弹窗
         }, 1000); // 模拟1秒后提交
+
+
+
+
 
       },
 
