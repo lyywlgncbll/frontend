@@ -15,11 +15,11 @@
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <searchNav></searchNav>
+                <searchNav @sortChanged="handleSort" :num="num"></searchNav>
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
-                <div class="null" v-if="searchItems.length == 0">未搜索到结果</div>
+                <div class="null" v-if="searchItems.length == 0"></div>
                 <div style="text-align: center; margin-top: 1%;">
                     <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
                         @update:currentPage="updatePage"></pageComponent>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import ClaimForm from '/src/components/search/ClaimForm.vue';
 import searchBar from '/src/components/search/searchBar.vue';
 import searchItem from '/src/components/search/searchItem.vue';
@@ -48,6 +48,7 @@ import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
 import searchNav from '@/components/search/searchNav.vue';
 import axios from 'axios';
 import { ARTICLESEARCH_API } from '@/utils/request.js'
+import SelectCharacter from '../user/selectCharacter.vue';
 //侧边栏是否展开
 const isExpand = ref(true)
 const expandBar = () => {
@@ -80,7 +81,7 @@ const closeClaimForm = () => {
 
 //分页
 const currentPage = ref(1)
-const totalPage = ref(100)
+const totalPage = ref(5)
 const pageSize = ref(7)
 
 //获取筛选数据
@@ -90,32 +91,40 @@ const handleFilter = (selections) => {
     fields.value = selections.fields
 }
 
+//获取排序方式
+const handleSort = (sort) => {
+    sortBy.value = sort
+    // search()
+}
+
+watch(currentPage, () => {
+    search()
+})
+
 const searchContent = ref("english")
-const isFiltered = ref(false)
 const option = ref(1)
 const sortBy = ref(1)
 const years = ref([])
 const journals = ref([])
 const fields = ref([])
+const num = ref(0)
 const search = async () => {
     try {
         await axios.post('/api/academic/searchPublications', {
             searchContent: searchContent.value,
-            isFiltered: true,
-            option: 1,
-            sortBy: 1,
+            isFiltered: false,
+            option: option.value,
+            sortBy: sortBy.value,
             pageSize: pageSize.value,
             currentPage: currentPage.value,
         }).then(response => {
             if (response.status == 200) {
-                console.log(response.data);
                 menuItems.value[0].contents = response.data.years
                 menuItems.value[1].contents = response.data.fields
-                menuItems.value[2].contents = response.data.journals
+                menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
                 searchItems.value = response.data.papers
             }
         })
-
     } catch (error) {
         console.error('Error fetching data:', error)
     }
@@ -139,7 +148,6 @@ const advancedSearch = async () => {
                 searchItems.value = response.data.papers
             }
         })
-
     } catch (error) {
         console.error('Error fetching data:', error)
     }

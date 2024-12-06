@@ -10,7 +10,7 @@
         </div>
         <div class="menu-content" :class="{ expand: dexpand }">
             <input type="text" v-model="searchQuery" :placeholder="'查找' + item.title" />
-            
+
             <div class="buttons">
                 <div v-for="(content, i) in filteredContents" :key="i" class="content-button"
                     :class="{ 'selected': isChecked(content) }" @click="handleSelection(content)">
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 const props = defineProps({
     isExpand: Boolean,
@@ -47,7 +47,7 @@ const selectedContents = ref([])
 // 监听 selectedContents 的变化，并向父组件传递
 watch(selectedContents, (newValue) => {
     emit('fieldChanged', newValue)
-})
+}, { deep: true })
 
 // 过滤后的内容
 const filteredContents = computed(() => {
@@ -129,7 +129,7 @@ const handleSelection = (content) => {
         font-size: 14px;
     }
 
-    input[type="text"]::placeholder{
+    input[type="text"]::placeholder {
         font-size: 14px;
     }
 }

@@ -9,12 +9,16 @@
             <li class="slide"></li>
             <li class="slide2"></li>
         </ul>
+        <span>共查询到 <i>{{ num }}</i> 条结果</span>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-
+import { ref, onMounted, onUnmounted, watch } from 'vue';
+const props = defineProps({
+    num: Number
+})
+const emit = defineEmits(['sortChanged'])
 onMounted(() => {
     const target = document.querySelector('.nav li')
     const slider = document.querySelector('.slide')
@@ -35,7 +39,7 @@ const handleClick = (event) => {
     const slider2 = document.querySelector('.slide2')
     const sliderWidth = slider.offsetWidth;
     if (target.tagName == 'LI' && !event.target.classList.contains('slide2')) {
-
+        handlSortBy(target)
     } else if (target.tagName == 'IMG') {
         target = target.closest('li');
         if (target.classList.contains('sort-year')) {
@@ -43,6 +47,7 @@ const handleClick = (event) => {
         } else {
             citeRotate.value = !citeRotate.value
         }
+        handlSortBy(target)
     } else {
         return
     }
@@ -68,6 +73,29 @@ const handleMouseOut = (event) => {
         slider.style.opacity = 0
     }
 }
+
+//排序
+const sortBy = ref(1)
+watch(sortBy, (newValue) => {
+    emit('sortChanged', newValue)
+})
+const handlSortBy = (target) => {
+    if (target.classList.contains('sort-year')) {
+        if (yearRotate.value) {
+            sortBy.value = 2
+        } else {
+            sortBy.value = 3
+        }
+    } else if (target.classList.contains('sort-cite')) {
+        if (citeRotate.value) {
+            sortBy.value = 4
+        } else {
+            sortBy.value = 5
+        }
+    } else {
+        sortBy.value = 1
+    }
+}
 </script>
 
 <style scoped>
@@ -87,6 +115,19 @@ const handleMouseOut = (event) => {
     border-radius: 5px;
     padding: 5px 0;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+
+    span {
+        margin-left: auto;
+        margin-right: 80px;
+        color: #9b9a9f;
+        font-size: 15px;
+    }
+
+    i {
+        margin: 0 5px;
+        font-size: 16px;
+        color:#383740;
+    }
 }
 
 .nav .sort {

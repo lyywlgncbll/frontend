@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { handleError, ref } from 'vue'
+import { handleError, ref, watch } from 'vue'
 import timeFilter from '@/components/search/filter/timeFilter.vue'
 import fieldFilter from '@/components/search/filter/fieldFilter.vue'
 
@@ -20,23 +20,30 @@ const props = defineProps({
     }
 })
 
+const emit = defineEmits(['selectionChanged'])
 const filter = ref({
     'years': [],
     'fields': [],
     'journals': [],
     'authors': []
 })
+
+//监听筛选条件变化
 const handleYearChanged = (selectedTimes) => {
     filter.value.years = selectedTimes
+    emit('selectionChanged',filter.value)
 }
 const handleFieldChanged = (selectedFields) => {
     filter.value.fields = selectedFields
+    emit('selectionChanged',filter.value)
 }
 const handleJournalChanged = (selectedJournal) => {
     filter.value.journals = selectedJournal
+    emit('selectionChanged',filter.value)
 }
 const handleAuthorChanged = (selectedAuthor) => {
     filter.value.authors = selectedAuthor
+    emit('selectionChanged',filter.value)
 }
 
 </script>
