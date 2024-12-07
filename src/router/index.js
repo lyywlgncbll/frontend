@@ -74,6 +74,7 @@ const routes = [
     },{
         path: "/admin",
         component: AdminInfo,
+        redirect: "/admin/platformOverview",
         children: [
             {
                 path: "/admin/audit",

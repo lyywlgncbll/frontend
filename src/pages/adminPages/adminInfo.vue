@@ -8,9 +8,9 @@
     </div>
   </div>
   <el-main class="content">
-        <!-- 放置表格 -->
-        <router-view/>
-      </el-main>
+      <!-- 放置表格 -->
+      <router-view/>
+  </el-main>
   
   
 </template>
@@ -21,11 +21,7 @@ import LeftTab from "~/components/AdminInfo/LeftTab.vue";
 export default {
   data() {
     return {
-      activeMenu: 'index',
-      showManagement: true,
-      showSystem: true,
-      userName: 'John Doe',
-      subMenuVisible: false,
+      
     };
   },
   methods: {
@@ -55,7 +51,7 @@ export default {
   position: fixed;
   z-index: 50;
   padding-top: 60px;
-  width: 20vw;
+  width: 250px;
   max-width: 460px;
   min-width: 430px;
   height: 100vh;
@@ -63,6 +59,7 @@ export default {
   display: flex;
   flex-direction: column;
   .LeftTab{
+    margin: 50px;
     max-height: 100vh;
   }
 }
@@ -85,6 +82,10 @@ export default {
 }
 
 .content {
+  display: flex;
+  z-index: 50;
+  padding-left: 25%;
+  padding-top: 110px;
   /* 样式 */
 }
 
