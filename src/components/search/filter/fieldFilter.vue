@@ -1,5 +1,5 @@
 <template>
-    <div class="menu-item">
+    <div class="menu-item" id="filter-root">
         <div class="menu-title" @click="handleDExpand">
             {{ item.title }}
             <span>
@@ -89,7 +89,7 @@ const handleSelection = (content) => {
     .line {
         margin: 10px auto;
         width: 100%;
-        border: #f1f0f0 1px solid;
+        border: var(--line-border-color) 1px solid;
     }
 
     ::-webkit-scrollbar {
@@ -123,7 +123,7 @@ const handleSelection = (content) => {
         height: 30px;
         padding: 10px;
         margin: 3px auto;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-color);
         border-radius: 8px;
         outline: none;
         font-size: 14px;
@@ -150,17 +150,17 @@ const handleSelection = (content) => {
         font-weight: 500;
         border-radius: 2em;
         line-height: 22px;
-        background-color: #e0e0e0;
-        color: #3b3b3b;
+        background-color: var(--button-background-color);
+        color: var(--button-color);
         cursor: pointer;
         transition: all .3s ease;
 
         &:hover {
-            background-color: #aaaaaa;
+            background-color: var(--button-background-hover-color);
         }
 
         &.selected {
-            background-color: #aaaaaa;
+            background-color: var(--button-background-hover-color);
         }
 
     }

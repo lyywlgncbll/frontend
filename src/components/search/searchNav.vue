@@ -1,5 +1,5 @@
 <template>
-    <div class="nav">
+    <div class="nav" id="filter-root">
         <ul class="sort" @mouseover="handleMouseOver" @mouseout="handleMouseOut" @click="handleClick">
             <li>综合</li>
             <li class="sort-year">年份 <img src="/src/assets/search/icon/down-expand2.svg"
@@ -111,7 +111,7 @@ const handlSortBy = (target) => {
     display: flex;
     align-items: center;
     margin-top: 20px;
-    border: 1px solid #c0bfbf;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 5px 0;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
@@ -119,14 +119,14 @@ const handlSortBy = (target) => {
     span {
         margin-left: auto;
         margin-right: 80px;
-        color: #9b9a9f;
+        color: var(--sort-span-color);
         font-size: 15px;
     }
 
     i {
         margin: 0 5px;
         font-size: 16px;
-        color:#383740;
+        color:var(--sort-i-color);
     }
 }
 
@@ -148,7 +148,7 @@ const handlSortBy = (target) => {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #3b3b3b;
+        color: var(--sort-i-color);
     }
 
     li img {
@@ -165,7 +165,7 @@ const handlSortBy = (target) => {
         position: absolute;
         border-radius: 15px;
         transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
-        background-color: #c0bfbf;
+        background-color: var(--sort-slide-background-color);
         z-index: 1;
     }
 
@@ -175,7 +175,7 @@ const handlSortBy = (target) => {
         position: absolute;
         border-radius: 15px;
         transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
-        background-color: #e0e0e0;
+        background-color: var(--button-background-color);
         opacity: 0;
         z-index: 0;
     }

@@ -10,9 +10,9 @@
         </div>
         <ul class="menu-content" :class="{ expand: dexpand }">
             <div class="range">
-                <input placeholder="起始年份">
+                <input placeholder="起始年份" type="number" v-model.number="beginYear">
                 <span>--</span>
-                <input placeholder="终止年份">
+                <input placeholder="终止年份" type="number" v-model.number="endYear">
             </div>
         </ul>
         <div class="line"></div>
@@ -35,26 +35,26 @@ const handleDExpand = () => {
     dexpand.value = !dexpand.value
 }
 
-// 搜索框内容
-const searchQuery = ref('')
-
-// 保存选中的内容
+const beginYear = ref()
+const endYear = ref()
 const selectedContents = ref([])
+
+watch([beginYear, endYear], ([newBeginYear, newEndYear]) => {
+    if (newBeginYear && newEndYear && newBeginYear > 0 && newEndYear >= newBeginYear) {
+        selectedContents.value = Array.from({ length: newEndYear - newBeginYear + 1 }, (_, i) => newBeginYear + i);
+        console.log(selectedContents.value);
+    } else {
+        selectedContents.value = []
+    }
+})
 watch(selectedContents, (newValue) => {
     emit('yearChanged', newValue)
 })
-// 过滤后的内容
-const filteredContents = computed(() => {
-    // 根据搜索框输入的内容，过滤出匹配的项
-    if (!searchQuery.value) {
-        return props.item.contents || []
-    }
-    const query = searchQuery.value.toLowerCase()
-    return (props.item.contents || []).filter(content => content.toLowerCase().includes(query))
-})
+
 </script>
 
 <style scoped>
+@import "@/assets/theme-colors.css";
 * {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -68,7 +68,7 @@ const filteredContents = computed(() => {
     .line {
         margin: 10px auto;
         width: 100%;
-        border: #f1f0f0 1px solid;
+        border: var(--line-border-color) 1px solid;
     }
 }
 
@@ -107,7 +107,7 @@ const filteredContents = computed(() => {
             width: 40%;
             height: 25px;
             outline: none;
-            border: 1px solid #ccc;
+            border: 1px solid var(--bar-input-border-color);
             border-radius: 3px;
             margin: 0 3px;
             font-size: 14px;
@@ -115,6 +115,17 @@ const filteredContents = computed(() => {
 
         input::placeholder {
             font-size: 14px;
+            text-align: center;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
     }
 }

@@ -5,23 +5,20 @@
                 <img src="/src/assets/search/icon/cite.svg" alt="cite" width="20px" height="20px">
                 <p>引用</p>
             </div>
-            <div class="patronise">
-                <img src="/src/assets/search/icon/patronise.svg" alt="patronise" width="20px" height="20px">
-                <p>点赞</p>
-            </div>
             <div class="claim" @click="openForm">
                 <p>认领</p>
             </div>
         </div>
-        <div class="title">{{ searchItem.title }}</div>
-        <span class="author" v-for="author in searchItem.authors.slice(0, 3)">{{ author }}</span>
-        <span class="from">{{ searchItem.journal }} - {{ searchItem.year }}</span>
+        <div class="title" :title="searchItem.title">{{ searchItem.title }}</div>
+        <div class="info">
+            <span class="author" v-for="author in searchItem.authors.slice(0, 3)">{{ author }}</span>
+            <span class="from" :title="searchItem.journal + ' - ' + searchItem.year">{{ searchItem.journal }} - {{ searchItem.year }}</span>
+        </div>
         <div class="content">{{ searchItem.abstract }}</div>
         <div class="line"></div>
         <div class="label">
             <div class="label-item" v-for="(field, index) in searchItem.fields">{{ field }}</div>
         </div>
-        <div class="cited-num">被引次数：{{ searchItem.citationCount }} 次</div>
     </div>
 
 </template>
@@ -63,7 +60,6 @@ const openForm = () => {
 }
 
 .cite,
-.patronise,
 .claim {
     display: flex;
     align-items: center;
@@ -82,8 +78,7 @@ const openForm = () => {
 
 }
 
-.cite:hover,
-.patronise:hover {
+.cite:hover {
     background-color: #d7dfe6;
 }
 
@@ -92,13 +87,11 @@ const openForm = () => {
 }
 
 .cite p,
-.patronise p,
 .claim p {
     font-size: 13px;
 }
 
-.cite p,
-.patronise p {
+.cite p {
     color: grey;
 }
 
@@ -119,14 +112,14 @@ const openForm = () => {
     position: relative;
     margin: 20px auto;
     transition: all 0.3s ease;
-}
 
-.container:hover{
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 }
 
 .title {
-    width: 70%;
+    width: 80%;
     font-size: 30px;
     font-weight: bold;
     font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
@@ -139,20 +132,31 @@ const openForm = () => {
     text-overflow: ellipsis;
 }
 
-.author {
-    padding: 0 10px;
-    color: #0c7af7;
-    cursor: pointer;
-    border-right: 2px solid rgb(139, 139, 139);
+.info {
+    width: 100%;
+    height: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .author {
+        padding: 0 10px;
+        color: #0c7af7;
+        border-right: 2px solid rgb(139, 139, 139);
+    }
+
+    .from {
+        color: rgb(139, 139, 139);
+        padding-left: 9px;
+    }
 }
 
-.from {
-    color: rgb(139, 139, 139);
-    padding-left: 9px;
-}
+
 
 .content {
     margin: 5px auto;
+    padding: 0 10px;
     width: 100%;
     height: 70px;
     overflow: hidden;
@@ -188,18 +192,10 @@ const openForm = () => {
     background-color: #ddf4ff;
     color: #0969da;
     cursor: pointer;
-}
 
-.label-item:hover {
-    color: white;
-    background-color: #0969da;
-}
-
-.cited-num {
-    width: 200px;
-    font-size: 14px;
-    color: grey;
-    margin-left: auto;
-    text-align: right;
+    &:hover {
+        color: white;
+        background-color: #0969da;
+    }
 }
 </style>

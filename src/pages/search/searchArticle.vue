@@ -1,14 +1,11 @@
 <template>
     <logged-nav-bar class="nav-bar" />
-    <div id="search-body">
+    <div id="search-root">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
                 <img src="/src/assets/search/icon/down-expand.svg" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
-            <!-- <div class="confirm" @click="sendFilter">
-                确认
-            </div> -->
             <div class="left-bar" :class="{ collapsed: !isExpand }">
                 <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
                 </searchBar>
@@ -20,8 +17,8 @@
                     @openClaimForm="showClaimForm">
                 </searchItem>
                 <div class="null" v-if="searchItems.length == 0"></div>
-                <div style="text-align: center; margin-top: 1%;">
-                    <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
+                <div class="page">
+                    <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPage"
                         @update:currentPage="updatePage"></pageComponent>
                 </div>
             </div>
@@ -89,20 +86,24 @@ const handleFilter = (selections) => {
     years.value = selections.years
     journals.value = selections.journals
     fields.value = selections.fields
+    advancedSearch()
 }
 
 //获取排序方式
 const handleSort = (sort) => {
     sortBy.value = sort
-    // search()
+    search()
+    // advancedSearch()
 }
 
 watch(currentPage, () => {
+    console.log(currentPage.value);
     search()
+    // advancedSearch()
 })
 
-const searchContent = ref("english")
-const option = ref(1)
+const searchContent = ref("learning")
+const option = ref(2)
 const sortBy = ref(1)
 const years = ref([])
 const journals = ref([])
@@ -144,7 +145,6 @@ const advancedSearch = async () => {
             fields: fields.value
         }).then(response => {
             if (response.status == 200) {
-                console.log(response.data);
                 searchItems.value = response.data.papers
             }
         })
@@ -159,6 +159,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import "../../assets/theme-colors.css";
+
 * {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -166,9 +168,8 @@ onMounted(() => {
     user-select: none;
 }
 
-#search-body {
+#search-root {
     margin: 0 50px;
-
 }
 
 #mid {
@@ -193,41 +194,25 @@ onMounted(() => {
     width: 20px;
     height: 44px;
     position: absolute;
-    background-color: #92979e;
+    background-color: var(--expand-button-background-color);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     left: -21px;
     top: 21px;
-}
 
-.confirm {
-    font-size: 11px;
-    text-align: center;
-    width: 20px;
-    height: 44px;
-    position: absolute;
-    background-color: #92979e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    left: -21px;
-    top: 70px;
-    color: white;
-}
-
-.left-expand:hover,
-.confirm:hover {
-    background-color: #6f6f6f;
+    &:hover{
+        background-color: var(--expand-button-hover-color);
+    }
 }
 
 .main {
     width: 75%;
-    height: 100%;
+    min-height: 80vh;
     margin: 0 auto;
     transition: all 0.3 ease;
+    position: relative;
 
     .null {
         width: 100%;
@@ -237,6 +222,13 @@ onMounted(() => {
 
     &.collapsed {
         width: 90%;
+    }
+
+    .page {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 }
 
@@ -270,7 +262,7 @@ onMounted(() => {
             top: 8px;
             right: 20px;
             cursor: pointer;
-            color: grey;
+            color: var(--expand-button-background-color);
         }
     }
 }
