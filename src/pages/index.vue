@@ -1,6 +1,6 @@
 <template>
     <div class="test">
-      <paper-details />
+      <logged-nav-bar/>
     </div>
 </template>
 
@@ -9,8 +9,10 @@ import loggedNavBar from "~/components/bar/logged-nav-bar.vue";
 import {defineComponent, ref,inject} from "vue";
 import {useRouter} from "vue-router";
 import PaperDetails from "~/components/home-page/paperIntros.vue";
+import HotTopics from "~/components/home-page/hotspot.vue";
 export default defineComponent({
   components:{
+    HotTopics,
     PaperDetails,
     loggedNavBar
   }

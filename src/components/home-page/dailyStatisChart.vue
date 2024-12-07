@@ -26,8 +26,8 @@
               <!-- 每个格子的贡献数显示 -->
               <el-tooltip :content="`${item.count} reading times on ${item.date}`"
                           placement="top"
-                          show-after="200"
-                          hide-after="100"
+                          :show-after= 200
+                          :hide-after= 100
                           effect="light"
               >
                 <div class="tooltip-trigger">
