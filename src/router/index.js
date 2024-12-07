@@ -26,6 +26,7 @@ const routes = [
         path: "/reader",
         name: "Reader",
         component: Reader,
+        props: (route) => ({ pdfurl: route.query.pdfurl })
     },
     {
         path: "/article",
