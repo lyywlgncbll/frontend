@@ -58,7 +58,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import axios from '@/utils/axios.js';
 import default_pic from "../assets/default.png";
 import AuthorList from "../components/UserInfo/AuthorList.vue";
 import Claims from "../components/UserInfo/Claims.vue";
@@ -147,7 +147,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         console.log("Edit profile clicked!!!!");
         this.isEditable = !this.isEditable;
         this.user.bio=newbio;
-        axios.post('http://localhost:8080/user/data/mod', {
+        axios.post('http://113.44.131.146/user/data/mod', {
           description: newbio, // 修正拼写错误
         },{
           headers: {
@@ -204,36 +204,14 @@ import Tabs from "../components/UserInfo/Tabs.vue";
           console.error('发送失败:', error);
         });
       },
-      sendLoginRequest() {
-          return new Promise((resolve, reject) => {
-            axios.post('http://localhost:8080/user/auth/login', {
-              mail: "2399791927@qq.com",
-              password: "2399791927",
-            }).then(response => {
-              console.log('发送成功:', response.data);
-              this.authorization = "Bearer " + response.data;
-              resolve();  // 登录成功，通知后续操作可以继续
-            })
-            .catch(error => {
-              console.error('发送失败:', error);
-              reject(error);  // 登录失败
-            });
-          });
-      },
       async sendGetMyInfo(){
         return new Promise((resolve, reject) => {
-            axios.get('http://localhost:8080/user/self',{
-              headers: {
-                Authorization: this.authorization,
-              },
-            }).then(response => {
+            axios.get('http://113.44.131.146:8080/user/self').then(response => {
               // 请求成功，处理返回的 json 数据
               this.user.id=response.data.id;
               this.user.name = response.data.name;
               this.user.mail=response.data.mail;
-
               this.user.bio=response.data.description;
-
               this.user.claim=response.data.claim;
               this.user.researchAreas=response.data.fieldsOfStudy;
               if(this.user.claim!=null){
@@ -250,7 +228,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       },
       async sendGetMyAvatar(){  
         const id = this.user.id;
-        axios.get('http://localhost:8080/user/avator/get',{
+        axios.get('http://113.44.131.146:8080/user/avator/get',{
           params: { id }
         }).then(response => {
             this.user.avatar="data:image/jpeg;base64,"+response.data;
@@ -264,28 +242,21 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       },
     },
     mounted(){
-      this.sendLoginRequest()
-      .then(() => {
+
         // 登录成功后再执行获取用户信息
         this.sendGetMyInfo()
           .then(() =>{
             this.sendGetMyAvatar().then(() =>{
               this.$refs.Claims.sendGetMyClaims();
-
-
-
             }).catch(error =>{
               console.error('登录请求个人头像失败',error)
             });
           }).catch(error => {
             console.error('登录请求个人信息失败:', error);
           });
-      })
-      .catch(error => {
-        console.error('登录发送信息失败:', error);
-      });
+      }
+      
     }
-  };
   </script>
   
   <style scoped>
