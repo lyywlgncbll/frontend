@@ -152,8 +152,6 @@ const openForm = () => {
     }
 }
 
-
-
 .content {
     margin: 5px auto;
     padding: 0 10px;

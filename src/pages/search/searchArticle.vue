@@ -1,5 +1,5 @@
 <template>
-    <logged-nav-bar class="nav-bar" />
+    <loggedNavBar class="nav-bar" />
     <div id="search-root">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
@@ -16,7 +16,6 @@
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
-                <div class="null" v-if="searchItems.length == 0"></div>
                 <div class="page">
                     <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPage"
                         @update:currentPage="updatePage"></pageComponent>
@@ -46,6 +45,16 @@ import searchNav from '@/components/search/searchNav.vue';
 import axios from 'axios';
 import { ARTICLESEARCH_API } from '@/utils/request.js'
 import SelectCharacter from '../user/selectCharacter.vue';
+
+onMounted(() => {
+    searchContent.value = localStorage.getItem('searchString')
+    option.value = Number(localStorage.getItem('searchOption'))
+    console.log(searchContent.value, option.value);
+
+    search()
+})
+
+
 //侧边栏是否展开
 const isExpand = ref(true)
 const expandBar = () => {
@@ -152,10 +161,6 @@ const advancedSearch = async () => {
         console.error('Error fetching data:', error)
     }
 }
-
-onMounted(() => {
-    search()
-})
 </script>
 
 <style scoped>
@@ -202,7 +207,7 @@ onMounted(() => {
     left: -21px;
     top: 21px;
 
-    &:hover{
+    &:hover {
         background-color: var(--expand-button-hover-color);
     }
 }
