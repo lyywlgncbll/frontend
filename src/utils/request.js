@@ -6,3 +6,6 @@ export const LOGIN_API = `/user/auth/login`;
 export const SEND_EMAIL_API = `/user/reg/verify`;
 export const REGISTER_API = `/user/reg/create`;
 export const GET_ALL_HISTORY_API='/api/history/getAllHistory';
+export const DELETE_HISTORY_API='/api/history/deleteHistory';
+export const GET_TOP_K_API='/topics/topk';
+export const GET_READ_CNT_API='/counter/get';

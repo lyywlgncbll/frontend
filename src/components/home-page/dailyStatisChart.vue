@@ -44,35 +44,38 @@
 </template>
 
 <script>
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, computed,nextTick} from 'vue';
 import { ElTooltip } from 'element-plus';
+import axios from "@/utils/axios.js";
+import {GET_READ_CNT_API, GET_TOP_K_API} from "@/utils/request.js";
 export default {
   name: 'DailyStatsChart',
   setup() {
     // 模拟的历史数据（你可以从 API 获取这些数据）
-    const statsData = ref([
-      { date: '2024-08-03', count: 5 },
-      { date: '2024-08-15', count: 15 },
-      { date: '2024-08-25', count: 27 },
-      { date: '2024-09-13', count: 27 },
-      { date: '2024-11-01', count: 5 },
-      { date: '2024-11-02', count: 7 },
-      { date: '2024-11-03', count: 10 },
-      { date: '2024-11-04', count: 6 },
-      { date: '2024-11-05', count: 8 },
-      { date: '2024-11-06', count: 12 },
-      { date: '2024-11-07', count: 3 },
-      { date: '2024-11-08', count: 9 },
-      { date: '2024-11-09', count: 11 },
-      { date: '2024-11-10', count: 13 },
-      { date: '2024-11-11', count: 6 },
-      { date: '2024-11-12', count: 7 },
-      { date: '2024-11-13', count: 9 },
-      { date: '2024-11-14', count: 5 },
-      { date: '2024-11-15', count: 6 },
-      { date: '2024-11-30', count: 16 },
-      { date: '2024-12-02', count: 16 },
-    ]);
+    // const statsData = ref([
+    //   { date: '2024-08-03', count: 5 },
+    //   { date: '2024-08-15', count: 15 },
+    //   { date: '2024-08-25', count: 27 },
+    //   { date: '2024-09-13', count: 27 },
+    //   { date: '2024-11-01', count: 5 },
+    //   { date: '2024-11-02', count: 7 },
+    //   { date: '2024-11-03', count: 10 },
+    //   { date: '2024-11-04', count: 6 },
+    //   { date: '2024-11-05', count: 8 },
+    //   { date: '2024-11-06', count: 12 },
+    //   { date: '2024-11-07', count: 3 },
+    //   { date: '2024-11-08', count: 9 },
+    //   { date: '2024-11-09', count: 11 },
+    //   { date: '2024-11-10', count: 13 },
+    //   { date: '2024-11-11', count: 6 },
+    //   { date: '2024-11-12', count: 7 },
+    //   { date: '2024-11-13', count: 9 },
+    //   { date: '2024-11-14', count: 5 },
+    //   { date: '2024-11-15', count: 6 },
+    //   { date: '2024-11-30', count: 16 },
+    //   { date: '2024-12-02', count: 16 },
+    // ]);
+    const statsData=ref([]);
 
 
     const getFourMonthsData = () => {
@@ -130,10 +133,24 @@ export default {
     const dayNames=getDayOfWeekFourMonthsAgo();
 
     const fullStatsData = ref([]);
+    const getStatsData=async ()=>{
+      try {
+        const response = await axios.get(GET_READ_CNT_API);
 
+        if (response.data && response.status === 200) {
+          console.log("获取read cnt成功"+response.data);
+          statsData.value = response.data;
+          await nextTick(() =>fullStatsData.value = getFourMonthsData());
+        } else {
+          console.error("获取数据失败:", response.data.message);
+        }
+      } catch (error) {
+        console.error("请求失败:", error);
+      }
+    }
     // 在组件挂载时获取数据
     onMounted(() => {
-      fullStatsData.value = getFourMonthsData();
+      getStatsData()
     });
 
     // 颜色映射函数

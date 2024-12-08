@@ -1,7 +1,7 @@
 <script>
 import {defineComponent, nextTick, onMounted, ref} from "vue";
 import axios from "@/utils/axios.js";
-import {GET_ALL_HISTORY_API} from "@/utils/request.js";
+import {DELETE_HISTORY_API, GET_ALL_HISTORY_API} from "@/utils/request.js";
 
 export default defineComponent({
   name: "UserHistory",
@@ -29,8 +29,23 @@ export default defineComponent({
     const toRead = (paper) => {
       alert(`继续阅读 "${paper.title}"!`);
     };
-    const markAsRead = (paper) => {
-      alert(`将 "${paper.title}" 标记为已读!`);
+    const markAsRead = async (paper) => {
+      try {
+        // 发送 DELETE 请求，传入 paper.id
+        const response = await axios.delete(DELETE_HISTORY_API, {
+            id: paper.id // 传递 paper.id
+        });
+
+        if (response.status === 200) {
+          alert(`成功将 "${paper.title}" 标记为已读!`);
+          await fetchHistoryData();
+          // 这里可以执行其他操作，比如更新 UI 或重新加载数据
+        } else {
+          console.error("标记为已读失败:", response.data.message);
+        }
+      } catch (error) {
+        console.error("请求失败:", error);
+      }
     };
     const animatedProgress = ref([]); // 动态进度，用于动画
     // 请求历史数据的函数
@@ -64,23 +79,6 @@ export default defineComponent({
     };
     onMounted(() => {
       fetchHistoryData();
-      // // 动态增加进度值，模拟加载动画
-      // historyData.value.forEach((item, index) => {
-      //   animatedProgress.value[index] = 0;
-      //   setTimeout(() => {
-      //     let progress = 0;
-      //     const interval = setInterval(() => {
-      //       if (progress >= item.progress) {
-      //         clearInterval(interval);
-      //       } else {
-      //         progress += 2; // 每次增加 2%
-      //         animatedProgress.value[index] = progress;
-      //       }
-      //     }, 10); // 每 10ms 更新一次
-      //   }, 0); // 按序延迟动画
-      // });
-
-
     });
 
 
