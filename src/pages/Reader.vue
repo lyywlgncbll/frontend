@@ -80,18 +80,18 @@ import axios from "@/utils/axios";
 import { reactive, onMounted, computed, onUnmounted, ref, Directive } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
 import { createLoadingTask } from "vue3-pdfjs";
-import { QIANFAN_ASK, GET_HISTORY_RATE, SEND_HISTORY_RATE, GET_PDF_BINARY } from "@/utils/request"
+import { QIANFAN_ASK, GET_HISTORY_RATE, SEND_HISTORY_RATE, GET_PDF_BINARY, ARTICLE_API } from "@/utils/request"
 import { ElNotification } from 'element-plus'
 const props = defineProps({
   //for pdf render
-  pdfurl:{
+  id:{
   type: String,
   required: true
   }
 })
 //for pdf render
 const state = reactive({
-  source: props.pdfurl,
+  source: props.id,
   data: null,
   pageNum: 1,
   scale: 1,
@@ -103,34 +103,42 @@ var loadedPageNum = 0
 onMounted(() => {
   loadedPageNum = 0
   //for pdf render
-  console.log(props.pdfurl)
-  const url = props.pdfurl
-  const config = {
+  console.log(props.id)
+  var config = {
     method: 'get',
-    url: GET_PDF_BINARY + `?url=${url}`,
-    responseType: 'blob',
+    url: ARTICLE_API + `?publicationId=${props.id}`
   }
-  axios(config).then((response: any) => {
-    // window.atob(response.data)
-    const blob = response.data;  // 获取 Blob 数据
+  axios(config).then((response:any) => {
+    const url = response.data.pdfurl
+    console.log("url: ", url)
+    config = {
+      method: 'get',
+      url: GET_PDF_BINARY + `?url=${url}`,
+      responseType: 'blob',
+    }
+    axios(config).then((response: any) => {
+      // window.atob(response.data)
+      const blob = response.data;  // 获取 Blob 数据
+  
+      // 创建一个 FileReader 实例
+      const reader = new FileReader();
+  
+      reader.onloadend = function () {
+        const dataUrl = reader.result;  // 获取 Data URL 格式的 Base64 编码数据
+        console.log('PDF Data URL:', dataUrl);
+  
+        // 将 Data URL 传递给 vue-pdf-embed 组件
+        state.data = dataUrl;  // 假设你使用 Vue.js 管理状态
+        const loadingTask = createLoadingTask(state.data);
+        loadingTask.promise.then((pdf) => {
+          state.numPages = pdf.numPages
+        })
+      };
+  
+      // 读取 Blob 数据为 Data URL
+      reader.readAsDataURL(blob);
+    })
 
-    // 创建一个 FileReader 实例
-    const reader = new FileReader();
-
-    reader.onloadend = function () {
-      const dataUrl = reader.result;  // 获取 Data URL 格式的 Base64 编码数据
-      console.log('PDF Data URL:', dataUrl);
-
-      // 将 Data URL 传递给 vue-pdf-embed 组件
-      state.data = dataUrl;  // 假设你使用 Vue.js 管理状态
-      const loadingTask = createLoadingTask(state.data);
-      loadingTask.promise.then((pdf) => {
-        state.numPages = pdf.numPages
-      })
-    };
-
-    // 读取 Blob 数据为 Data URL
-    reader.readAsDataURL(blob);
   })
   // state.source = `D:/40995/Documents/课程资料/软分/frontend/dist/test/01.pdf`
   // state.source = url

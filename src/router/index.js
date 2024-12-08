@@ -32,7 +32,7 @@ const routes = [
         path: "/reader",
         name: "Reader",
         component: Reader,
-        props: (route) => ({ pdfurl: route.query.pdfurl })
+        props: (route) => ({ id: route.query.id })
     },
     {
         path: "/article",
