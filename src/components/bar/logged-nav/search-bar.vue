@@ -7,6 +7,7 @@ export default {
         { value: "2", label: "作者" },
         { value: "3", label: "摘要" },
         { value: "4", label: "领域" },
+        { value: "5", label: "刊物" },
       ],
       select: 1, // 当前选中的值
       input: "", // 输入框内容
@@ -93,7 +94,7 @@ export default {
       <span class="selected-label">{{ selectedLabel }}</span>
       <i :class="['icon', optionsListActive ? 'up' : 'down']"></i>
     </div>
-    <img src="../../../assets/iconfonts/nav-bar/search1.svg" class="search-logo">
+    <img src="/src/assets/iconfonts/nav-bar/search1.svg" class="search-logo">
     <!-- 输入框 -->
     <input
         ref="searchInput"

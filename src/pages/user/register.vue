@@ -2,7 +2,7 @@
 import NavigationBar from "~/components/bar/unlogged-nav-bar.vue";
 import {defineComponent} from "vue";
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import {SEND_EMAIL_API, REGISTER_API} from "~/utils/request.js";
 export default defineComponent({
   components:{
