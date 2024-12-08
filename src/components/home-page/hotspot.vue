@@ -1,6 +1,6 @@
 <template>
   <div class="hot-topics-container" id="page-root">
-    <h2 class="section-title">热点话题</h2>
+    <h2 class="section-title" @click="toHotTopic">热点话题</h2>
     <div class="topics-list">
       <div
           v-for="(topic, index) in topics"
@@ -36,9 +36,15 @@
 import {onMounted, ref} from "vue";
 import {GET_TOP_K_API} from "@/utils/request.js";
 import axios from "@/utils/axios.js";
+import router from "@/router/index.js";
 
 export default {
   name: 'HotTopics',
+  methods:{
+    toHotTopic(){
+      router.push('/hotTopic');
+    }
+  },
   setup() {
     const topics=ref([]);
     const getTopK=async ()=>{
@@ -184,6 +190,7 @@ export default {
   color: #333;
   margin-bottom: 15px;
   text-align: center;
+  cursor: pointer;
 }
 
 .topics-list {
