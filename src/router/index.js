@@ -30,7 +30,8 @@ const routes = [
     },
     {
         path: "/article",
-        component: Article
+        component: Article,
+        props: (route) => ({ id: route.query.id })
     },
     {
         path: "/login",

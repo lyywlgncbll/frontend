@@ -63,11 +63,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import axios from "axios";
+import axios from "@/utils/axios";
 import { reactive, onMounted, computed, onUnmounted, ref, Directive } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
 import { createLoadingTask } from "vue3-pdfjs";
-import { QIANFAN_ASK } from "../utils/request"
+import { QIANFAN_ASK } from "@/utils/request"
 import { ElNotification } from 'element-plus'
 const props = defineProps({
   //for pdf render

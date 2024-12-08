@@ -1,45 +1,50 @@
 <template>
+  <logged-nav-bar class="nav-bar" />
   <el-card class="paper-detail">
+
     <!-- 标题 -->
     <h1 class="paper-title">{{ paper.title }}</h1>
 
     <!-- 元数据 -->
     <h2 class="section-title">论文信息</h2>
-    <el-row class="paper-metadata" gutter="20">
-      <!-- 作者 -->
-      <el-col :span="12">
-        <el-descriptions title="作者" border>
-          <el-descriptions-item>
-            <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
-              @click="goToAuthorPage(author)">
-              {{ author }}
-            </el-button>
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-col>
+    <el-skeleton v-if="isLoading" :rows="3" animated style="margin: 20px 0;"></el-skeleton>
+    <template v-else>
+      <el-row class="paper-metadata" gutter="20">
+        <el-col :span="8">
+          <el-descriptions title="作者" border>
+            <el-descriptions-item>
+              <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
+                @click="goToAuthorPage(author)">
+                {{ author }}
+              </el-button>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-col>
 
-      <!-- 关键词 -->
-      <el-col :span="12">
-        <el-descriptions title="关键词" border>
-          <el-descriptions-item>
-            <el-button v-for="keyword in paper.keywords" :key="keyword" type="text" class="keyword-button"
-              @click="goToKeywordPage(keyword)">
-              {{ keyword }}
-            </el-button>
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-col>
-    </el-row>
+        <!-- 关键词 -->
+        <el-col :span="8">
+          <el-descriptions title="关键词" border>
+            <el-descriptions-item>
+              <el-button v-for="keyword in paper.keywords" :key="keyword" type="text" class="keyword-button"
+                @click="goToKeywordPage(keyword)">
+                {{ keyword }}
+              </el-button>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-col>
 
-    <!-- 发表日期 -->
-    <el-row class="paper-date" gutter="20">
-      <el-col :span="24">
-        <el-descriptions title="发布日期" border>
-          <el-descriptions-item>
-            {{ paper.publishedDate }}
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-col>
+        <el-col :span="8">
+          <el-descriptions title="发布日期" border>
+            <el-descriptions-item>
+              {{ paper.publishedDate }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-col>
+      </el-row>
+
+      <!-- 发表日期 -->
+      <!-- <el-row class="paper-date" gutter="20"> -->
+
 
       <!-- <el-col :span="12">
         <el-descriptions title="语言" border>
@@ -48,21 +53,28 @@
           </el-descriptions-item>
         </el-descriptions>
       </el-col> -->
-    </el-row>
-
+      <!-- </el-row> -->
+    </template>
     <!-- 摘要 -->
     <h2 class="section-title">论文概述</h2>
-    <p>{{ paper.abstract }}</p>
+    <el-row class="paper-abstract">
+      <el-col :span="24">
+        <el-skeleton v-if="isLoading" :rows="3" animated></el-skeleton>
+        <p v-else class="abstract">{{ paper.abstract }}</p>
+      </el-col>
+    </el-row>
 
     <!-- 引用数据 -->
     <h2 class="section-title">论文引用</h2>
     <el-row class="paper-references">
       <el-col :span="24">
-        <el-descriptions title="引用" border>
+        <el-skeleton v-if="isLoading" :rows="2" animated></el-skeleton>
+        <el-descriptions title="引用" border v-else>
           <el-descriptions-item>
             <ul>
               <li v-for="(reference, index) in paper.references" :key="index">
-                {{ reference }}
+                <el-link v-if="reference.isReachable">{{ reference.title }}</el-link>
+                <el-link v-else disabled>{{ reference.title }}</el-link>
               </li>
             </ul>
           </el-descriptions-item>
@@ -80,7 +92,7 @@
       </el-col>
     </el-row>
 
-    <!-- 操作按钮 -->
+
     <el-row justify="center" class="actions">
       <el-button type="primary" @click="downloadPaper">
         <el-icon>
@@ -100,7 +112,8 @@
     <el-card class="recommendation-card">
       <el-carousel :interval="5000" arrow="always">
         <el-carousel-item v-for="(paper, index) in recommendations" :key="paper.id">
-          <div class="paper-item" style="justify-content: center; display: flex; align-items: center; flex-direction: column;">
+          <div class="paper-item"
+            style="justify-content: center; display: flex; align-items: center; flex-direction: column;">
             <h3 style="margin-top: 5px; font-size: 30px;">{{ paper.title }}</h3>
             <p style="margin-top: 5px;">{{ paper.author }}</p>
             <p class="abstract" style="margin-top: 5px;">{{ paper.abstract }}</p>
@@ -116,10 +129,37 @@
 
 
 <script>
+import { createRouter, createWebHistory } from 'vue-router';
+import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
+import { ARTICLE_API } from "~/utils/request.js"
+import Reader from './Reader.vue';
+import axios from 'axios';
+
+const routes = [
+  {
+    path: '/reader',
+    name: 'Reader',
+    component: Reader,
+    props: (route) => ({ url: route.query.url }), // 将 query 参数映射为 props
+  },
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+//const id = "https://openalex.org/W1481824024"
 export default {
+  router,
   name: "PaperDetail",
+  props: {
+    id: {
+      type: String,
+      reequired: true
+    }
+  },
   data() {
-    
+
     return {
       paper: {
         title: "A Comprehensive Study on Artificial Intelligence",
@@ -127,13 +167,22 @@ export default {
         publishedDate: "2024-11-17",
         abstract:
           "This paper explores the latest advancements in artificial intelligence (AI), covering topics such as neural networks, natural language processing, and the ethical implications of AI systems.",
-        keywords: ["AI", "Neural Networks", "Ethics", "NLP", "Machine Learning"],
+        keywords: ["AI", "Neural Networks", "Ethics", "NLP", "Machine Learning", "AI", "Neural Networks", "Ethics", "NLP", "Machine Learning"],
         references: [
-          "Doe, J., Smith, J. (2023). A Study on Neural Networks. Journal of AI Research.",
-          "Johnson, A. (2022). Ethics in AI Systems. Ethics in Technology Review.",
-          "Lee, K. et al. (2021). Machine Learning Algorithms. AI and Machine Learning Journal."
+          {
+            id: "1",
+            title: "A Study on Neural Networks",
+            authors: ["Doe, J.", "Smith, J."],
+            isReachable: true,
+          },
+          {
+            id: "2",
+            title: "Ethics in AI Systems",
+            authors: ["Johnson, A."],
+            isReachable: false,
+          },
         ],
-        language: "English"
+        pdfUrl: "/test/test.pdf"
       },
       views: "101",
       downloads: "1001",
@@ -162,13 +211,15 @@ export default {
             "This paper reviews the development and applications of graph neural networks.",
           link: "/paper/3",
         },
-      ]
+      ],
+      isLoading: true,
     };
   },
   created() {
     // 从 localStorage 中加载数据
     this.views = localStorage.getItem("views") || 101; // 默认值101
     this.downloads = localStorage.getItem("downloads") || 1001; // 默认值1001
+    this.fetchData();
   },
   watch: {
     views(newVal) {
@@ -181,13 +232,28 @@ export default {
     }
   },
   methods: {
+    async fetchData() {
+      try {
+        console.log(this.id)
+        const response = await axios.get(ARTICLE_API, {
+          params:{
+            publicationId: this.id
+          }
+        });
+        this.paper = this.transformBackendDataToPaper(response.data);
+        this.isLoading = false;
+      } catch (error) {
+        console.log("error");
+      } finally {
+      }
+    },
     downloadPaper() {
       this.downloads++;
       this.$message({
         message: "Downloading PDF...",
         type: "info",
       });
-      
+
     },
     preview() {
       this.views++;
@@ -195,7 +261,10 @@ export default {
         message: "Preview...",
         type: "success",
       });
-      window.location.href = "/reader";
+      this.$router.push({
+        name: "Reader", // 路由名称，需在路由配置中定义
+        query: { url: this.paper.pdfUrl },
+      });
     },
     goToAuthorPage(author) {
       this.$message({
@@ -209,6 +278,25 @@ export default {
         type: "info",
       });
     },
+    transformBackendDataToPaper(backendData) {
+      // 将后端数据转换为前端 paper 数据格式
+      const paper = {
+        title: backendData.title,
+        authors: backendData.authors,
+        publishedDate: `${backendData.publishedYear}-01-01`, // 默认设置为每年 1 月 1 日
+        abstract: backendData.abstract,
+        keywords: backendData.keywords,
+        references: backendData.references.map((ref, index) => ({
+          id: ref.id, // 生成 ID
+          title: ref.title,
+          authors: [], // 无法从后端 JSON 获取，默认设置为空
+          isReachable: ref.isReachable, // 假设所有文献都可访问，后续可以根据业务逻辑调整
+        })),
+        pdfUrl: backendData.pdfurl,
+      };
+
+      return paper;
+    }
   },
 };
 
@@ -245,6 +333,12 @@ export default {
   margin-bottom: 8px;
 }
 
+.metadata-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
 .paper-metadata {
   margin: 20px 0;
 }
@@ -255,6 +349,10 @@ export default {
 
 .actions {
   margin-top: 20px;
+}
+
+.paper-abstract {
+  margin: 20px 0;
 }
 
 .paper-references {
@@ -285,7 +383,21 @@ export default {
 }
 
 .abstract {
-  font-size: 12px;
+  font-size: 16px;
+
+}
+
+.published-date {
   color: gray;
+  font-weight: bold;
+}
+
+
+.nav-bar {
+  position: fixed;
+  z-index: 100;
+  height: auto;
+  left: 0;
+  right: 0;
 }
 </style>

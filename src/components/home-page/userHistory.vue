@@ -1,15 +1,17 @@
 <script>
-import {defineComponent, onMounted, ref} from "vue";
+import {defineComponent, nextTick, onMounted, ref} from "vue";
+import axios from "@/utils/axios.js";
+import {DELETE_HISTORY_API, GET_ALL_HISTORY_API} from "@/utils/request.js";
 
 export default defineComponent({
   name: "UserHistory",
-  props: {
-    historyData: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-  },
+  // props: {
+  //   historyData: {
+  //     type: Array,
+  //     required: true,
+  //     default: () => [],
+  //   },
+  // },
   methods:{
     getProgressBarColor(progress) {
       // 计算灰色的强度，progress 越大，灰度越低
@@ -22,35 +24,67 @@ export default defineComponent({
 
   },
   setup(props) {
+    const historyData = ref([]);  // 使用 ref 来存储动态的 historyData
     // For dynamic interaction, like marking as read
     const toRead = (paper) => {
       alert(`继续阅读 "${paper.title}"!`);
     };
-    const markAsRead = (paper) => {
-      alert(`将 "${paper.title}" 标记为已读!`);
+    const markAsRead = async (paper) => {
+      try {
+        // 发送 DELETE 请求，传入 paper.id
+        const response = await axios.delete(DELETE_HISTORY_API, {
+            id: paper.id // 传递 paper.id
+        });
+
+        if (response.status === 200) {
+          alert(`成功将 "${paper.title}" 标记为已读!`);
+          await fetchHistoryData();
+          // 这里可以执行其他操作，比如更新 UI 或重新加载数据
+        } else {
+          console.error("标记为已读失败:", response.data.message);
+        }
+      } catch (error) {
+        console.error("请求失败:", error);
+      }
     };
     const animatedProgress = ref([]); // 动态进度，用于动画
-
+    // 请求历史数据的函数
+    const fetchHistoryData = async () => {
+      try {
+        const response = await axios.get(GET_ALL_HISTORY_API);
+        if (response.data && response.status === 200) {
+          console.log("获取历史记录成功:", response.data);
+          historyData.value = response.data;
+          // 确保在数据加载完成后再处理进度
+          await nextTick(() => {
+            historyData.value.forEach((item, index) => {
+              animatedProgress.value[index] = 0;
+              let progress = 0;
+              const interval = setInterval(() => {
+                if (progress >= item.progress) {
+                  clearInterval(interval);
+                } else {
+                  progress += 2; // 每次增加 2%
+                  animatedProgress.value[index] = progress;
+                }
+              }, 10); // 每 10ms 更新一次
+            });
+          });
+        } else {
+          console.error("获取历史数据失败", response.data.message);
+        }
+      } catch (error) {
+        console.error("请求历史数据失败:", error);
+      }
+    };
     onMounted(() => {
-      // 动态增加进度值，模拟加载动画
-      props.historyData.forEach((item, index) => {
-        animatedProgress.value[index] = 0;
-        setTimeout(() => {
-          let progress = 0;
-          const interval = setInterval(() => {
-            if (progress >= item.progress) {
-              clearInterval(interval);
-            } else {
-              progress += 2; // 每次增加 2%
-              animatedProgress.value[index] = progress;
-            }
-          }, 10); // 每 10ms 更新一次
-        }, 0); // 按序延迟动画
-      });
+      fetchHistoryData();
     });
 
 
+
     return {
+      historyData,
       toRead,
       markAsRead,
       animatedProgress
@@ -62,7 +96,7 @@ export default defineComponent({
 <template>
   <div class="history-container" id="page-root">
     <h2 class="history-title">阅读历史记录</h2>
-    <div v-if="historyData.length > 0" class="history-list">
+    <div v-if="historyData" class="history-list">
       <div v-for="(item, index) in historyData" :key="index" class="history-item">
         <div class="paper-info">
           <h3 class="paper-title" :title="item.title">{{ item.title }}</h3>
