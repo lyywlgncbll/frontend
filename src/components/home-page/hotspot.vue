@@ -52,7 +52,7 @@ export default {
         const response = await axios.get(GET_TOP_K_API+"?k=10");
 
         if (response.data && response.status === 200) {
-          console.log("获取topic成功"+response.data);
+          console.log("获取topic成功");
           // 遍历 response.data 数组中的每个项
           topics.value = response.data.map(item => {
             if (item.keywords) {
