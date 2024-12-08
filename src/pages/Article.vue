@@ -355,6 +355,8 @@ export default defineComponent({
     },
     async fetchReferenceData(ref) {
       try {
+        console.log(ref);
+        console.log(ref.id);
         const response = await axios.get(REFERENCE_API, {
           params: {
             referenceId: ref.id
@@ -370,12 +372,13 @@ export default defineComponent({
       await this.fetchData(id);
       await this.delay(2000);
       // 并行请求所有引用数据
-      const referencePromises = this.paper.references.map(ref =>
+      //const referencePromises = 
+      this.paper.references.map(ref =>
         this.fetchReferenceData(ref)
       );
 
       // 等待所有引用数据请求都完成
-      await Promise.all(referencePromises);
+      //await Promise.all(referencePromises);
 
       this.isLoadingReference = false;
     },
@@ -453,7 +456,7 @@ export default defineComponent({
         keywords: backendData.keywords,
         fields: backendData.fields,
         references: backendData.references.map((refId, index) => ({
-          id: refId, // 生成 ID
+          id: refId.id, // 生成 ID
           title: "null",
           authors: [], // 无法从后端 JSON 获取，默认设置为空
           isReachable: false, // 假设所有文献都可访问，后续可以根据业务逻辑调整
