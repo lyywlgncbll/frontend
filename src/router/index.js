@@ -29,6 +29,7 @@ const routes = [
     },
     {
         path: "/article",
+        name: "Article",
         component: Article,
         props: (route) => ({ id: route.query.id })
     },
