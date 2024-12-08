@@ -12,14 +12,13 @@
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <searchNav @sortChanged="handleSort" :num="num"></searchNav>
+                <searchNav @sortChanged="handleSort" :totalEntries="totalEntries"></searchNav>
                 <searchTopic></searchTopic>
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
                 <div class="page">
-                    <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPage"
-                        @update:currentPage="updatePage"></pageComponent>
+                    <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPages"></pageComponent>
                 </div>
             </div>
         </div>
@@ -57,7 +56,6 @@ const menuItems = ref([
     { id: 'years', title: '时间', contents: [] },
     { id: 'fields', title: '领域', contents: [] },
     { id: 'journals', title: '期刊', contents: [] },
-    { id: 'authors', title: '作者', contents: [] }
 ])
 
 const searchItems = ref([])
@@ -79,7 +77,7 @@ const closeClaimForm = () => {
 
 //分页
 const currentPage = ref(1)
-const totalPage = ref(5)
+const totalPages = ref(5)
 const pageSize = ref(7)
 
 //获取筛选数据
@@ -93,16 +91,17 @@ const handleFilter = (selections) => {
 //获取排序方式
 const handleSort = (sort) => {
     sortBy.value = sort
-    search()
-    // advancedSearch()
+    // search()
+    advancedSearch()
 }
 
 watch(currentPage, () => {
-    console.log(currentPage.value);
-    search()
-    // advancedSearch()
+    // console.log(currentPage.value);
+    // search()
+    advancedSearch()
 })
 
+const totalEntries = ref(0)
 const sortBy = ref(1)
 const years = ref([])
 const journals = ref([])
@@ -119,10 +118,13 @@ const search = async () => {
             currentPage: currentPage.value,
         }).then(response => {
             if (response.status == 200) {
+                console.log("初级", response.data);
                 menuItems.value[0].contents = response.data.years
                 menuItems.value[1].contents = response.data.fields
                 menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
                 searchItems.value = response.data.papers
+                totalPages.value = response.data.totalPages
+                totalEntries.value = response.data.totalEntries
             } else {
                 console.error("搜索失败:", response.data.message)
             }
@@ -146,7 +148,10 @@ const advancedSearch = async () => {
             fields: fields.value
         }).then(response => {
             if (response.status == 200) {
+                console.log("高级", response.data);
                 searchItems.value = response.data.papers
+                totalPages.value = response.data.totalPages
+                totalEntries.value = response.data.totalEntries
             } else {
                 console.error("筛选失败:", response.data.message)
             }

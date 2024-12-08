@@ -5,9 +5,6 @@
                 <img src="/src/assets/search/icon/cite.svg" alt="cite" width="20px" height="20px">
                 <p>引用 ( {{ searchItem.citationCount }} )</p>
             </div>
-            <div class="claim" @click="openForm">
-                <p>认领</p>
-            </div>
         </div>
         <div class="title" :title="searchItem.title">{{ searchItem.title }}</div>
         <div class="info">
