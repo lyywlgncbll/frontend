@@ -43,11 +43,22 @@ export default {
     const topics=ref([]);
     const getTopK=async ()=>{
       try {
-        const response = await axios.get(GET_TOP_K_API+"?k=10");
+        const response = await axios.get(GET_TOP_K_API+"?k=3");
 
         if (response.data && response.status === 200) {
           console.log("获取topic成功"+response.data);
-          topics.value = response.data;
+          // 遍历 response.data 数组中的每个项
+          topics.value = response.data.map(item => {
+            if (item.keywords) {
+              // 将字符串形式的 JSON 数组转换为真实的 JavaScript 数组
+              try {
+                item.keywords = JSON.parse(item.keywords);
+              } catch (e) {
+                console.error("解析 keywords 字段失败:", e);
+              }
+            }
+            return item;
+          });
         } else {
           console.error("获取数据失败:", response.data.message);
         }
