@@ -42,18 +42,17 @@ import searchItem from '/src/components/search/searchItem.vue';
 import pageComponent from '/src/components/pageComponent.vue';
 import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
 import searchNav from '@/components/search/searchNav.vue';
-import axios from 'axios';
-import { ARTICLESEARCH_API } from '@/utils/request.js'
-import SelectCharacter from '../user/selectCharacter.vue';
+import axios from '@/utils/axios';
+import { SEARCH_API } from '../../utils/request.js'
 
+const searchContent = ref("learning")
+const option = ref(2)
 onMounted(() => {
     searchContent.value = localStorage.getItem('searchString')
     option.value = Number(localStorage.getItem('searchOption'))
-    console.log(searchContent.value, option.value);
-
+    // console.log(searchContent.value, option.value);
     search()
 })
-
 
 //侧边栏是否展开
 const isExpand = ref(true)
@@ -111,8 +110,6 @@ watch(currentPage, () => {
     // advancedSearch()
 })
 
-const searchContent = ref("learning")
-const option = ref(2)
 const sortBy = ref(1)
 const years = ref([])
 const journals = ref([])
@@ -120,7 +117,7 @@ const fields = ref([])
 const num = ref(0)
 const search = async () => {
     try {
-        await axios.post('/api/academic/searchPublications', {
+        await axios.post(SEARCH_API, {
             searchContent: searchContent.value,
             isFiltered: false,
             option: option.value,

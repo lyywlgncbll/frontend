@@ -16,3 +16,7 @@ export const GET_ALL_HISTORY_API='/api/history/getAllHistory';
 export const DELETE_HISTORY_API='/api/history/deleteHistory';
 export const GET_TOP_K_API='/topics/topk';
 export const GET_READ_CNT_API='/counter/get';
+
+
+//搜索
+export const SEARCH_API='/api/academic/searchPublications';
