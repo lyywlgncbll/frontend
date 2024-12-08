@@ -104,7 +104,7 @@ onMounted(() => {
   loadedPageNum = 0
   //for pdf render
   console.log(props.pdfurl)
-  const url = `https://www.thieme-connect.de/products/ejournals/pdf/10.1055/a-2166-6797.pdf`
+  const url = props.pdfurl
   const config = {
     method: 'get',
     url: GET_PDF_BINARY + `?url=${url}`,
