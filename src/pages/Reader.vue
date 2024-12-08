@@ -19,7 +19,7 @@
   </div>
   <div class="AI-reading" v-if="showAIReading">
     <el-header class="header">
-      <el-icon class="close" @click="showAIReading = false"><Close /></el-icon>
+      <!-- <el-icon class="close" @click="showAIReading = false"><Close /></el-icon> -->
     </el-header>
     <el-main class="main">
       <div v-for="QAndA in QAndAList" :key="QAndA.index">
@@ -275,15 +275,14 @@ const scrollTo = () => {
 .AI-reading {
   position: fixed;
   z-index: 100;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 48%;
-  height: 30%;
+  top: 0%;
+  left: 0%;
+  width: 25%;
+  height: 100%;
   background-color: rgb(250, 250, 250);
 }
 .header {
-  height: 10%;
+  height: 0%;
   padding: 0;
   display: flex;
   justify-content: flex-end;
@@ -296,8 +295,8 @@ const scrollTo = () => {
 .main {
   height: 90%;
   overflow-y: scroll;
-  padding-top: 0;
-  padding-bottom: 5%;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
 }
 .background {
   position: fixed;
