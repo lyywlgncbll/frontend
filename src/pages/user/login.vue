@@ -33,7 +33,7 @@ export default defineComponent({
           // 将 token 存储到 localStorage
           if (response.data) {
             localStorage.setItem('authToken', response.data);
-            console.log('Token 已保存到 localStorage');
+            console.log('Token 已保存到 localStorage'+response.data);
           } else {
             console.warn('响应中未包含 token');
           }
