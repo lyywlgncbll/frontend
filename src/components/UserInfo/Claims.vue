@@ -11,8 +11,6 @@
             v-model="searchQuery" 
             class="modal-input" 
             placeholder="请输入对象名称" />
-
-          
           <!-- 搜索按钮 -->
           <button @click="filterClaims" class="search-button">搜索</button>
   
@@ -22,8 +20,11 @@
               <li v-for="(claim, index) in filteredClaims" :key="index" class="claim-item">
                 <span>{{ claim.claim }}</span>
                 <span :class="['status', claim.status]">{{ claim.status }}</span>
-                <button @click="selectClaim(claim)" class="select-button">
+                <button v-if="!claim.isClaimed" @click="selectClaim(claim)" class="select-button">
                     {{ claim.isSelected ? '已选择' : '选择' }}
+                </button>
+                <button v-else class="select-button disabled">
+                已认领
                 </button>
               </li>
             </ul>
@@ -69,12 +70,12 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import axios from '@/utils/axios.js';
   export default {
     props: {
         userid: {
-            type: Number,
-            required: true,
+          type: Number,
+          required: true,
         },
         authorization:{
           type: String,
@@ -104,7 +105,6 @@
       // 打开弹窗
       openClaimModal() {
         this.isModalOpen = true;
-        this.filteredClaims = this.allClaims;  // 初始显示所有对象
       },
   
       // 关闭弹窗
@@ -115,27 +115,27 @@
       },
   
       // 搜索并筛选认领对象
-      filterClaims() {
+      filterClaims(){
         if (!this.searchQuery) {
-          this.filteredClaims = null; // 如果没有输入内容，显示所有对象
+          this.filteredClaims = []; // 如果没有输入内容，显示空
         } else {
           // 如果有搜索内容，发送GET请求
-          axios.get('http://113.44.131.146:8080/api/academic/claim/query', {
+          axios.get('/api/academic/claim/query', {
             params: {
               authorName: this.searchQuery,  // 传入authorName，使用searchQuery
               count: 20  // 假设你需要返回的结果数量是固定的，这里可以根据需求调整
-            }
-          })
-          .then(response => {
-            console.log(response.data);
+            }}).then(response => {
+            console.log("sss",response.data);
             // 假设返回的数据是一个JSON数组
             this.filteredClaims = response.data.map(claim => {
               // 为每个元素添加isSelected属性，初始值为false
               return {
                 ...claim,  // 保留原有的属性
-                isSelected: false  // 新增的属性
+                isSelected: false, // 新增的属性
+                isClaimed: claim.status === 'Claimed',// 判断状态是否为“Claimed”
               };
             });
+            console.log("我是filteredClaims:",this.filteredClaims);
           }).catch(error => {
             console.error('Error fetching claims:', error);  // 错误处理
           });
@@ -147,24 +147,25 @@
         claim.isSelected = !claim.isSelected; // 填充输入框为选中的对象
         this.searchQuery = claim.isSelected ? claim.claim : '';
       },
-  
+      
       // 提交认领请求
       submitClaimRequest(){
         if (!this.searchQuery) return; // 如果没有选择认领对象，直接返回
+        const authorid = this.filteredClaims.find(a => a.claim === this.searchQuery).authorid;
         this.isSubmitting = true;
-        console.log(this.Authorization);
         axios.post(
-            "http://113.44.131.146:8080/portal/claim/open", // 请求的 URL
-            { claim: this.searchQuery }, // 请求体中的 claim 字段
+            "/portal/claim/open", // 请求的 URL
+            { 
+              claim: authorid
+            }, // 请求体中的 claim 字段
             ).then(response => {
               console.log('响应数据:', response.data);
-            })
-            .catch(error => {
+            }).catch(error => {
               console.error('请求失败:', error);
             });
         this.isSubmitting = false;
         this.closeClaimModal(); // 关闭弹窗
-        window.location.reload();
+        //window.location.reload();
       },
 
          // 格式化日期函数
@@ -178,20 +179,20 @@
           // 格式化数据函数
         formatClaims(response) {
             const formatted = response.view.map(item => ({
-                claim: item.claim,
-                createTime: item.createTime ? this.formatDate(item.createTime) : null,
-                handleTime: item.handleTime ? this.formatDate(item.handleTime) : null,
-                status: item.status
+                claim: item.authorName,
+                createTime: item.claim.createTime ? this.formatDate(item.claim.createTime) : null,
+                handleTime: item.claim.handleTime ? this.formatDate(item.claim.handleTime) : null,
+                status: item.claim.status
             }));
             // 更新数据
             this.claimRequests = formatted;
             this.$emit('updataUserClaim',this.claimRequests);
         },
-        
+
         //自动获取当前认领请求
         sendGetMyClaims(){
             const id = this.userid;
-            axios.get('http://113.44.131.146:8080/portal/claim/getall',{
+            axios.get('/portal/claim/getall',{
             params: { 
                 userID:id,
                 pageSize:30,
@@ -204,6 +205,7 @@
                 console.error('获取失败:', error);
             });
         },
+
     },
 
     mounted(){
@@ -354,7 +356,11 @@
   .select-button:hover {
     background-color: #0056b3;
   }
-  
+  .select-button.disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
   .no-results {
     color: #dc3545;
   }

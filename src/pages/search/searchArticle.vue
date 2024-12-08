@@ -7,28 +7,20 @@
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
-                </searchBar>
+                <searchFilter :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
+                </searchFilter>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <searchNav @sortChanged="handleSort" :num="num"></searchNav>
+                <searchNav @sortChanged="handleSort" :totalEntries="totalEntries"></searchNav>
+                <searchTopic></searchTopic>
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
                 <div class="page">
-                    <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPage"
-                        @update:currentPage="updatePage"></pageComponent>
+                    <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPages"></pageComponent>
                 </div>
             </div>
-        </div>
-
-    </div>
-
-    <div class="background" v-if="isShow">
-        <div class="form">
-            <div class="close" @click="closeClaimForm">x</div>
-            <ClaimForm :formId="formId" :formTitle="formTitle"></ClaimForm>
         </div>
     </div>
 
@@ -36,12 +28,12 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import ClaimForm from '/src/components/search/ClaimForm.vue';
-import searchBar from '/src/components/search/searchBar.vue';
+import searchFilter from '/src/components/search/searchFilter.vue';
 import searchItem from '/src/components/search/searchItem.vue';
 import pageComponent from '/src/components/pageComponent.vue';
 import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
 import searchNav from '@/components/search/searchNav.vue';
+import searchTopic from '@/components/search/searchTopic.vue';
 import axios from '@/utils/axios';
 import { SEARCH_API } from '../../utils/request.js'
 
@@ -64,7 +56,6 @@ const menuItems = ref([
     { id: 'years', title: '时间', contents: [] },
     { id: 'fields', title: '领域', contents: [] },
     { id: 'journals', title: '期刊', contents: [] },
-    { id: 'authors', title: '作者', contents: [] }
 ])
 
 const searchItems = ref([])
@@ -86,7 +77,7 @@ const closeClaimForm = () => {
 
 //分页
 const currentPage = ref(1)
-const totalPage = ref(5)
+const totalPages = ref(5)
 const pageSize = ref(7)
 
 //获取筛选数据
@@ -100,16 +91,17 @@ const handleFilter = (selections) => {
 //获取排序方式
 const handleSort = (sort) => {
     sortBy.value = sort
-    search()
-    // advancedSearch()
+    // search()
+    advancedSearch()
 }
 
 watch(currentPage, () => {
-    console.log(currentPage.value);
-    search()
-    // advancedSearch()
+    // console.log(currentPage.value);
+    // search()
+    advancedSearch()
 })
 
+const totalEntries = ref(0)
 const sortBy = ref(1)
 const years = ref([])
 const journals = ref([])
@@ -126,14 +118,19 @@ const search = async () => {
             currentPage: currentPage.value,
         }).then(response => {
             if (response.status == 200) {
+                console.log("初级", response.data);
                 menuItems.value[0].contents = response.data.years
                 menuItems.value[1].contents = response.data.fields
                 menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
                 searchItems.value = response.data.papers
+                totalPages.value = response.data.totalPages
+                totalEntries.value = response.data.totalEntries
+            } else {
+                console.error("搜索失败:", response.data.message)
             }
         })
     } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('请求失败:', error)
     }
 }
 
@@ -151,11 +148,16 @@ const advancedSearch = async () => {
             fields: fields.value
         }).then(response => {
             if (response.status == 200) {
+                console.log("高级", response.data);
                 searchItems.value = response.data.papers
+                totalPages.value = response.data.totalPages
+                totalEntries.value = response.data.totalEntries
+            } else {
+                console.error("筛选失败:", response.data.message)
             }
         })
     } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('请求失败:', error)
     }
 }
 </script>
@@ -178,9 +180,12 @@ const advancedSearch = async () => {
     display: flex;
     margin: 30px auto;
     position: relative;
+    transition: all 1s ease;
 }
 
 .left-bar {
+    position: sticky;
+    top: 30px;
     margin-top: 20px;
     width: 20%;
     overflow: hidden;
@@ -193,16 +198,16 @@ const advancedSearch = async () => {
 }
 
 .left-expand {
+    position: sticky;
+    top: 31px;
+    margin-top: 21px;
     width: 20px;
     height: 44px;
-    position: absolute;
     background-color: var(--expand-button-background-color);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    left: -21px;
-    top: 21px;
 
     &:hover {
         background-color: var(--expand-button-hover-color);
@@ -231,41 +236,6 @@ const advancedSearch = async () => {
         bottom: -40px;
         left: 50%;
         transform: translateX(-50%);
-    }
-}
-
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-
-    .form {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%);
-        height: 400px;
-        width: 450px;
-        background-color: white;
-        margin: 0 auto;
-        border-radius: 10px;
-
-        .close {
-            font-size: 22px;
-            font-weight: 500;
-            position: absolute;
-            top: 8px;
-            right: 20px;
-            cursor: pointer;
-            color: var(--expand-button-background-color);
-        }
     }
 }
 </style>

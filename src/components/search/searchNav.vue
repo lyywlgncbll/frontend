@@ -9,14 +9,14 @@
             <li class="slide"></li>
             <li class="slide2"></li>
         </ul>
-        <span>共查询到 <i>{{ num }}</i> 条结果</span>
+        <span>共查询到 <i>{{ totalEntries }}</i> 条结果</span>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 const props = defineProps({
-    num: Number
+    totalEntries: Number
 })
 const emit = defineEmits(['sortChanged'])
 onMounted(() => {
