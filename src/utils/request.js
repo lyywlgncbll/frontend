@@ -1,5 +1,6 @@
 
 export const QIANFAN_ASKONCE = `/api/qianfan/askonce`
+export const QIANFAN_ASK = `/api/qianfan/ask`
 export const USERSEARCH_API = `/user/search`;
 export const USERFIELDS_API = `/user/search/fields`
 export const USERAVATOR_API = `/user/avator/get`
