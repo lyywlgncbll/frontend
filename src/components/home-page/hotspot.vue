@@ -43,7 +43,7 @@ export default {
     const topics=ref([]);
     const getTopK=async ()=>{
       try {
-        const response = await axios.get(GET_TOP_K_API+"?k=3");
+        const response = await axios.get(GET_TOP_K_API+"?k=10");
 
         if (response.data && response.status === 200) {
           console.log("获取topic成功"+response.data);

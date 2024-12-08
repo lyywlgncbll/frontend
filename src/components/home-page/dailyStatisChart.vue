@@ -192,6 +192,7 @@ export default {
 }
 
 .daily-stats-chart {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: auto;
   max-width: 800px;
   //margin: 0 auto;
