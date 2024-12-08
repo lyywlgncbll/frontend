@@ -17,6 +17,7 @@ import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
 import Login from "../pages/user/login.vue"
 import Register from "../pages/user/register.vue"
+import HotTopic from "@/pages/hotTopic/hotTopic.vue";
 const routes = [
     {
         path: "/",
@@ -57,7 +58,7 @@ const routes = [
         component: SearchUserResult,
     },
     {
-        path: "/search/searchArticle/result",
+        path: "/search/result",
         component: searchArticle,
     },
     {
@@ -74,6 +75,9 @@ const routes = [
     }, {
         path: "/home",
         component: HomePage,
+    },{
+        path:"/hotTopic",
+        component:HotTopic,
     }
 ]
 

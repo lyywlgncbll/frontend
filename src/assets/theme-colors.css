@@ -1,19 +1,38 @@
-#bar-root{
-    --bar-background-color:#f6f8fa;
-    --bar-border-color:#D1D9E0;
-    --long-button-hover-color:#F2F3F5;
-    --button-hover-color:#EAEDF0;
-    --bar-font-color:#5b636d;
-    font-size: 14px;
-}
-#page-root{
-    --page-border-color:#D1D9E0;
-    --page-button-color:#5b636d;
-    --page-button-border-color:#D1D9E0;
-    --page-button-hover-color:#393939;
-    --page-block-hover-color:#F2F3F4;
-    --page-barckground-color:#f6f8fa;
-    --page-font-color:#1F2328;
+#bar-root {
+    --bar-background-color: #f6f8fa;
+    --bar-border-color: #D1D9E0;
+    --long-button-hover-color: #F2F3F5;
+    --button-hover-color: #EAEDF0;
+    --bar-font-color: #5b636d;
     font-size: 14px;
 }
 
+#page-root {
+    --page-border-color: #D1D9E0;
+    --page-button-color: #5b636d;
+    --page-button-border-color: #D1D9E0;
+    --page-button-hover-color: #393939;
+    --page-block-hover-color: #F2F3F4;
+    --page-barckground-color: #f6f8fa;
+    --page-font-color: #1F2328;
+    font-size: 14px;
+}
+
+#search-root {
+    --expand-button-background-color: #92979e;
+    --expand-button-hover-color: #6f6f6f;
+    --bar-border-color: #d1d9e0;
+    --line-border-color: #f1f0f0;
+    --bar-input-border-color: #ccc;
+}
+
+#filter-root {
+    --line-border-color: #f1f0f0;
+    --border-color: #ccc;
+    --button-background-color:#e0e0e0;
+    --button-color:#3b3b3b;
+    --button-background-hover-color:#aaaaaa;
+    --sort-span-color:#9b9a9f;
+    --sort-i-color:#383740;
+    --sort-slide-background-color:#c0bfbf;
+}

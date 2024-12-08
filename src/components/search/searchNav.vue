@@ -1,28 +1,25 @@
 <template>
-    <div class="nav">
-        
-        <div class="search">
-            <img src="/src/assets/search/icon/search1.svg">
-            <input class="search-input" placeholder="Search" type="search"></input>
-        </div>
-
+    <div class="nav" id="filter-root">
         <ul class="sort" @mouseover="handleMouseOver" @mouseout="handleMouseOut" @click="handleClick">
             <li>综合</li>
-            <li class="sort-year">年份 <img src="/src/assets/search/icon/down-expand.svg"
+            <li class="sort-year">年份 <img src="/src/assets/search/icon/down-expand2.svg"
                     :style="{ transform: yearRotate ? 'rotate(180deg)' : 'rotate(0deg)' }"></li>
-            <li class="sort-cite">引用 <img src="/src/assets/search/icon/down-expand.svg"
+            <li class="sort-cite">引用 <img src="/src/assets/search/icon/down-expand2.svg"
                     :style="{ transform: citeRotate ? 'rotate(180deg)' : 'rotate(0deg)' }"></li>
             <li class="slide"></li>
             <li class="slide2"></li>
         </ul>
+        <span>共查询到 <i>{{ num }}</i> 条结果</span>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted,onUnmounted } from 'vue';
-
+import { ref, onMounted, onUnmounted, watch } from 'vue';
+const props = defineProps({
+    num: Number
+})
+const emit = defineEmits(['sortChanged'])
 onMounted(() => {
-    document.addEventListener('click', closeDropdown)
     const target = document.querySelector('.nav li')
     const slider = document.querySelector('.slide')
     const slider2 = document.querySelector('.slide2')
@@ -33,10 +30,6 @@ onMounted(() => {
     slider2.style.left = -50 + 'px'
 })
 
-onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown)
-})
-
 //导航栏
 const yearRotate = ref(false)
 const citeRotate = ref(false)
@@ -45,8 +38,8 @@ const handleClick = (event) => {
     const slider = document.querySelector('.slide')
     const slider2 = document.querySelector('.slide2')
     const sliderWidth = slider.offsetWidth;
-    if (target.tagName == 'LI') {
-
+    if (target.tagName == 'LI' && !event.target.classList.contains('slide2')) {
+        handlSortBy(target)
     } else if (target.tagName == 'IMG') {
         target = target.closest('li');
         if (target.classList.contains('sort-year')) {
@@ -54,6 +47,7 @@ const handleClick = (event) => {
         } else {
             citeRotate.value = !citeRotate.value
         }
+        handlSortBy(target)
     } else {
         return
     }
@@ -63,7 +57,7 @@ const handleClick = (event) => {
     slider2.style.left = halfDifference + 'px'
 }
 const handleMouseOver = (event) => {
-    if (event.target.tagName == 'LI') {
+    if (event.target.tagName == 'LI' && !event.target.classList.contains('slide2')) {
         const target = event.target
         const slider = document.querySelector('.slide2')
         const targetWidth = target.offsetWidth;
@@ -80,24 +74,27 @@ const handleMouseOut = (event) => {
     }
 }
 
-//下拉菜单
-const options = ['领域', '摘要', '标题']
-const selectedOption = ref('领域')
-const isOpen = ref(false)
-
-const selectOption = (option) => {
-  selectedOption.value = option
-  isOpen.value = false
-}
-
-const toggleDropdown = () => {
-  isOpen.value = !isOpen.value
-}
-
-const closeDropdown = (event) => {
-  if (!event.target.closest('.relative')) {
-    isOpen.value = false
-  }
+//排序
+const sortBy = ref(1)
+watch(sortBy, (newValue) => {
+    emit('sortChanged', newValue)
+})
+const handlSortBy = (target) => {
+    if (target.classList.contains('sort-year')) {
+        if (yearRotate.value) {
+            sortBy.value = 2
+        } else {
+            sortBy.value = 3
+        }
+    } else if (target.classList.contains('sort-cite')) {
+        if (citeRotate.value) {
+            sortBy.value = 4
+        } else {
+            sortBy.value = 5
+        }
+    } else {
+        sortBy.value = 1
+    }
 }
 </script>
 
@@ -111,100 +108,76 @@ const closeDropdown = (event) => {
 
 .nav {
     width: 100%;
-    height: 40px;
     display: flex;
     align-items: center;
-}
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 5px 0;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
 
-.search {
-    width: 70%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    position: relative;
-}
+    span {
+        margin-left: auto;
+        margin-right: 80px;
+        color: var(--sort-span-color);
+        font-size: 15px;
+    }
 
-.search-input {
-    width: 100%;
-    height: 40px;
-    line-height: 28px;
-    padding: 0 2.5rem;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    outline: none;
-    background-color: #f3f3f4;
-    color: #0d0c22;
-    transition: .3s ease;
-}
-
-.search img {
-    position: absolute;
-    right: 1rem;
-    fill: #9e9ea7;
-    width: 1rem;
-    height: 1rem;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: rgba(76, 171, 234, 0.4);
-    background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(76, 179, 234, 0.1);
-}
-
-.search-input::placeholder {
-    color: #9e9ea7;
+    i {
+        margin: 0 5px;
+        font-size: 16px;
+        color:var(--sort-i-color);
+    }
 }
 
 .nav .sort {
     height: 40px;
     display: flex;
     align-items: center;
-    margin-left: auto;
-    border: 1px solid #85a9c2;
     border-radius: 5px;
     position: relative;
-}
 
-.nav .sort li:not(.slide, .slide2) {
-    height: 100%;
-    width: 60px;
-    padding: 5px;
-    margin: 0 15px;
-    cursor: pointer;
-    text-align: center;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    li:not(.slide, .slide2) {
+        height: 100%;
+        width: 60px;
+        padding: 5px;
+        margin: 0 15px;
+        cursor: pointer;
+        text-align: center;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--sort-i-color);
+    }
 
-.nav .sort li img {
-    width: 13px;
-    height: 13px;
-    margin-left: 5px;
-    transition: .5s;
-}
+    li img {
+        width: 13px;
+        height: 13px;
+        margin-left: 5px;
+        transition: .5s;
+    }
 
-.nav .sort .slide {
-    position: relative;
-    height: 80%;
-    width: 70px;
-    position: absolute;
-    border-radius: 15px;
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
-    background-color: rgba(88, 181, 243, 0.5);
-    z-index: 1;
-}
+    .slide {
+        position: relative;
+        height: 80%;
+        width: 70px;
+        position: absolute;
+        border-radius: 15px;
+        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
+        background-color: var(--sort-slide-background-color);
+        z-index: 1;
+    }
 
-.nav .sort .slide2 {
-    height: 80%;
-    width: 70px;
-    position: absolute;
-    border-radius: 15px;
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
-    background-color: rgba(143, 204, 245, 0.5);
-    opacity: 0;
-    z-index: 1;
+    .slide2 {
+        height: 80%;
+        width: 70px;
+        position: absolute;
+        border-radius: 15px;
+        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
+        background-color: var(--button-background-color);
+        opacity: 0;
+        z-index: 0;
+    }
 }
 </style>
