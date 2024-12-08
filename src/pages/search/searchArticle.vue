@@ -25,18 +25,10 @@
         </div>
     </div>
 
-    <div class="background" v-if="isShow">
-        <div class="form">
-            <div class="close" @click="closeClaimForm">x</div>
-            <ClaimForm :formId="formId" :formTitle="formTitle"></ClaimForm>
-        </div>
-    </div>
-
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import ClaimForm from '/src/components/search/ClaimForm.vue';
 import searchFilter from '/src/components/search/searchFilter.vue';
 import searchItem from '/src/components/search/searchItem.vue';
 import pageComponent from '/src/components/pageComponent.vue';
@@ -155,7 +147,7 @@ const advancedSearch = async () => {
         }).then(response => {
             if (response.status == 200) {
                 searchItems.value = response.data.papers
-            }else{
+            } else {
                 console.error("筛选失败:", response.data.message)
             }
         })
@@ -239,41 +231,6 @@ const advancedSearch = async () => {
         bottom: -40px;
         left: 50%;
         transform: translateX(-50%);
-    }
-}
-
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-
-    .form {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%);
-        height: 400px;
-        width: 450px;
-        background-color: white;
-        margin: 0 auto;
-        border-radius: 10px;
-
-        .close {
-            font-size: 22px;
-            font-weight: 500;
-            position: absolute;
-            top: 8px;
-            right: 20px;
-            cursor: pointer;
-            color: var(--expand-button-background-color);
-        }
     }
 }
 </style>

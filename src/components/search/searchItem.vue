@@ -12,7 +12,8 @@
         <div class="title" :title="searchItem.title">{{ searchItem.title }}</div>
         <div class="info">
             <span class="author" v-for="author in searchItem.authors.slice(0, 3)">{{ author }}</span>
-            <span class="from" :title="searchItem.journal + ' - ' + searchItem.year">{{ searchItem.journal }} - {{ searchItem.year }}</span>
+            <span class="from" :title="searchItem.journal + ' - ' + searchItem.year">{{ searchItem.journal }} - {{
+                searchItem.year }}</span>
         </div>
         <div class="content">{{ searchItem.abstract }}</div>
         <div class="line"></div>
@@ -59,8 +60,7 @@ const openForm = () => {
     right: 10px;
 }
 
-.cite,
-.claim {
+.cite {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,37 +70,16 @@ const openForm = () => {
     padding: 5px;
     background-color: #eff2f5;
     min-width: 60px;
+
+    &:hover {
+        background-color: #d7dfe6;
+    }
+
+    p{
+        font-size: 13px;
+        color: grey;
+    }
 }
-
-.claim {
-    background-color: #1599db;
-    color: white;
-
-}
-
-.cite:hover {
-    background-color: #d7dfe6;
-}
-
-.claim:hover {
-    background-color: #0687d7;
-}
-
-.cite p,
-.claim p {
-    font-size: 13px;
-}
-
-.cite p {
-    color: grey;
-}
-
-.claim p {
-    color: white;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-
 
 /* 内容 */
 .container {
