@@ -32,10 +32,7 @@ export default defineComponent({
     const markAsRead = async (paper) => {
       try {
         // 发送 DELETE 请求，传入 paper.id
-        const response = await axios.delete(DELETE_HISTORY_API, {
-            id: paper.id // 传递 paper.id
-        });
-
+        const response = await axios.delete(DELETE_HISTORY_API+"?articleId="+paper.id);
         if (response.status === 200) {
           alert(`成功将 "${paper.title}" 标记为已读!`);
           await fetchHistoryData();
@@ -207,7 +204,6 @@ export default defineComponent({
   overflow: hidden; /* 隐藏超出部分 */
   text-overflow: ellipsis; /* 超出部分显示省略号 */
   transition: width 0.3s ease, opacity 0.3s ease;
-
 }
 .progress-container {
   width: 100%;

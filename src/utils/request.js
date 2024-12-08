@@ -5,6 +5,7 @@ export const USERSEARCH_API = `/user/search`;
 export const USERFIELDS_API = `/user/search/fields`
 export const USERAVATOR_API = `/user/avator/get`
 export const ARTICLE_API = `/api/academic/getPublicationById`
+export const REFERENCE_API = `/api/academic/getReferenceById`
 
 //登录注册页
 export const LOGIN_API = `/user/auth/login`;

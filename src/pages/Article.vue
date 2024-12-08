@@ -1,139 +1,216 @@
 <template>
   <logged-nav-bar class="nav-bar" />
-  <el-card class="paper-detail">
-
-    <!-- 标题 -->
-    <h1 class="paper-title">{{ paper.title }}</h1>
-
-    <!-- 元数据 -->
-    <h2 class="section-title">论文信息</h2>
-    <el-skeleton v-if="isLoading" :rows="3" animated style="margin: 20px 0;"></el-skeleton>
-    <template v-else>
-      <el-row class="paper-metadata" gutter="20">
-        <el-col :span="8">
-          <el-descriptions title="作者" border>
-            <el-descriptions-item>
-              <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
-                @click="goToAuthorPage(author)">
-                {{ author }}
-              </el-button>
-            </el-descriptions-item>
-          </el-descriptions>
+  <div class="paper-detail">
+    <div class="paper-detail-left">
+      <!-- 标题 -->
+      <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
+      <h1 class="paper-title" v-else>{{ paper.title }}</h1>
+      <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
+      <el-row class="paper-row" v-else>
+        <!-- <p>Authors:&emsp;</p> -->
+        <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
+          @click="goToAuthorPage(author)">
+          {{ author }}
+        </el-button>
+        <el-button type="text" disabled class="date-button">{{ paper.publishedDate }}</el-button>
+      </el-row>
+      <el-divider />
+      <!-- 元数据 -->
+      <h2 class="section-title">领域</h2>
+      <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
+      <template v-else>
+        <el-row class="paper-metadata" gutter="20">
+          <el-button v-for="field in paper.fields" :key="field" type="primary" class="keyword-button" round>
+            {{ field }}
+          </el-button>
+        </el-row>
+      </template>
+      <h2 class="section-title">关键词</h2>
+      <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
+      <template v-else>
+        <el-row class="paper-metadata" gutter="20">
+          <el-button v-for="keyword in paper.keywords" :key="keyword" type="primary" class="keyword-button" round
+            @click="goToKeywordPage(keyword)">
+            {{ keyword }}
+          </el-button>
+        </el-row>
+      </template>
+      <!-- 摘要 -->
+      <h2 class="section-title">论文概述</h2>
+      <el-row class="paper-abstract">
+        <el-col :span="24">
+          <el-skeleton v-if="isLoading" :rows="3" animated></el-skeleton>
+          <p v-else class="abstract" :class="{ 'collapsed': !isExpanded }">
+            {{ paper.abstract }}
+          </p>
+          <el-button v-if="!isLoading && paper.abstract.length > 100" @click="toggleExpand" type="text">
+            <el-icon v-if="isExpanded">
+              <ArrowUpBold />
+            </el-icon>
+            <el-icon v-else>
+              <ArrowDownBold />
+            </el-icon>
+          </el-button>
         </el-col>
+      </el-row>
 
-        <!-- 关键词 -->
-        <el-col :span="8">
-          <el-descriptions title="关键词" border>
+      <!-- 引用数据 -->
+      <h2 class="section-title">论文引用</h2>
+      <el-row class="paper-references">
+        <el-col :span="24">
+          <el-skeleton v-if="isLoadingReference" :rows="2" animated></el-skeleton>
+          <el-descriptions border v-else>
             <el-descriptions-item>
-              <el-button v-for="keyword in paper.keywords" :key="keyword" type="text" class="keyword-button"
-                @click="goToKeywordPage(keyword)">
-                {{ keyword }}
-              </el-button>
-            </el-descriptions-item>
-          </el-descriptions>
-        </el-col>
-
-        <el-col :span="8">
-          <el-descriptions title="发布日期" border>
-            <el-descriptions-item>
-              {{ paper.publishedDate }}
+              <ul>
+                <li v-for="(reference, index) in paper.references" :key="index">
+                  <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
+                    type="primary">{{ reference.title
+                    }}</el-link>
+                  <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
+                    type="primary">{{
+                      reference.title }}</el-link>
+                </li>
+              </ul>
             </el-descriptions-item>
           </el-descriptions>
         </el-col>
       </el-row>
 
-      <!-- 发表日期 -->
-      <!-- <el-row class="paper-date" gutter="20"> -->
+      <!-- <h2 class="section-title">数据统计</h2>
+      <el-row>
+        <el-col :span="6">
+          <el-statistic title="总浏览量" :value=views />
+        </el-col>
+        <el-col :span="6">
+          <el-statistic title="总下载量" :value=downloads />
+        </el-col>
+      </el-row> -->
 
 
-      <!-- <el-col :span="12">
-        <el-descriptions title="语言" border>
-          <el-descriptions-item>
-            {{ paper.language }}
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-col> -->
-      <!-- </el-row> -->
-    </template>
-    <!-- 摘要 -->
-    <h2 class="section-title">论文概述</h2>
-    <el-row class="paper-abstract">
-      <el-col :span="24">
-        <el-skeleton v-if="isLoading" :rows="3" animated></el-skeleton>
-        <p v-else class="abstract">{{ paper.abstract }}</p>
-      </el-col>
-    </el-row>
+      <!-- <el-row justify="center" class="actions">
+        <el-button type="primary" @click="downloadPaper">
+          <el-icon>
+            <Download />
+          </el-icon>
+          Download PDF
+        </el-button>
+        <el-button type="success" @click="preview">
+          <el-icon>
+            <View />
+          </el-icon>
+          Preview
+        </el-button>
+      </el-row>
 
-    <!-- 引用数据 -->
-    <h2 class="section-title">论文引用</h2>
-    <el-row class="paper-references">
-      <el-col :span="24">
-        <el-skeleton v-if="isLoading" :rows="2" animated></el-skeleton>
-        <el-descriptions title="引用" border v-else>
-          <el-descriptions-item>
-            <ul>
-              <li v-for="(reference, index) in paper.references" :key="index">
-                <el-link v-if="reference.isReachable">{{ reference.title }}</el-link>
-                <el-link v-else disabled>{{ reference.title }}</el-link>
-              </li>
-            </ul>
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-col>
-    </el-row>
-
-    <h2 class="section-title">数据统计</h2>
-    <el-row>
-      <el-col :span="6">
-        <el-statistic title="总浏览量" :value=views />
-      </el-col>
-      <el-col :span="6">
-        <el-statistic title="总下载量" :value=downloads />
-      </el-col>
-    </el-row>
-
-
-    <el-row justify="center" class="actions">
-      <el-button type="primary" @click="downloadPaper">
-        <el-icon>
-          <Download />
-        </el-icon>
-        Download PDF
-      </el-button>
-      <el-button type="success" @click="preview">
-        <el-icon>
-          <View />
-        </el-icon>
-        Preview
-      </el-button>
-    </el-row>
-
-    <h2 class="section-title" style="justify-self: center;">论文推荐</h2>
-    <el-card class="recommendation-card">
-      <el-carousel :interval="5000" arrow="always">
-        <el-carousel-item v-for="(paper, index) in recommendations" :key="paper.id">
-          <div class="paper-item"
-            style="justify-content: center; display: flex; align-items: center; flex-direction: column;">
-            <h3 style="margin-top: 5px; font-size: 30px;">{{ paper.title }}</h3>
-            <p style="margin-top: 5px;">{{ paper.author }}</p>
-            <p class="abstract" style="margin-top: 5px;">{{ paper.abstract }}</p>
-            <el-button type="primary" size="mini" @click="goToDetail(paper.link)" style="margin-top: 5px;">
-              View Details
-            </el-button>
+      <h2 class="section-title" style="justify-self: center;">论文推荐</h2>
+      <el-card class="recommendation-card">
+        <el-carousel :interval="5000" arrow="always">
+          <el-carousel-item v-for="(paper, index) in recommendations" :key="paper.id">
+            <div class="paper-item"
+              style="justify-content: center; display: flex; align-items: center; flex-direction: column;">
+              <h3 style="margin-top: 5px; font-size: 30px;">{{ paper.title }}</h3>
+              <p style="margin-top: 5px;">{{ paper.author }}</p>
+              <p class="abstract" style="margin-top: 5px;">{{ paper.abstract }}</p>
+              <el-button type="primary" size="mini" @click="goToDetail(paper.link)" style="margin-top: 5px;">
+                View Details
+              </el-button>
+            </div>
+          </el-carousel-item>
+        </el-carousel>
+      </el-card> -->
+    </div>
+    <div class="statistics-container">
+      <div class="stat-item">
+        <el-row class="stat-header">
+          <el-icon>
+            <Download />
+          </el-icon>
+          <div class="stat-label">
+            <span>下载</span>
           </div>
-        </el-carousel-item>
-      </el-carousel>
-    </el-card>
-  </el-card>
+        </el-row>
+
+        <div class="striped-divider"></div>
+
+        <el-row class="stat-footer">
+          <span>下载次数</span>
+          <div class="stat-number">
+            <span>{{ downloads }}</span>
+          </div>
+        </el-row>
+      </div>
+      <div class="stat-item">
+        <el-row class="stat-header">
+          <el-icon>
+            <View />
+          </el-icon>
+          <div class="stat-label">
+            <span>浏览</span>
+          </div>
+        </el-row>
+
+        <div class="striped-divider1"></div>
+
+        <el-row class="stat-footer">
+          <span>浏览次数</span>
+          <div class="stat-number">
+            <span>{{ views }}</span>
+          </div>
+        </el-row>
+      </div>
+      <div class="stat-item">
+        <el-row class="stat-header">
+          <el-icon>
+            <BottomLeft />
+          </el-icon>
+          <div class="stat-label">
+            <span>引用</span>
+          </div>
+        </el-row>
+
+        <div class="striped-divider2"></div>
+
+        <el-row class="stat-footer">
+          <span>引用次数</span>
+          <div class="stat-number">
+            <span>{{ getReferenceLength() }}</span>
+          </div>
+        </el-row>
+      </div>
+      <el-row><span>&emsp;</span></el-row>
+      <el-tooltip class="box-item" effect="dark" content="下载论文" placement="right">
+        <el-button circle class="stat-button" size="large" type="primary" @click="downloadPaper()"><el-icon size="25px">
+            <Download />
+          </el-icon></el-button>
+      </el-tooltip>
+      <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right">
+        <el-button circle class="stat-button" size="large" type="success" @click="preview()"><el-icon size="25px">
+            <View />
+          </el-icon></el-button>
+      </el-tooltip>
+      <el-tooltip class="box-item" effect="dark" content="收藏论文" placement="right">
+        <el-button circle class="stat-button" size="large" @click="toggleFavorite()" type="warning">
+          <el-icon v-if="isFavorite" size="25px">
+            <StarFilled />
+          </el-icon>
+          <el-icon v-else size="25px">
+            <Star />
+          </el-icon>
+        </el-button>
+      </el-tooltip>
+    </div>
+  </div>
 </template>
 
 
 <script>
 import { createRouter, createWebHistory } from 'vue-router';
 import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
-import { ARTICLE_API } from "~/utils/request.js"
+import { ARTICLE_API, REFERENCE_API } from "~/utils/request.js"
 import Reader from './Reader.vue';
-import axios from 'axios';
+//import Article from '.Article.vue';
+import axios from '@/utils/axios.js';
+import { defineComponent } from "vue";
 
 const routes = [
   {
@@ -143,13 +220,13 @@ const routes = [
     props: (route) => ({ url: route.query.url }), // 将 query 参数映射为 props
   },
 ];
-
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 //const id = "https://openalex.org/W1481824024"
-export default {
+export default defineComponent({
+  components: { LoggedNavBar },
   router,
   name: "PaperDetail",
   props: {
@@ -168,6 +245,7 @@ export default {
         abstract:
           "This paper explores the latest advancements in artificial intelligence (AI), covering topics such as neural networks, natural language processing, and the ethical implications of AI systems.",
         keywords: ["AI", "Neural Networks", "Ethics", "NLP", "Machine Learning", "AI", "Neural Networks", "Ethics", "NLP", "Machine Learning"],
+        fields: ["AI", "Neural Networks", "Ethics"],
         references: [
           {
             id: "1",
@@ -182,8 +260,15 @@ export default {
             isReachable: false,
           },
         ],
-        pdfUrl: "/test/test.pdf"
+        pdfUrl: "/test/test.pdf",
+        isFavorite: false
       },
+      // stats: [
+      //   { icon: 'path/to/icon1.png', number: 101, label: 'Views' },
+      //   { icon: 'path/to/icon2.png', number: 1001, label: 'Downloads' },
+      //   { icon: 'path/to/icon3.png', number: 10, label: 'Admins' },
+      //   // 添加更多统计项
+      // ],
       views: "101",
       downloads: "1001",
       recommendations: [
@@ -213,13 +298,15 @@ export default {
         },
       ],
       isLoading: true,
+      isLoadingReference: true,
+      isExpanded: false
     };
   },
-  created() {
+  mounted() {
     // 从 localStorage 中加载数据
     this.views = localStorage.getItem("views") || 101; // 默认值101
     this.downloads = localStorage.getItem("downloads") || 1001; // 默认值1001
-    this.fetchData();
+    this.fetchAllData(this.id);;
   },
   watch: {
     views(newVal) {
@@ -229,31 +316,106 @@ export default {
     downloads(newVal) {
       // 当 downloads 更新时，将新值存储到 localStorage
       localStorage.setItem("downloads", newVal);
+    },
+    '$route.query.id': {
+      immediate: true,
+      handler(newId) {
+        this.isLoading = true;
+        this.isLoadingReference = true;
+        this.fetchAllData(newId); // 调用方法加载数据
+        // this.paper.references.forEach((ref, index) => {
+        //   this.fetchReferenceData(ref);
+        // });
+        // this.isLoadingReference = false;
+      }
     }
+    // '$route.params.id': {
+    //   handler(newId) {
+    //     this.fetchData(newId); // 调用方法重新获取数据
+    //   },
+    //   immediate: true, // 初始化时也调用一次
+    // },
   },
   methods: {
-    async fetchData() {
+    async fetchData(id) {
       try {
-        console.log(this.id)
+        console.log(id);
         const response = await axios.get(ARTICLE_API, {
-          params:{
-            publicationId: this.id
+          params: {
+            publicationId: id
           }
         });
         this.paper = this.transformBackendDataToPaper(response.data);
         this.isLoading = false;
+
+
       } catch (error) {
-        console.log("error");
-      } finally {
+        console.log("Error fetching data:", error);
       }
+    },
+    async fetchReferenceData(ref) {
+      try {
+        console.log(ref);
+        console.log(ref.id);
+        const response = await axios.get(REFERENCE_API, {
+          params: {
+            referenceId: ref.id
+          }
+        });
+        ref.title = response.data.title;
+        ref.isReachable = response.data.isReachable;
+      } catch (error) {
+        console.log("error")
+      }
+    },
+    async fetchAllData(id) {
+      await this.fetchData(id);
+      await this.delay(2000);
+      // 并行请求所有引用数据
+      //const referencePromises = 
+      this.paper.references.map(ref =>
+        this.fetchReferenceData(ref)
+      );
+
+      // 等待所有引用数据请求都完成
+      //await Promise.all(referencePromises);
+
+      this.isLoadingReference = false;
+    },
+    async refreshPage() {
+      this.isLoading = true;  // 设置加载状态
+      this.paper = null;      // 清空当前数据
+      await this.fetchData(); // 重新获取数据
+    },
+    delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     },
     downloadPaper() {
       this.downloads++;
+      this.downloadPdf(this.paper.pdfUrl);
       this.$message({
         message: "Downloading PDF...",
         type: "info",
       });
+    },
+    async downloadPdf(pdfUrl) {
+      try {
+        const response = await fetch(pdfUrl);
+        if (!response.ok) {
+          throw new Error('网络错误');
+        }
 
+        const blob = await response.blob(); // 将响应体转换为 Blob 对象
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob); // 创建 Blob URL
+        link.download = pdfUrl.split('/').pop(); // 设置文件名为 URL 的最后一部分
+        link.click(); // 模拟点击链接，触发下载
+      } catch (error) {
+        console.error('下载失败', error);
+      }
+    },
+    getReferenceLength(){
+      return this.paper.references.length;
     },
     preview() {
       this.views++;
@@ -263,7 +425,7 @@ export default {
       });
       this.$router.push({
         name: "Reader", // 路由名称，需在路由配置中定义
-        query: { url: this.paper.pdfUrl },
+        query: { id: this.id },
       });
     },
     goToAuthorPage(author) {
@@ -278,6 +440,12 @@ export default {
         type: "info",
       });
     },
+    gotoArticlePage(paperId) {
+      this.$router.push({
+        name: "Article",
+        query: { id: paperId }
+      });
+    },
     transformBackendDataToPaper(backendData) {
       // 将后端数据转换为前端 paper 数据格式
       const paper = {
@@ -286,51 +454,110 @@ export default {
         publishedDate: `${backendData.publishedYear}-01-01`, // 默认设置为每年 1 月 1 日
         abstract: backendData.abstract,
         keywords: backendData.keywords,
-        references: backendData.references.map((ref, index) => ({
-          id: ref.id, // 生成 ID
-          title: ref.title,
+        fields: backendData.fields,
+        references: backendData.references.map((refId, index) => ({
+          id: refId.id, // 生成 ID
+          title: "null",
           authors: [], // 无法从后端 JSON 获取，默认设置为空
-          isReachable: ref.isReachable, // 假设所有文献都可访问，后续可以根据业务逻辑调整
+          isReachable: false, // 假设所有文献都可访问，后续可以根据业务逻辑调整
         })),
         pdfUrl: backendData.pdfurl,
       };
-
       return paper;
+    },
+    toggleFavorite() {
+      this.isFavorite = !this.isFavorite;
+      if (this.isFavorite) {
+        this.$message({
+          message: "收藏成功",
+          type: "info",
+        });
+      }
+      else {
+        this.$message({
+          message: "取消收藏成功",
+          type: "info",
+        });
+      }
+    },
+    toggleExpand() {
+      this.isExpanded = !this.isExpanded;
     }
   },
-};
+});
 
 </script>
 
 <style scoped>
+@font-face {
+  font-family: 'TimesNewRoman';
+  src: url('../assets/fonts/times_new_roman.ttf') format('truetype');
+}
+
+* {}
+
+.article-page {
+  display: flex;
+  height: 100vh;
+}
+
 .paper-detail {
   margin: 20px;
+  margin-top: 80px;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+}
+
+.paper-detail-left {
+  width: 75%;
+  margin-left: 0%;
 }
 
 .paper-title {
+  margin-top: 10px;
   font-size: 30px;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
   margin-bottom: 20px;
+  /* font-family: 'TimesNewRoman'; */
 }
 
 .section-title {
   font-size: 20px;
   font-weight: bold;
   color: #1890ff;
-  margin: 20px 0 10px 0;
-  border-bottom: 2px solid #1890ff;
-  padding-bottom: 5px;
+  margin: 20px 0 0 0;
+  /* border-bottom: 2px solid #1890ff; */
+  /* padding-bottom: 5px; */
 }
 
-.author-button,
-.keyword-button {
+.author-button {
   margin-right: 8px;
   margin-bottom: 8px;
+  font-style: italic;
+}
+
+.keyword-button {
+  margin-left: 8px;
+  margin-bottom: 8px;
+}
+
+.paper-row {
+  display: flex;
+  align-items: center;
+  /* 垂直居中 */
+  justify-content: space-between;
+  /* 空间分配 */
+}
+
+.date-button {
+  margin-left: auto;
+  /* 将日期按钮推到右侧 */
+  margin-right: 20px;
 }
 
 .metadata-title {
@@ -340,7 +567,7 @@ export default {
 }
 
 .paper-metadata {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .paper-date {
@@ -352,11 +579,56 @@ export default {
 }
 
 .paper-abstract {
-  margin: 20px 0;
+  margin-top: 10px;
+  background-color: #f9f9f9;
+  /* 背景色，增加对比 */
+  border-radius: 8px;
+  /* 圆角让卡片更柔和 */
+  padding: 16px;
+  /* 内边距让内容显得不拥挤 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* 添加阴影效果 */
+}
+
+.abstract {
+  font-size: 15px;
+  line-height: 1.8;
+  /* 增加行距，提高可读性 */
+  color: #555;
+  /* 次要文字颜色 */
+  text-align: justify;
+  /* 使文本两端对齐 */
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* 设置最多显示3行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.abstract.collapsed {
+  -webkit-line-clamp: 3;
+  /* 限制显示3行 */
+}
+
+.abstract:not(.collapsed) {
+  -webkit-line-clamp: unset;
+  /* 不限制行数，显示完整内容 */
+}
+
+.el-button {
+  margin-top: 10px;
 }
 
 .paper-references {
   margin: 20px 0;
+}
+
+.reference-link {
+  font-size: 15px;
+  /* font-weight: bold; */
+  font-style: italic;
 }
 
 .paper-references ul {
@@ -382,11 +654,6 @@ export default {
   padding: 10px;
 }
 
-.abstract {
-  font-size: 16px;
-
-}
-
 .published-date {
   color: gray;
   font-weight: bold;
@@ -396,8 +663,124 @@ export default {
 .nav-bar {
   position: fixed;
   z-index: 100;
-  height: auto;
+  height: 60px;
   left: 0;
   right: 0;
+  top: 0;
+}
+
+.statistics-container {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  width: 22%;
+  right: 3%;
+  margin-left: 30px;
+}
+
+.stat-item {
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  /* 文字居左对齐 */
+  margin-bottom: 15px;
+}
+
+.stat-header .el-icon {
+  font-size: 25px;
+  /* 图标大小 */
+  margin-right: 10px;
+  color: #3498db;
+  /* 图标颜色 */
+}
+
+.stat-header .stat-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.striped-divider {
+  height: 4px;
+  background: repeating-linear-gradient(45deg,
+      #ff7f50, #ff7f50 10px,
+      /* 红色 */
+      #ff6347 10px, #ff6347 20px,
+      /* 橙色 */
+      #ff4500 20px, #ff4500 30px,
+      /* 深红 */
+      #ffa500 30px, #ffa500 40px
+      /* 黄橙色 */
+    );
+  margin: 10px 0;
+}
+
+.striped-divider1 {
+  height: 4px;
+  background: repeating-linear-gradient(45deg,
+      #28ea2c, #28ea2c 10px,
+      /* 红色 */
+      #07a649 10px, #07a649 20px,
+      /* 橙色 */
+      #03b94e 20px, #03b94e 30px,
+      /* 深红 */
+      #4cec8e 30px, #4cec8e 40px
+      /* 黄橙色 */
+    );
+  margin: 10px 0;
+}
+
+.striped-divider2 {
+  height: 4px;
+  background: repeating-linear-gradient(45deg,
+      #ff50ee, #ff50ee 10px,
+      /* 红色 */
+      #cb50ff 10px, #cb50ff 20px,
+      /* 橙色 */
+      #bf50ff 20px, #bf50ff 30px,
+      /* 深红 */
+      #ff50d9 30px, #ff50d9 40px
+      /* 黄橙色 */
+    );
+  margin: 10px 0;
+}
+
+.stat-footer {
+  display: flex;
+  justify-content: space-between;
+  /* 文字和数字分开，文字居左，数字居右 */
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.stat-footer .stat-text {
+  margin-right: auto;
+  /* 将文字部分推到左边 */
+  font-size: 14px;
+}
+
+.stat-footer .stat-number {
+  font-size: 14px;
+  font-weight: bold;
+  color: #3498db;
+  /* 统计数字的颜色 */
+  margin-left: 20px;
+  /* 如果需要，增加数字与文字之间的间距 */
+}
+
+.stat-button {
+  margin-top: 15px;
+  margin-left: 0%;
+  padding: 25px 25px;
 }
 </style>
