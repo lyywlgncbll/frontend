@@ -1,12 +1,14 @@
 <script>
+import router from "@/router/index.js";
+
 export default {
   data() {
     return {
       options: [
         { value: "1", label: "篇名" },
-        { value: "2", label: "作者" },
-        { value: "3", label: "摘要" },
-        { value: "4", label: "领域" },
+        { value: "2", label: "摘要" },
+        { value: "3", label: "领域" },
+        { value: "4", label: "作者" },
         { value: "5", label: "刊物" },
       ],
       select: 1, // 当前选中的值
@@ -51,7 +53,10 @@ export default {
           if(this.input.length===0){
             alert("请输入内容")
           }else{
-            alert("正在搜索");
+            localStorage.setItem('searchOption',this.select);
+            localStorage.setItem('searchString',this.input);
+            router.push('search/result');
+            // alert("正在搜索");
           }
         }
       }

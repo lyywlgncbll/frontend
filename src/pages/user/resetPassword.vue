@@ -6,6 +6,18 @@ export default defineComponent({
   components:{
     NavigationBar
   },
+  data() {
+    return {
+      Email: '',
+      // UserName: '',
+      Password: '',
+      ConfirmPassword: '',
+      EmailVerificationCode: ''
+    };
+  },
+  setup(){
+
+  },
 });
 </script>
 
