@@ -9,7 +9,8 @@ import topLevelAwait from "vite-plugin-top-level-await";
 export default defineConfig({
   resolve: {
     alias: {
-      "~":path.resolve(__dirname,"src")
+      "~":path.resolve(__dirname,"src"),
+      "@":path.resolve(__dirname,"src")
     }
   },
   plugins: [vue(),WindiCSS(),
