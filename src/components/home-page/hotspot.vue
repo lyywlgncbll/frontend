@@ -59,88 +59,88 @@ export default {
       getTopK();
     });
     return {
-      // topics
-      topics: [
-        {
-          id: "https://openalex.org/T10077",
-          name: "Molecular Mechanisms of Synaptic Plasticity and Neurological Disorders",
-          description: "This cluster of papers explores the molecular mechanisms underlying synaptic plasticity, focusing on neurotransmission, GABAergic and glutamatergic systems, neuronal circuits, astrocyte function, NMDA receptors, dendritic spines, and long-term potentiation. The research also investigates the relevance of these mechanisms to neurological disorders.",
-          updatedDate: "2024-12-02",
-          createdDate: "2024-01-23",
-          worksCount: 191639,
-          citedByCount: 8005974,
-          keywords: [
-            "Synaptic Plasticity", "Neurotransmission", "GABAergic", "Glutamate Receptors",
-            "Neuronal Circuits", "Astrocyte Function", "NMDA Receptors", "Dendritic Spines",
-            "Long-Term Potentiation", "Neurological Disorders"
-          ]
-        },
-        {
-          id: "https://openalex.org/T10078",
-          name: "The Evolution of Artificial Intelligence and Machine Learning",
-          description: "This cluster explores the historical development of artificial intelligence, from its inception to modern machine learning techniques, and its future prospects in transforming industries.",
-          updatedDate: "2024-12-03",
-          createdDate: "2023-06-15",
-          worksCount: 125678,
-          citedByCount: 5734123,
-          keywords: [
-            "Artificial Intelligence", "Machine Learning", "Deep Learning", "Neural Networks",
-            "AI in Industry", "Automation", "Future Technology"
-          ]
-        },
-        {
-          id: "https://openalex.org/T10079",
-          name: "Advances in Genomic Medicine and Personalized Healthcare",
-          description: "This research cluster discusses the latest advances in genomics, and their impact on personalized medicine and healthcare, with an emphasis on precision diagnostics and treatments.",
-          updatedDate: "2024-11-28",
-          createdDate: "2023-08-30",
-          worksCount: 98765,
-          citedByCount: 4203981,
-          keywords: [
-            "Genomics", "Personalized Medicine", "Healthcare", "Precision Medicine", "Genetic Disorders",
-            "CRISPR", "Bioinformatics"
-          ]
-        },
-        {
-          id: "https://openalex.org/T10080",
-          name: "Sustainable Urban Development and Smart Cities",
-          description: "Exploring the intersection of urbanization, sustainability, and technology, this cluster focuses on the development of smart cities and sustainable urban planning strategies.",
-          updatedDate: "2024-11-15",
-          createdDate: "2023-04-25",
-          worksCount: 65432,
-          citedByCount: 2871012,
-          keywords: [
-            "Smart Cities", "Sustainability", "Urban Planning", "Renewable Energy", "Green Architecture",
-            "IoT", "Urban Mobility"
-          ]
-        },
-        {
-          id: "https://openalex.org/T10081",
-          name: "Exploring the Impact of Climate Change on Global Agriculture",
-          description: "This research cluster investigates the effects of climate change on agriculture, including the challenges and solutions for food security, crop production, and sustainable farming.",
-          updatedDate: "2024-12-01",
-          createdDate: "2023-09-10",
-          worksCount: 83421,
-          citedByCount: 2569821,
-          keywords: [
-            "Climate Change", "Agriculture", "Food Security", "Sustainable Farming", "Crop Yield",
-            "Environmental Science", "Agricultural Technology"
-          ]
-        },
-        {
-          id: "https://openalex.org/T10082",
-          name: "The Role of Blockchain in Supply Chain Management",
-          description: "Examining the role of blockchain technology in enhancing transparency, traceability, and security in global supply chains. This cluster explores real-world applications and challenges.",
-          updatedDate: "2024-12-01",
-          createdDate: "2023-11-05",
-          worksCount: 231456,
-          citedByCount: 1890234,
-          keywords: [
-            "Blockchain", "Supply Chain", "Logistics", "Cryptocurrency", "Digital Ledger",
-            "Traceability", "Transparency"
-          ]
-        }
-      ]
+      topics
+      // topics: [
+      //   {
+      //     id: "https://openalex.org/T10077",
+      //     name: "Molecular Mechanisms of Synaptic Plasticity and Neurological Disorders",
+      //     description: "This cluster of papers explores the molecular mechanisms underlying synaptic plasticity, focusing on neurotransmission, GABAergic and glutamatergic systems, neuronal circuits, astrocyte function, NMDA receptors, dendritic spines, and long-term potentiation. The research also investigates the relevance of these mechanisms to neurological disorders.",
+      //     updatedDate: "2024-12-02",
+      //     createdDate: "2024-01-23",
+      //     worksCount: 191639,
+      //     citedByCount: 8005974,
+      //     keywords: [
+      //       "Synaptic Plasticity", "Neurotransmission", "GABAergic", "Glutamate Receptors",
+      //       "Neuronal Circuits", "Astrocyte Function", "NMDA Receptors", "Dendritic Spines",
+      //       "Long-Term Potentiation", "Neurological Disorders"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10078",
+      //     name: "The Evolution of Artificial Intelligence and Machine Learning",
+      //     description: "This cluster explores the historical development of artificial intelligence, from its inception to modern machine learning techniques, and its future prospects in transforming industries.",
+      //     updatedDate: "2024-12-03",
+      //     createdDate: "2023-06-15",
+      //     worksCount: 125678,
+      //     citedByCount: 5734123,
+      //     keywords: [
+      //       "Artificial Intelligence", "Machine Learning", "Deep Learning", "Neural Networks",
+      //       "AI in Industry", "Automation", "Future Technology"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10079",
+      //     name: "Advances in Genomic Medicine and Personalized Healthcare",
+      //     description: "This research cluster discusses the latest advances in genomics, and their impact on personalized medicine and healthcare, with an emphasis on precision diagnostics and treatments.",
+      //     updatedDate: "2024-11-28",
+      //     createdDate: "2023-08-30",
+      //     worksCount: 98765,
+      //     citedByCount: 4203981,
+      //     keywords: [
+      //       "Genomics", "Personalized Medicine", "Healthcare", "Precision Medicine", "Genetic Disorders",
+      //       "CRISPR", "Bioinformatics"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10080",
+      //     name: "Sustainable Urban Development and Smart Cities",
+      //     description: "Exploring the intersection of urbanization, sustainability, and technology, this cluster focuses on the development of smart cities and sustainable urban planning strategies.",
+      //     updatedDate: "2024-11-15",
+      //     createdDate: "2023-04-25",
+      //     worksCount: 65432,
+      //     citedByCount: 2871012,
+      //     keywords: [
+      //       "Smart Cities", "Sustainability", "Urban Planning", "Renewable Energy", "Green Architecture",
+      //       "IoT", "Urban Mobility"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10081",
+      //     name: "Exploring the Impact of Climate Change on Global Agriculture",
+      //     description: "This research cluster investigates the effects of climate change on agriculture, including the challenges and solutions for food security, crop production, and sustainable farming.",
+      //     updatedDate: "2024-12-01",
+      //     createdDate: "2023-09-10",
+      //     worksCount: 83421,
+      //     citedByCount: 2569821,
+      //     keywords: [
+      //       "Climate Change", "Agriculture", "Food Security", "Sustainable Farming", "Crop Yield",
+      //       "Environmental Science", "Agricultural Technology"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10082",
+      //     name: "The Role of Blockchain in Supply Chain Management",
+      //     description: "Examining the role of blockchain technology in enhancing transparency, traceability, and security in global supply chains. This cluster explores real-world applications and challenges.",
+      //     updatedDate: "2024-12-01",
+      //     createdDate: "2023-11-05",
+      //     worksCount: 231456,
+      //     citedByCount: 1890234,
+      //     keywords: [
+      //       "Blockchain", "Supply Chain", "Logistics", "Cryptocurrency", "Digital Ledger",
+      //       "Traceability", "Transparency"
+      //     ]
+      //   }
+      // ]
     };
   }
 
