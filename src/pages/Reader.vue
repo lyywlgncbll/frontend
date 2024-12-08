@@ -6,7 +6,7 @@
     <div class="pdf-wrap">
       <vue-pdf-embed 
         class="vue-pdf-embed" 
-        :source="state.source" 
+        :source="state.data" 
         v-for="page in state.numPages" :key="page" 
         :style="state.scale" 
         :page="page" 
@@ -21,7 +21,7 @@
     <el-main class="main">
       <div v-for="QAndA in QAndAList" :key="QAndA.index">
         <el-divider v-if="QAndA.index != 0"/>
-        <el-row style="padding-top: 1%;padding-bottom: 1%;">
+        <el-row style="padding-top: 2%;padding-bottom: 2%;">
           <el-col :span="2">
 
           </el-col>
@@ -30,7 +30,7 @@
           </el-col>
           <el-col :span="18">
             <el-row class="question">
-              <div v-html="QAndA.question"></div>
+              <div v-html="QAndA.question" class="msg"></div>
             </el-row>
           </el-col>
           <el-col :span="2" class="question">
@@ -43,7 +43,7 @@
           </el-col>
           <el-col :span="18">
             <el-row class="answer">
-              <div v-html="QAndA.answer"></div>
+              <div v-html="QAndA.answer" class="msg"></div>
             </el-row>
           </el-col>
           <el-col :span="2">
@@ -69,7 +69,7 @@
           />
         </el-col>
         <el-col :span="3">
-          <el-icon class="middle" color="grey" size="32px" @click="AIReading()"><Top /></el-icon>
+          <el-icon class="middle" color="grey" size="32px" @click="AIReading(), state.data=`test/01.pdf`"><Top /></el-icon>
         </el-col>
       </el-row>
     </el-footer>
@@ -80,7 +80,7 @@ import axios from "@/utils/axios";
 import { reactive, onMounted, computed, onUnmounted, ref, Directive } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
 import { createLoadingTask } from "vue3-pdfjs";
-import { QIANFAN_ASK, GET_HISTORY_RATE, SEND_HISTORY_RATE } from "@/utils/request"
+import { QIANFAN_ASK, GET_HISTORY_RATE, SEND_HISTORY_RATE, GET_PDF_BINARY } from "@/utils/request"
 import { ElNotification } from 'element-plus'
 const props = defineProps({
   //for pdf render
@@ -92,6 +92,7 @@ const props = defineProps({
 //for pdf render
 const state = reactive({
   source: props.pdfurl,
+  data: null,
   pageNum: 1,
   scale: 1,
   numPages: 0,
@@ -103,14 +104,37 @@ onMounted(() => {
   loadedPageNum = 0
   //for pdf render
   console.log(props.pdfurl)
-  const url = `https://onlinelibrary.wiley.com/doi/pdfdirect/10.1046/j.1365-2125.2001.01356.x`
+  const url = `https://www.thieme-connect.de/products/ejournals/pdf/10.1055/a-2166-6797.pdf`
+  const config = {
+    method: 'get',
+    url: GET_PDF_BINARY + `?url=${url}`,
+    responseType: 'blob',
+  }
+  axios(config).then((response: any) => {
+    // window.atob(response.data)
+    const blob = response.data;  // 获取 Blob 数据
+
+    // 创建一个 FileReader 实例
+    const reader = new FileReader();
+
+    reader.onloadend = function () {
+      const dataUrl = reader.result;  // 获取 Data URL 格式的 Base64 编码数据
+      console.log('PDF Data URL:', dataUrl);
+
+      // 将 Data URL 传递给 vue-pdf-embed 组件
+      state.data = dataUrl;  // 假设你使用 Vue.js 管理状态
+      const loadingTask = createLoadingTask(state.data);
+      loadingTask.promise.then((pdf) => {
+        state.numPages = pdf.numPages
+      })
+    };
+
+    // 读取 Blob 数据为 Data URL
+    reader.readAsDataURL(blob);
+  })
   // state.source = `D:/40995/Documents/课程资料/软分/frontend/dist/test/01.pdf`
   // state.source = url
-  state.source = "test/01.pdf"
-  const loadingTask = createLoadingTask(state.source);
-  loadingTask.promise.then((pdf) => {
-    state.numPages = pdf.numPages
-  })
+  // state.source = "test/01.pdf"
   notifyShortcutKey()
   AIconfig.data.sessionId = "1"
   AIconfig.data.question = "下面我将给出一些论文中的内容，请你为我解释它们"
@@ -154,6 +178,9 @@ const handleInput = (event : KeyboardEvent) => {
 }
 
 const AIReading = () => {
+  if (textarea.value == null || textarea.value === "") {
+    return
+  }
   const question = textarea.value
   AIconfig.data.question = question
   AIconfig.data.sessionId = "1"
@@ -239,6 +266,7 @@ const calReadingProgressRate = () => {
 }
 
 const afterPDFLoaded = () => {// 每加载一个页面就会调用一次该函数😅
+  console.log("call load pdf")
   loadedPageNum++
   if (loadedPageNum == state.numPages) {
     setTimeout(() => {//虽然是afterLoaded但仍然不能获取正确的高度😅故增加延时
@@ -341,5 +369,10 @@ const scrollTo = () => {
 .question {
   display: flex;
   justify-content: flex-end;
+}
+.msg {
+  border: 2px solid grey;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
 }
 </style>
