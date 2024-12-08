@@ -54,7 +54,7 @@ import Tabs from "../components/AdminInfo/Tabs.vue";
         },
         sendLoginRequest() {
           return new Promise((resolve, reject) => {
-            axios.post('http://localhost:8080/op/login', {
+            axios.post('http://113.44.131.146:8080/op/login', {
               login: "daxia",
               password: "123456",
             }).then(response => {

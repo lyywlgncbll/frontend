@@ -86,16 +86,13 @@
     },
     data() {
       return {
-        
         Authorization:this.authorization,
         // 控制弹窗的显示
         isModalOpen: false,
-      // 当前搜索查询
-      searchQuery: '',
+        // 当前搜索查询
+        searchQuery: '',
         // 用户的认领请求
         claimRequests: this.myclaimRequests,
-        
-  
         // 当前显示的匹配的对象
         filteredClaims: [],
   
@@ -120,10 +117,10 @@
       // 搜索并筛选认领对象
       filterClaims() {
         if (!this.searchQuery) {
-          this.filteredClaims = this.allClaims; // 如果没有输入内容，显示所有对象
+          this.filteredClaims = null; // 如果没有输入内容，显示所有对象
         } else {
           // 如果有搜索内容，发送GET请求
-          axios.get('http://localhost:8080/api/academic/claim/query', {
+          axios.get('http://113.44.131.146:8080/api/academic/claim/query', {
             params: {
               authorName: this.searchQuery,  // 传入authorName，使用searchQuery
               count: 20  // 假设你需要返回的结果数量是固定的，这里可以根据需求调整
@@ -139,8 +136,7 @@
                 isSelected: false  // 新增的属性
               };
             });
-          })
-          .catch(error => {
+          }).catch(error => {
             console.error('Error fetching claims:', error);  // 错误处理
           });
         }
@@ -158,13 +154,8 @@
         this.isSubmitting = true;
         console.log(this.Authorization);
         axios.post(
-            "http://localhost:8080/portal/claim/open", // 请求的 URL
+            "http://113.44.131.146:8080/portal/claim/open", // 请求的 URL
             { claim: this.searchQuery }, // 请求体中的 claim 字段
-            {
-              headers: {
-                Authorization: this.authorization, // 请求头中的 Authorization 字段
-              },
-            }
             ).then(response => {
               console.log('响应数据:', response.data);
             })
@@ -200,7 +191,7 @@
         //自动获取当前认领请求
         sendGetMyClaims(){
             const id = this.userid;
-            axios.get('http://localhost:8080/portal/claim/getall',{
+            axios.get('http://113.44.131.146:8080/portal/claim/getall',{
             params: { 
                 userID:id,
                 pageSize:30,
@@ -213,8 +204,6 @@
                 console.error('获取失败:', error);
             });
         },
-
-
     },
 
     mounted(){

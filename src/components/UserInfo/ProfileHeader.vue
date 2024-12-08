@@ -102,7 +102,7 @@ export default {
       const formData = new FormData();
       formData.append("avator", file);
       try {
-        const response = await axios.post("http://localhost:8080/user/avator/upload", formData, {
+        const response = await axios.post("http://113.44.131.146:8080/user/avator/upload", formData, {
           headers: {
             Authorization: this.authorization, 
             "Content-Type": "multipart/form-data" // 设置Content-Type为multipart/form-data
