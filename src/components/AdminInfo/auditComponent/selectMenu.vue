@@ -22,7 +22,8 @@
     },
     methods: {
       handleChange() {
-        console.log('选中的值:', this.value);
+        //调用父组件方法
+        this.$emit('updateTableTo', this.value);
       }
     }
   };

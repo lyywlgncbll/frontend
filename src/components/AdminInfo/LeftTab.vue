@@ -48,7 +48,7 @@ export default {
 /* 自定义菜单样式 */
 .menu-container {
   display: flex;
-  width: 50%;
+  width: auto;
   justify-content: flex-start;
   padding: 10px;
   border: 2px solid #ccc; /* 设置边框 */

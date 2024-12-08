@@ -45,8 +45,8 @@ export default{
 </script>
 <style scoped>
 .menu-container {
-  flex-wrap: wrap;
-  width: 80%;
+  display: flexbox;
+  width: 90%;
   justify-content: flex-start;
   padding: 50px;
   border: 2px solid #ccc; /* 设置边框 */

@@ -51,9 +51,9 @@ export default {
   position: fixed;
   z-index: 50;
   padding-top: 60px;
-  width: 250px;
-  max-width: 460px;
-  min-width: 430px;
+  width: 300px;
+  max-width: 300px;
+  min-width: 280px;
   height: 100vh;
   border-right: 1px solid var(--page-border-color);
   display: flex;

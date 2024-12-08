@@ -1,15 +1,25 @@
 <template>
     <div class="menu-container">
-        <h3>入驻学者</h3>
+        <scholarsTable/>
     </div>
 </template>
 <script>
+import scholarsTable from './scholarsComponent/scholarsTable.vue';
+export default{
+  data(){
+    return{
 
+    };
+  },
+  components:{
+    scholarsTable
+  }
+}
 </script>
 <style scoped>
 .menu-container {
-  display: flex;
-  width: 80%;
+  display: flexbox;
+  width: 90%;
   justify-content: flex-start;
   padding: 50px;
   border: 2px solid #ccc; /* 设置边框 */
