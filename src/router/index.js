@@ -10,21 +10,19 @@ import Reader from '../pages/Reader.vue'
 import userInfo from '../pages/userInfo.vue'
 
 import HomePage from "~/pages/homePage/homePage.vue"
-import ResetPassword from "~/pages/user/resetPassword.vue"
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
-import AdminInfo from '../pages/adminPages/adminInfo.vue'
-import Audit from '../components/AdminInfo/audit.vue'
-import PlatformOverview from '../components/AdminInfo/platform-overview.vue'
-import Scholars from '../components/AdminInfo/scholars.vue'
 import Login from "../pages/user/login.vue";
 import Register from "../pages/user/register.vue";
 import ResetPassword from "~/pages/user/resetPassword.vue";
 import SearchUserResult from "../pages/search/SearchUser.vue"
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
-import Login from "../pages/user/login.vue"
-import Register from "../pages/user/register.vue"
 import HotTopic from "@/pages/hotTopic/hotTopic.vue";
+
+import AdminInfo from '../pages/adminPages/adminInfo.vue'
+import Audit from '../components/AdminInfo/audit.vue'
+import PlatformOverview from '../components/AdminInfo/platform-overview.vue'
+import Scholars from '../components/AdminInfo/scholars.vue'
 const routes = [
     {
         path: "/",
