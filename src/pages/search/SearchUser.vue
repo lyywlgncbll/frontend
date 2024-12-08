@@ -47,7 +47,7 @@
 </template>
 <script>
 import SearchBox from '/src/components/search/SearchBox.vue';
-import searchBar from '/src/components/search/searchBar.vue';
+import searchBar from '/src/components/search/searchFilter.vue';
 import pageComponent from '/src/components/pageComponent.vue';
 import { useRouter } from "vue-router";
 import axios from 'axios';

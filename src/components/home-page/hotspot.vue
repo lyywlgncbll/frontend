@@ -1,6 +1,6 @@
 <template>
   <div class="hot-topics-container" id="page-root">
-    <h2 class="section-title">热点话题</h2>
+    <h2 class="section-title" @click="toHotTopic">热点话题</h2>
     <div class="topics-list">
       <div
           v-for="(topic, index) in topics"
@@ -36,9 +36,15 @@
 import {onMounted, ref} from "vue";
 import {GET_TOP_K_API} from "@/utils/request.js";
 import axios from "@/utils/axios.js";
+import router from "@/router/index.js";
 
 export default {
   name: 'HotTopics',
+  methods:{
+    toHotTopic(){
+      router.push('/hotTopic');
+    }
+  },
   setup() {
     const topics=ref([]);
     const getTopK=async ()=>{
@@ -46,8 +52,19 @@ export default {
         const response = await axios.get(GET_TOP_K_API+"?k=10");
 
         if (response.data && response.status === 200) {
-          console.log("获取topic成功"+response.data);
-          topics.value = response.data;
+          console.log("获取topic成功");
+          // 遍历 response.data 数组中的每个项
+          topics.value = response.data.map(item => {
+            if (item.keywords) {
+              // 将字符串形式的 JSON 数组转换为真实的 JavaScript 数组
+              try {
+                item.keywords = JSON.parse(item.keywords);
+              } catch (e) {
+                console.error("解析 keywords 字段失败:", e);
+              }
+            }
+            return item;
+          });
         } else {
           console.error("获取数据失败:", response.data.message);
         }
@@ -60,6 +77,87 @@ export default {
     });
     return {
       topics
+      // topics: [
+      //   {
+      //     id: "https://openalex.org/T10077",
+      //     name: "Molecular Mechanisms of Synaptic Plasticity and Neurological Disorders",
+      //     description: "This cluster of papers explores the molecular mechanisms underlying synaptic plasticity, focusing on neurotransmission, GABAergic and glutamatergic systems, neuronal circuits, astrocyte function, NMDA receptors, dendritic spines, and long-term potentiation. The research also investigates the relevance of these mechanisms to neurological disorders.",
+      //     updatedDate: "2024-12-02",
+      //     createdDate: "2024-01-23",
+      //     worksCount: 191639,
+      //     citedByCount: 8005974,
+      //     keywords: [
+      //       "Synaptic Plasticity", "Neurotransmission", "GABAergic", "Glutamate Receptors",
+      //       "Neuronal Circuits", "Astrocyte Function", "NMDA Receptors", "Dendritic Spines",
+      //       "Long-Term Potentiation", "Neurological Disorders"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10078",
+      //     name: "The Evolution of Artificial Intelligence and Machine Learning",
+      //     description: "This cluster explores the historical development of artificial intelligence, from its inception to modern machine learning techniques, and its future prospects in transforming industries.",
+      //     updatedDate: "2024-12-03",
+      //     createdDate: "2023-06-15",
+      //     worksCount: 125678,
+      //     citedByCount: 5734123,
+      //     keywords: [
+      //       "Artificial Intelligence", "Machine Learning", "Deep Learning", "Neural Networks",
+      //       "AI in Industry", "Automation", "Future Technology"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10079",
+      //     name: "Advances in Genomic Medicine and Personalized Healthcare",
+      //     description: "This research cluster discusses the latest advances in genomics, and their impact on personalized medicine and healthcare, with an emphasis on precision diagnostics and treatments.",
+      //     updatedDate: "2024-11-28",
+      //     createdDate: "2023-08-30",
+      //     worksCount: 98765,
+      //     citedByCount: 4203981,
+      //     keywords: [
+      //       "Genomics", "Personalized Medicine", "Healthcare", "Precision Medicine", "Genetic Disorders",
+      //       "CRISPR", "Bioinformatics"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10080",
+      //     name: "Sustainable Urban Development and Smart Cities",
+      //     description: "Exploring the intersection of urbanization, sustainability, and technology, this cluster focuses on the development of smart cities and sustainable urban planning strategies.",
+      //     updatedDate: "2024-11-15",
+      //     createdDate: "2023-04-25",
+      //     worksCount: 65432,
+      //     citedByCount: 2871012,
+      //     keywords: [
+      //       "Smart Cities", "Sustainability", "Urban Planning", "Renewable Energy", "Green Architecture",
+      //       "IoT", "Urban Mobility"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10081",
+      //     name: "Exploring the Impact of Climate Change on Global Agriculture",
+      //     description: "This research cluster investigates the effects of climate change on agriculture, including the challenges and solutions for food security, crop production, and sustainable farming.",
+      //     updatedDate: "2024-12-01",
+      //     createdDate: "2023-09-10",
+      //     worksCount: 83421,
+      //     citedByCount: 2569821,
+      //     keywords: [
+      //       "Climate Change", "Agriculture", "Food Security", "Sustainable Farming", "Crop Yield",
+      //       "Environmental Science", "Agricultural Technology"
+      //     ]
+      //   },
+      //   {
+      //     id: "https://openalex.org/T10082",
+      //     name: "The Role of Blockchain in Supply Chain Management",
+      //     description: "Examining the role of blockchain technology in enhancing transparency, traceability, and security in global supply chains. This cluster explores real-world applications and challenges.",
+      //     updatedDate: "2024-12-01",
+      //     createdDate: "2023-11-05",
+      //     worksCount: 231456,
+      //     citedByCount: 1890234,
+      //     keywords: [
+      //       "Blockchain", "Supply Chain", "Logistics", "Cryptocurrency", "Digital Ledger",
+      //       "Traceability", "Transparency"
+      //     ]
+      //   }
+      // ]
     };
   }
 
@@ -87,11 +185,12 @@ export default {
   //background-color: white;
   width: 100%;
   height: auto;
-  font-size: 18px;
+  //font-size: 18px;
   font-weight: bold;
   color: #333;
   margin-bottom: 15px;
   text-align: center;
+  cursor: pointer;
 }
 
 .topics-list {
@@ -100,56 +199,62 @@ export default {
   ::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Edge 隐藏滚动条 */
   }
+  align-items: center;
   display: flex;
   flex-direction: column;
   max-height: calc(100% - 50px);
   gap: 15px; /* 间距 */
 }
 .topic-card {
+  width: 98%;
   background-color: #fff;
   padding: 12px;
   border-radius: 6px;
-  border: var(--page-border-color) 1px solid;
+  //border: var(--page-border-color) 1px solid;
   //box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: height 0.3s ease;
   //cursor: pointer;
   position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
+.topic-card:hover{
+  //transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 .topic-card:hover .topic-details {
-  height: auto;
+  max-height: 1000px; /* 或者设置为你需要的最大值 */
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.3s ease, visibility 0.3s ease,height 0.3s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease, box-shadow 0.3s ease;
 }
 
 .topic-card .topic-details {
   opacity: 0;
   visibility: hidden;
-  height: 0;
-  transition: opacity 0.3s ease, visibility 0.3s ease,height 0.3s ease;
-  margin-top: 10px;
+  max-height: 0;
+  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease;
 }
+
 
 .topic-info {
   text-align: left;
 }
 
 .topic-title {
-  font-size: 18px;
+  //font-size: 18px;
   font-weight: 600;
   color: #333;
 }
 
 .topic-stats {
-  font-size: 14px;
+  //font-size: 14px;
   color: #777;
   display: flex;
   gap: 15px;
 }
 
 .topic-description {
-  font-size: 14px;
+  //font-size: 14px;
   color: #666;
 }
 
@@ -164,7 +269,7 @@ export default {
   color: #333;
   border-radius: 20px;
   padding: 5px 10px;
-  font-size: 12px;
+  //font-size: 12px;
   transition: background-color 0.3s ease;
   cursor: pointer;
 }
@@ -173,17 +278,22 @@ export default {
   background-color: #bdbdbd;
 }
 
-@media (max-width: 768px) {
+* {
   .section-title {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .topic-title {
     font-size: 16px;
   }
+  .topic-info{
+    font-size: 13px;
+  }
 
   .topic-description {
     font-size: 13px;
+    font-style: italic;
+    padding: 5px 0;
   }
 
   .topic-tag {

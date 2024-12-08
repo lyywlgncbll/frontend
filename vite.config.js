@@ -13,8 +13,8 @@ export default defineConfig({
       "@":path.resolve(__dirname,"src")
     }
   },
-  plugins: [vue(),WindiCSS(),
-    topLevelAwait({//修复top level await错误
+  plugins: [vue(), WindiCSS(),
+  topLevelAwait({//修复top level await错误
     // The export name of top-level await promise for each chunk module
     promiseExportName: "__tla",
     // The function to generate import names of top-level await promise in each chunk module
@@ -27,4 +27,5 @@ export default defineConfig({
   // server: {
   //   port: 8080
   // }
+
 })

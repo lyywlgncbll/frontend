@@ -1,13 +1,15 @@
 <script>
+import router from "@/router/index.js";
+
 export default {
   data() {
     return {
       options: [
         { value: "1", label: "篇名" },
-        { value: "2", label: "作者" },
-        { value: "3", label: "摘要" },
-        { value: "4", label: "领域" },
-        { value: "5", label: "刊物" },
+        { value: "2", label: "摘要" },
+        { value: "3", label: "领域" },
+        { value: "4", label: "作者" },
+        { value: "5", label: "关键词" },
       ],
       select: 1, // 当前选中的值
       input: "", // 输入框内容
@@ -19,6 +21,8 @@ export default {
   mounted() {
     window.addEventListener("keydown", this.handleKeydown);
     window.addEventListener("mousedown", this.handleClickOutside);
+    this.input=localStorage.getItem('searchString')|| '';
+    this.select=localStorage.getItem('searchOption')|| '';
   },
   beforeDestroy() {
     // 在组件销毁时移除事件监听
@@ -49,9 +53,20 @@ export default {
       if (event.key === "Enter") {
         if(this.inputFocused===true){
           if(this.input.length===0){
+            localStorage.setItem('searchOption',this.select);
+            localStorage.setItem('searchString','');
             alert("请输入内容")
           }else{
-            alert("正在搜索");
+            localStorage.setItem('searchOption',this.select);
+            localStorage.setItem('searchString',this.input);
+            localStorage.setItem('topic','')
+            if (!this.$route.path.includes('search/result')) {
+              router.push('search/result');
+            } else{
+              window.location.reload();
+            }
+            
+            // alert("正在搜索");
           }
         }
       }
@@ -182,6 +197,7 @@ export default {
   align-items: center;
   cursor: pointer;
   border-right: 1px solid var(--bar-border-color);
+  border-top-left-radius: 6px;
   padding: 8px 12px;
   //border-bottom-left-radius: 6px;
   //border-top-left-radius: 6px;
@@ -190,8 +206,8 @@ export default {
   transition: 0.3s ease;
   color:var(--bar-font-color);
   width: 25%;
-  max-width: 90px;
-  min-width: 80px;
+  max-width: 100px;
+  min-width: 90px;
 }
 .select-menu:hover{
   transition: background-color 0.3s ease;
@@ -199,7 +215,7 @@ export default {
 }
 
 .selected-label {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 .icon {
@@ -253,8 +269,8 @@ export default {
   top: 100%;
   //left: 3px;
   width: calc(25% + 1px);
-  max-width: 91px;
-  min-width: 81px;
+  max-width: 101px;
+  min-width: 91px;
   //margin-top: 40px;
   background-color: white;
   border: 1px solid var(--bar-border-color) ;

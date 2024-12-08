@@ -1,10 +1,10 @@
 <template>
-  <div :class="pageComponent">
-    <p style="width: 150px;">共 {{ totalPage }} 页</p>
+  <div class="pageComponent">
+    <p>共 {{ totalPage }} 页</p>
     <!-- 上一页按钮 -->
     <el-button :disabled="currentPage === 1" @click="changePage(currentPage - 1)" :circle="true" type="primary"
       size="small" class="changePageButton">
-      <img src="/src/assets/search/icon/frontpage.svg" class="changePageButtonIcon">
+      <img src="/src/assets/search/icon/down-expand2.svg" class="changePageButtonIcon" style="transform: rotate(90deg);">
     </el-button>
     <!-- 页码按钮 -->
     <el-button :type="page === currentPage ? 'primary' : ''" :plain="true" v-for="page in pages" :key="page"
@@ -15,7 +15,7 @@
     <!-- 下一页按钮 -->
     <el-button :disabled="currentPage === totalPage" @click="changePage(currentPage + 1)" circle="true" type="primary"
       size="small" class="changePageButton">
-      <img src="/src/assets/search/icon/nextpage.svg" class="changePageButtonIcon">
+      <img src="/src/assets/search/icon/down-expand2.svg" class="changePageButtonIcon" style="transform: rotate(-90deg);">
     </el-button>
   </div>
 </template>
@@ -73,7 +73,7 @@ export default {
       this.pages = [];
       for (let i = start; i <= end; i++) {
         this.pages.push(i);
-      } 
+      }
     },
     changePage(page) {
       if (page < 1 || page > this.totalPage) return;
@@ -85,26 +85,71 @@ export default {
 
 <style scoped>
 .pageComponent {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  margin: 10px auto;
+
+  p {
+    text-align: center;
+    margin-right: 20px;
+  }
 }
 
 .changePageButton {
-  margin-right: 1%;
-  margin-left: 1%;
+  background-color: transparent;
+  border: none;
+
+  &:hover{
+    text-decoration: none;
+    background-color: #818b981a;
+    outline: 0px;
+    transition-duration: 0.1s;
+    border: none;
+  }
 }
 
 .changePageButtonIcon {
   width: 15px;
   height: 15px;
+
+  
 }
 
 .pagesButton {
-  margin-left: 1%;
-  margin-right: 1%;
+  margin: 0 4px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0.5rem calc(0.375rem);
+  font-style: normal;
+  line-height: 1;
+  color: #1F2328;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  margin-right: 4px;
+  background-color: transparent;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+
+  &:hover{
+    text-decoration: none;
+    background-color: #818b981a;
+    outline: 0px;
+    transition-duration: 0.1s;
+  }
+  
 }
 
-p {
-  display: inline;
+.pagesButton.el-button--primary{
+  text-decoration: none;
+    background-color: #0969da;
+    color: white;
+    outline: 0px;
+    transition-duration: 0.1s;
 }
+
 </style>
