@@ -2,6 +2,7 @@
 import {defineComponent, nextTick, onMounted, ref} from "vue";
 import axios from "@/utils/axios.js";
 import {DELETE_HISTORY_API, GET_ALL_HISTORY_API} from "@/utils/request.js";
+import router from "@/router/index.js";
 
 export default defineComponent({
   name: "UserHistory",
@@ -26,8 +27,8 @@ export default defineComponent({
   setup(props) {
     const historyData = ref([]);  // 使用 ref 来存储动态的 historyData
     // For dynamic interaction, like marking as read
-    const toRead = (paper) => {
-      alert(`继续阅读 "${paper.title}"!`);
+    const toRead = (id) => {
+      router.push({ path: "/reader", query: { id } })
     };
     const markAsRead = async (paper) => {
       try {
@@ -104,7 +105,7 @@ export default defineComponent({
           <p class="paper-progress">阅读进度: {{ animatedProgress[index] }}%</p>
         </div>
         <div class="action-buttons">
-          <button @click="toRead(item)" class="action-button">
+          <button @click="toRead(item.id)" class="action-button">
             <img src="../../assets/iconfonts/book.svg" alt="继续阅读" class="read-action">继续阅读
           </button>
           <button @click="markAsRead(item)" class="action-button" id="1">
