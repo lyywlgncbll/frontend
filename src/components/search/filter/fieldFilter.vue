@@ -135,7 +135,7 @@ const handleSelection = (content) => {
 }
 
 .menu-content.expand {
-    height: 150px;
+    height: 145px;
     padding: 0 10px;
 }
 

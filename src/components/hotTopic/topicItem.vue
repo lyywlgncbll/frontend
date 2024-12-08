@@ -1,124 +1,167 @@
 <template>
-    <div id="topicItem" class="topicItem">
-        <div class="time">
-            <img src="/src/assets/iconfonts/hotTopic/clock.svg" class="icon">
-            <span>4小时前</span>
+    <div id="topic-item" class="topicItem">
+        <div class="index">{{ index + 1 }}</div>
+        <div class="topic" :title="'Topic'" @click="clickTopic(item.name)">
+            {{ item.name }}
         </div>
-        <div class="topic">
-            {{item.title}}
+        <div class="info">
+            <div class="works">Works: {{ item.worksCount }}</div>
+            <div class="cited">Cited By: {{ item.citedByCount }}</div>
+            <div class="date">Created: {{ item.createdDate }}</div>
         </div>
         <div class="before"></div>
         <div class="content">
-            {{ item.content }}
+            {{ item.description }}
         </div>
         <div class="after"></div>
-        <div class="keywords" >
-            <div class="keyword" v-for="keyword in item.keywords">{{ keyword }}</div>
+        <div class="keywords">
+            <div class="keyword" v-for="keyword in item.keywords" @click="clickKeyword(keyword)">{{ keyword }}</div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-const props=defineProps({
-    item:Object,
+import router from "@/router/index.js";
+const props = defineProps({
+    item: Object,
+    index: Number
 })
 
+const clickTopic = (content) => {
+    localStorage.setItem('searchOption', 2)
+    localStorage.setItem('searchString', content)
+    localStorage.setItem('topic', content)
+    router.push('search/result')
+}
+const clickKeyword = (content) => {
+    localStorage.setItem('searchOption', 2)
+    localStorage.setItem('searchString', content)
+    router.push('search/result')
+}
 </script>
 
 <style scoped>
-.topicItem{
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+.topicItem {
     position: relative;
     width: 100%;
     padding: 10px;
-    border-top: 1px solid #d1d9e0b3;
+    border-top: 1px solid var(--border-color);
     padding: 20px;
-    .topic{
+
+    .topic {
         margin-top: 5px;
         width: 80%;
         font-size: 30px;
         font-weight: bold;
-        font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+        font-family: 'Montserrat', sans-serif;
+        font-style: italic;
         line-height: 1.4;
         letter-spacing: 0.5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-style: italic;
+        cursor: pointer;
     }
 }
 
-.time{
+.info {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin: 3px 5px;
+    color: var(--info-color);
+    font-size: 15px;
+    font-style: italic;
+
+    .works {
+        margin-right: 10px;
+    }
+
+    .cited {
+        margin: 0 10px;
+    }
+
+    .date {
+        margin-left: 10px;
+    }
+}
+
+.index {
     position: absolute;
-    right: 60px;
-    top:25px;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    top: 25px;
+    padding: 20px;
+    font-size: 22px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    .icon{
-        width: 20px;
-        height: 20px;
-        margin-right: 5px;
-    }
-    span{
-        font-size: 15px;
-        color: #767a7b;
-    }
+    background: linear-gradient(45deg, var(--index-background-from-color), var(--index-background-to-color));
+    color: var(--keyword-hover-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
 }
 
-.before{
-    border-left: .25em solid grey;
-    background-color: #f6f8fa;
+.before {
+    border-left: 5px solid var(--content-border-color);
+    background-color: var(--content-background-color);
     width: 100%;
     height: 10px;
     border-top-right-radius: 10px;
     margin-top: 10px;
 }
 
-.after{
-    border-left: .25em solid grey;
-    background-color: #f6f8fa;
+.after {
+    border-left: 5px solid var(--content-border-color);
+    background-color: var(--content-background-color);
     width: 100%;
     height: 10px;
     border-bottom-right-radius: 10px;
     margin-bottom: 10px;
 }
 
-.content{
-    border-left: .25em solid grey;
-    background-color: #f6f8fa;
-    color: #767a7b;
+.content {
+    border-left: 5px solid var(--content-border-color);
+    background-color: var(--content-background-color);
+    color: var(--info-color);
     padding: 0 18px;
-    font-size: 18px;
-
-    display: -webkit-box; 
-    -webkit-line-clamp: 3; 
-    -webkit-box-orient: vertical; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    font-size: 19px;
+    font-family: 'Nunito', sans-serif;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.keywords{
+.keywords {
     margin: 15px auto;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    .keyword{
+
+    .keyword {
         font-size: 12px;
         display: inline-block;
         padding: 2px 12px;
         font-weight: 500;
         border-radius: 2em;
         line-height: 22px;
-        background-color: #ddf4ff;
-        color: #0969da;
+        background-color: var(--keyword-background-color);
+        color: var(--keyword-color);
         cursor: pointer;
 
         &:hover {
             color: white;
-            background-color: #0969da;
+            background-color: var(--keyword-color);
         }
     }
 }

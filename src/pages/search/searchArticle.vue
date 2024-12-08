@@ -7,12 +7,13 @@
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
-                </searchBar>
+                <searchFilter :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
+                </searchFilter>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
                 <searchNav @sortChanged="handleSort" :num="num"></searchNav>
+                <searchTopic></searchTopic>
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
@@ -22,7 +23,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="background" v-if="isShow">
@@ -37,11 +37,12 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import ClaimForm from '/src/components/search/ClaimForm.vue';
-import searchBar from '/src/components/search/searchBar.vue';
+import searchFilter from '/src/components/search/searchFilter.vue';
 import searchItem from '/src/components/search/searchItem.vue';
 import pageComponent from '/src/components/pageComponent.vue';
 import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
 import searchNav from '@/components/search/searchNav.vue';
+import searchTopic from '@/components/search/searchTopic.vue';
 import axios from '@/utils/axios';
 import { SEARCH_API } from '../../utils/request.js'
 
@@ -130,10 +131,12 @@ const search = async () => {
                 menuItems.value[1].contents = response.data.fields
                 menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
                 searchItems.value = response.data.papers
+            } else {
+                console.error("搜索失败:", response.data.message)
             }
         })
     } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('请求失败:', error)
     }
 }
 
@@ -152,10 +155,12 @@ const advancedSearch = async () => {
         }).then(response => {
             if (response.status == 200) {
                 searchItems.value = response.data.papers
+            }else{
+                console.error("筛选失败:", response.data.message)
             }
         })
     } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('请求失败:', error)
     }
 }
 </script>
@@ -178,9 +183,12 @@ const advancedSearch = async () => {
     display: flex;
     margin: 30px auto;
     position: relative;
+    transition: all 1s ease;
 }
 
 .left-bar {
+    position: sticky;
+    top: 30px;
     margin-top: 20px;
     width: 20%;
     overflow: hidden;
@@ -193,16 +201,16 @@ const advancedSearch = async () => {
 }
 
 .left-expand {
+    position: sticky;
+    top: 31px;
+    margin-top: 21px;
     width: 20px;
     height: 44px;
-    position: absolute;
     background-color: var(--expand-button-background-color);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    left: -21px;
-    top: 21px;
 
     &:hover {
         background-color: var(--expand-button-hover-color);

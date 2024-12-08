@@ -3,7 +3,7 @@
         <div class="tools">
             <div class="cite">
                 <img src="/src/assets/search/icon/cite.svg" alt="cite" width="20px" height="20px">
-                <p>引用</p>
+                <p>引用 ( {{ searchItem.citationCount }} )</p>
             </div>
             <div class="claim" @click="openForm">
                 <p>认领</p>
@@ -69,7 +69,7 @@ const openForm = () => {
     border: 1px solid #d1d9e0;
     padding: 5px;
     background-color: #eff2f5;
-    width: 60px;
+    min-width: 60px;
 }
 
 .claim {
