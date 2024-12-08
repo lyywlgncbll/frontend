@@ -14,6 +14,8 @@
 </template>
 <script>
 import readCountChart from './overviewComponent/readCountChart.vue';
+import axios from "@/utils/axios";
+import { USERCOUNT_API,SCHOLARSCOUNT_API,ARTICLECOUNT_API,AUTHORCOUNT_API,GET_READ_CNT_API } from '@/utils/request.js'
 export default{
     data() {
         return {
@@ -22,9 +24,9 @@ export default{
             scholarCount:541100,
             appScholarCount:6,
             readDate: [
-                '2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04',
-                '2024-01-05', '2024-01-06', '2024-01-07', '2024-01-08',
-                '2024-01-09', '2024-01-10'
+                '2024-12-01', '2024-12-02', '2024-12-03', '2024-12-04',
+                '2024-12-05', '2024-12-06', '2024-12-07', '2024-12-08',
+                '2024-12-09', '2024-12-10'
             ],
             readCount: [20, 18, 19, 34, 20, 30, 31, 23, 42, 31]
         };
@@ -37,9 +39,45 @@ export default{
             this.$router.push('/admin/scholars');
         }
     },
-    mounted(){
+    created(){
         //获取后台信息
-        this.userCount = 100
+        try {
+            axios.get(USERCOUNT_API).then(response => {
+                if (response.status === 200) {
+                   this.userCount = response.data;
+                }
+            });
+            axios.get(SCHOLARSCOUNT_API).then(response => {
+                if (response.status === 200) {
+                   this.appScholarCount = response.data;
+                }
+            });
+            axios.get(ARTICLECOUNT_API).then(response => {
+                if (response.status === 200) {
+                   this.articleCount = response.data;
+                }
+            });
+            axios.get(AUTHORCOUNT_API).then(response => {
+                if (response.status === 200) {
+                   this.scholarCount = response.data;
+                }
+            });
+            axios.get(GET_READ_CNT_API).then(response => {
+                if (response.status === 200) {
+                    const responseData = response.data;
+                    this.readDate.length = 0;
+                    this.readCount.length = 0;
+
+                    // 遍历响应数据，填充 readDate 和 readCount
+                    responseData.forEach(item => {
+                        this.readDate.push(item.date);
+                        this.readCount.push(item.count);
+                    });
+                }
+            });
+        } catch (error) {
+            console.error('update failed:', error);
+        }
     }
 }
 </script>

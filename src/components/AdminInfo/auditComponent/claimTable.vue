@@ -7,8 +7,7 @@
               <input type="checkbox" @click="toggleAllSelection" :checked="isAllSelected" />
             </th>
             <th>姓名</th>
-            <th>邮箱</th>
-            <th>申请认领内容</th>
+            <th>认领对应作者</th>
             <th>创建时间</th>
             <th>状态</th>
             <th>操作</th>
@@ -23,11 +22,10 @@
             <td>
               <input type="checkbox" :checked="isSelected(row)" @click.stop="toggleRowSelection(row)" />
             </td>
-            <td class="name" @click="changeTo(row)">{{ row.name }}</td>
-            <td>{{ row.email }}</td>
-            <td>{{ row.claim }}</td>
-            <td>{{ row.createTime }}</td>
-            <td>{{ getStatusText(row.status) }}</td>
+            <td class="name" @click="changeTo(row)">{{ row.user.name }}</td>
+            <td>{{ row.authorName }}</td>
+            <td>{{ getTime(row.claim.createTime) }}</td>
+            <td>{{ getStatusText(row.claim.status) }}</td>
             <td>
               <button @click.stop="approve(row)">通过</button>
               <button @click.stop="reject(row)">拒绝</button>
@@ -39,97 +37,118 @@
 </template>
   
 <script>
-  export default {
-    props: {
-      // 父组件传递的数据
-      tableData: {
-        type: Array,
-        required: true,
-      },
+import axios from "@/utils/axios";
+import { UPDATECLIAM_API } from '@/utils/request.js'
+export default {
+  props: {
+    // 父组件传递的数据
+    tableData: {
+      type: Array,
+      required: true,
     },
-    data() {
-      return {
-        selectedRows: new Set(),
-      };
+  },
+  data() {
+    return {
+      selectedRows: new Set(),
+    };
+  },
+
+  computed: {
+    // 判断是否全选
+    isAllSelected() {
+      return this.selectedRows.size === this.tableData.length;
     },
-  
-    computed: {
-      // 判断是否全选
-      isAllSelected() {
-        return this.selectedRows.size === this.tableData.length;
-      },
+  },
+
+  methods: {
+    // 选择/取消单行的选中状态
+    toggleRowSelection(row) {
+      if (this.selectedRows.has(row)) {
+        this.selectedRows.delete(row);
+      } else {
+        this.selectedRows.add(row);
+      }
     },
-  
-    methods: {
-      // 选择/取消单行的选中状态
-      toggleRowSelection(row) {
-        if (this.selectedRows.has(row)) {
-          this.selectedRows.delete(row);
-        } else {
-          this.selectedRows.add(row);
-        }
-      },
-  
-      // 判断某一行是否选中
-      isSelected(row) {
-        return this.selectedRows.has(row);
-      },
-  
-      // 全选或取消全选
-      toggleAllSelection() {
-        if (this.isAllSelected) {
-          this.selectedRows.clear();
-        } else {
-          this.tableData.forEach(row => this.selectedRows.add(row));
-        }
-      },
-  
-      // 点击姓名触发父组件方法
-      changeTo(row) {
-        this.$emit('name-clicked', row);
-      },
-  
-      // 通过操作
-      approve(row) {
-        row.status = 'ACCEPTED';
-      },
-  
-      // 拒绝操作
-      reject(row) {
-        row.status = 'REJECTED';
-      },
-  
-      // 状态转义方法
-      getStatusText(status) {
-        switch (status) {
-          case 'PENDING':
-            return '未处理';
-          case 'ACCEPTED':
-            return '已通过';
-          case 'REJECTED':
-            return '已拒绝';
-          default:
-            return status;
-        }
-      },
-  
-      handleSelectedRows(status) {
-        if(status === "ACCEPTED"){
-          console.log("一键通过")
-        }
-        else{
-          console.log("一键拒绝")
-        }
-        const selectedRowsArray = Array.from(this.selectedRows);
-        selectedRowsArray.forEach(row => {
-          // 在这里处理每个选中的行
-          console.log(`正在处理 ${row.name} 的请求，当前状态: ${row.status}`);
-          // 在这里修改状态，或做其他处理
-          row.status = 'ACCEPTED'; // 示例处理
-        });
-      },
+
+    // 判断某一行是否选中
+    isSelected(row) {
+      return this.selectedRows.has(row);
     },
-  };
+
+    // 全选或取消全选
+    toggleAllSelection() {
+      if (this.isAllSelected) {
+        this.selectedRows.clear();
+      } else {
+        this.tableData.forEach(row => this.selectedRows.add(row));
+      }
+    },
+
+    // 点击姓名触发父组件方法
+    changeTo(row) {
+      this.$emit('name-clicked', row);
+    },
+
+    // 通过操作
+    approve(row) {
+      row.claim.status = 'ACCEPTED';
+      this.updateClaim(row.claim)
+    },
+
+    // 拒绝操作
+    reject(row) {
+      row.claim.status = 'REJECTED';
+      this.updateClaim(row.claim)
+    },
+    updateClaim(claim){
+      try {
+        axios.get(UPDATECLIAM_API,{
+          params: {
+            id: claim.id,
+            status: claim.status
+            }
+          });
+      } catch (error) {
+        console.error('update failed:', error);
+      }
+    },
+    // 状态转义方法
+    getStatusText(status) {
+      switch (status) {
+        case 'PENDING':
+          return '未处理';
+        case 'ACCEPTED':
+          return '已通过';
+        case 'REJECTED':
+          return '已拒绝';
+        default:
+          return status;
+      }
+    },
+    getTime(time){
+      const date = new Date(time);
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以要加1，并确保两位数
+      const day = String(date.getUTCDate()).padStart(2, '0'); // 确保日期是两位数
+      return `${year}-${month}-${day}`;
+    },
+    handleSelectedRows(status) {
+      if(status === "ACCEPTED"){
+        console.log("一键通过")
+      }
+      else{
+        console.log("一键拒绝")
+      }
+      const selectedRowsArray = Array.from(this.selectedRows);
+      selectedRowsArray.forEach(row => {
+        // 在这里处理每个选中的行
+        console.log(`正在处理 ${row.name} 的请求，当前状态: ${row.claim.status}`);
+        // 在这里修改状态，或做其他处理
+        row.claim.status = 'ACCEPTED'; // 示例处理
+      });
+    },
+  },
+};
 </script>
   
 <style scoped>

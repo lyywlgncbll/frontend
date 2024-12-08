@@ -21,33 +21,18 @@
 import selectMenu from './auditComponent/selectMenu.vue';
 import claimTable from './auditComponent/claimTable.vue'
 import pageComponent from '../pageComponent.vue';
+import axios from "@/utils/axios";
+import { GETCLAIMALL_API, GETUSER_API } from '@/utils/request.js'
+import { use } from 'echarts';
+
 export default{
   data(){
     return {
-      tableData: [
-        {
-          id: '1',
-          userid: '12',
-          name: '王小虎',
-          email: 'xiaohu@company.com',
-          claim: '申请成为平台会员',
-          status: 'PENDING',
-          createTime: '2024-01-01',
-        },
-        {
-          id: '2',
-          userid: '13',
-          name: '李四',
-          email: 'lisi@company.com',
-          claim: '申请访问数据',
-          status: 'PENDING',
-          createTime: '2024-01-02',
-        },
-      ],
+      tableData: [],
       currentPage: 1,
       totalPage: 7,
       pageSize: 6,
-      filterStatus: "pending",
+      filterStatus: "pending_only",
     };
   },
   components:{
@@ -55,14 +40,67 @@ export default{
     claimTable,
     pageComponent
   },
+  created(){
+    this.getClaim();
+  },
   methods:{
     getClaim(){
-      console.log(this.status);
+      try {
+          axios.get(GETCLAIMALL_API,{
+            params: {
+                keyword: this.keyword,
+                pageSize: this.pageSize,
+                page: this.currentPage,
+                queryMode: this.filterStatus
+              }
+            }).then(response => {
+              if (response.status === 200) {
+                this.tableData = response.data.view;
+                this.totalPage = response.data.totalPage;
+              }
+          }).then(()=>{
+              this.updateAllUser();
+          });
+        } catch (error) {
+            console.error('update failed:', error);
+        }
       //调用接口获取数据
     },
+    async updateAllUser(){
+      const promises = this.tableData.map(async (claim) => {
+        const user = await this.getUser(claim.claim.userID);
+        try{
+          axios.get(GETUSER_API,{
+            params: {
+              userID: claim.claim.userID
+              }
+            }).then(response => {
+              if (response.status === 200) {
+                claim.user = response.data;
+              }
+          });
+        } catch (error) {
+          console.error('update failed:', error);
+        }
+      })
+    },
+    async getUser(userID){
+      try {
+          axios.get(GETUSER_API,{
+            params: {
+              userID: userID
+              }
+            }).then(response => {
+              if (response.status === 200) {
+                return response.data;
+              }
+          });
+        } catch (error) {
+          console.error('update failed:', error);
+        }
+    },
     updateTableTo(status){
-      console.log(status);
-      this.filterStatus = status;
+      this.filterStatus = this.getFilterStatus(status);
       this.getClaim();
       //更新（搜索）指定状态的表单
     },
@@ -74,6 +112,18 @@ export default{
     },
     handleNameClick(row) {
       console.log('Clicked on name:', row);
+    },
+    getFilterStatus(status){
+      switch(status){
+        case "pending":
+          return "pending_only";
+        case "accepted":
+          return "accepted_only";
+        case "rejected":
+          return "rejected_only";
+        case "all":
+          return "all";
+      }
     },
     handleBatchAction(status) {
       if (this.$refs.claimTable) {
@@ -107,7 +157,7 @@ export default{
   font-weight: 200;
 }
 .titleButton:hover {
-    background-color: #f0f0f0; /* Green */
+  background-color: #f0f0f0; /* Green */
 }
 .select-menu-pos{
   position: fixed;
@@ -137,5 +187,10 @@ export default{
 }
 .claimTable-pos{
   margin: 50px 0px;
+}
+.pageComponent{
+  position: absolute;
+  left: 50%;
+  /* transform: translateX(-50%); */
 }
 </style>
