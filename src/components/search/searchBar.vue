@@ -1,31 +1,16 @@
 <template>
     <div :class="{ sidebar: true, collapsed: !isExpand }">
-        <div v-for="(item, index) in menuItems" :key="item.id" class="menu-item">
-            <div class="menu-title" @click="toggleItem(index)">
-                {{ item.title }}
-                <span>
-                    <img v-if="expandedIndexes.includes(index)" src="/src/assets/search/icon/down-expand.svg" alt=""
-                        width="15px" height="15px">
-                    <img v-else src="/src/assets/search/icon/down-expand.svg" alt="" width="15px" height="15px"
-                        :style="{ transform: 'rotate(180deg)' }">
-                </span>
-            </div>
-
-            <ul class="menu-content" :class="{ expand: expandedIndexes.includes(index) }">
-                <li v-for="(content, i) in item.contents" :key="i" class="content-item">
-                    <label>
-                        <input class="checkbox" type="checkbox" :value="content"
-                            @change="handleSelection(item.id, content, $event)">
-                        <span>{{ content }}</span>
-                    </label>
-                </li>
-            </ul>
-        </div>
+        <timeFilter :isExpand="isExpand" :item="menuItems[0]" @yearChanged="handleYearChanged"></timeFilter>
+        <fieldFilter :isExpand="isExpand" :item="menuItems[1]" @fieldChanged="handleFieldChanged"></fieldFilter>
+        <fieldFilter :isExpand="isExpand" :item="menuItems[2]" @fieldChanged="handleJournalChanged"></fieldFilter>
+        <fieldFilter :isExpand="isExpand" :item="menuItems[3]" @fieldChanged="handleAuthorChanged"></fieldFilter>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { handleError, ref, watch } from 'vue'
+import timeFilter from '@/components/search/filter/timeFilter.vue'
+import fieldFilter from '@/components/search/filter/fieldFilter.vue'
 
 const props = defineProps({
     isExpand: Boolean,
@@ -34,46 +19,38 @@ const props = defineProps({
         required: true,
     }
 })
-const emit = defineEmits(['selectionChanged', 'clear'])
 
-//菜单展开
-const expandedIndexes = ref([])
-const toggleItem = (index) => {
-    if (expandedIndexes.value.includes(index)) {
-        expandedIndexes.value = expandedIndexes.value.filter(i => i !== index)
-    } else {
-        expandedIndexes.value.push(index)
-    }
+const emit = defineEmits(['selectionChanged'])
+const filter = ref({
+    'years': [],
+    'fields': [],
+    'journals': [],
+    'authors': []
+})
+
+//监听筛选条件变化
+const handleYearChanged = (selectedTimes) => {
+    filter.value.years = selectedTimes
+    emit('selectionChanged', filter.value)
+}
+const handleFieldChanged = (selectedFields) => {
+    filter.value.fields = selectedFields
+    emit('selectionChanged', filter.value)
+}
+const handleJournalChanged = (selectedJournal) => {
+    filter.value.journals = selectedJournal
+    emit('selectionChanged', filter.value)
+}
+const handleAuthorChanged = (selectedAuthor) => {
+    filter.value.authors = selectedAuthor
+    emit('selectionChanged', filter.value)
 }
 
-const selectedItems = ref(
-    props.menuItems.reduce((acc, item) => {
-        acc[item.id] = []
-        return acc
-    }, {})
-)
-const handleSelection = (key, content, event) => {
-    if (event.target.checked) {
-        selectedItems.value[key].push(content)
-    } else {
-        selectedItems.value[key] = selectedItems.value[key].filter(item => item !== content)
-    }
-    emit('selectionChanged', selectedItems.value)
-}
-
-const clear = () => {
-    const inputs = document.getElementsByClassName('checkbox')
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].checked = false
-    }
-    for (let key in selectedItems.value) {
-        selectedItems.value[key].length = 0
-    }
-}
-emit('clear', clear)
 </script>
 
 <style scoped>
+@import "@/assets/theme-colors.css";
+
 * {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -88,88 +65,12 @@ emit('clear', clear)
     position: relative;
     transition: all 0.3s ease;
     min-width: 150px;
+    border: 1px solid var(--bar-border-color);
+    border-radius: 4px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
 .sidebar.collapsed {
     transform: translateX(-100%);
-}
-
-.menu-item {
-    margin-bottom: 12px;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    overflow: hidden;
-    box-shadow: 0px 3px 5px -4px;
-}
-
-.menu-title {
-    background-color: #bee1f6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    font-weight: bold;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.menu-title:hover {
-    background-color: #9ecae9;
-}
-
-.menu-content {
-    overflow-y: scroll;
-    background-color: #f0f8ff;
-    height: 0;
-    transition: all 1s;
-    padding: 0 10px;
-    position: relative;
-}
-
-.menu-content li:nth-child(1) {
-    margin-top: 15px;
-}
-
-.content-item {
-    display: flex;
-    align-items: center;
-    padding: 2px 15px;
-    margin: 5px auto;
-    white-space: nowrap;
-}
-
-.content-item input {
-    margin-right: 8px;
-    cursor: pointer;
-}
-
-.content-item span {
-    text-align: center;
-    font-size: 15px;
-    cursor: pointer;
-    color: #333;
-    white-space: nowrap;
-}
-
-.expand {
-    height: 130px;
-    padding: 0 10px;
-}
-
-.icon-container {
-    height: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    cursor: pointer;
-}
-
-.icon {
-    height: 12px;
-    width: 12px;
 }
 </style>

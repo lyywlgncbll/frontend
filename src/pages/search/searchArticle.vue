@@ -1,29 +1,23 @@
 <template>
-    <div id="search-body">
+    <loggedNavBar class="nav-bar" />
+    <div id="search-root">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
                 <img src="/src/assets/search/icon/down-expand.svg" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
-            <div class="confirm" @click="sendFilter">
-                确认
-            </div>
-            <div class="clear" @click="callClearMethod">
-                清除
-            </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
-                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter"
-                    @clear="receiveMethod">
+                <searchBar :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
                 </searchBar>
             </div>
 
             <div :class="{ main: true, collapsed: !isExpand }">
-                <SearchNav></SearchNav>
+                <searchNav @sortChanged="handleSort" :num="num"></searchNav>
                 <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
                     @openClaimForm="showClaimForm">
                 </searchItem>
-                <div style="text-align: center; margin-top: 1%;">
-                    <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
+                <div class="page">
+                    <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPage"
                         @update:currentPage="updatePage"></pageComponent>
                 </div>
             </div>
@@ -41,12 +35,25 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import ClaimForm from '/src/components/search/ClaimForm.vue';
 import searchBar from '/src/components/search/searchBar.vue';
 import searchItem from '/src/components/search/searchItem.vue';
 import pageComponent from '/src/components/pageComponent.vue';
-import SearchNav from '/src/components/search/SearchNav.vue';
+import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
+import searchNav from '@/components/search/searchNav.vue';
+import axios from '@/utils/axios';
+import { SEARCH_API } from '../../utils/request.js'
+
+const searchContent = ref("learning")
+const option = ref(2)
+onMounted(() => {
+    searchContent.value = localStorage.getItem('searchString')
+    option.value = Number(localStorage.getItem('searchOption'))
+    // console.log(searchContent.value, option.value);
+    search()
+})
+
 //侧边栏是否展开
 const isExpand = ref(true)
 const expandBar = () => {
@@ -54,90 +61,13 @@ const expandBar = () => {
 }
 
 const menuItems = ref([
-    { id: 'time', title: '时间', contents: [1999, 1998, 1997] },
-    { id: 'theme', title: '领域', contents: ['deep', 'hhhhhhhh'] },
-    { id: 'source', title: '期刊', contents: [] }
+    { id: 'years', title: '时间', contents: [] },
+    { id: 'fields', title: '领域', contents: [] },
+    { id: 'journals', title: '期刊', contents: [] },
+    { id: 'authors', title: '作者', contents: [] }
 ])
 
-const searchItems = ref([
-    {
-        id: "sadasdsadsadsad",
-        title: 'sciend in the age of LLMs',
-        author: 'sisythus',
-        from: 'IEEE',
-        time: 1999,
-        content: "Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.Intelligence research is more advanced and less controversial than is generally realized. Definitive conclusions about the neural and genetic bases of intelligence are being drawn — these have ethical implications that need to be addressed.",
-        label: [
-            "机器学习",
-            "深度学习",
-        ],
-        num: 100,
-    },
-    {
-        id: "sadcccccadsad",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 1998,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "人工智能",
-            "深度学习",
-        ],
-        num: 100,
-    },
-    {
-        id: "seeeeeeeeeesad",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 1997,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "人工智能",
-        ],
-        num: 100,
-    },
-    {
-        id: "seeejjjjjjjjd",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 1997,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "deep learning",
-            "hhhhhhhh",
-        ],
-        num: 100,
-    },
-    {
-        id: "seeeeooooooooo",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 2024,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "deep learning",
-            "hhhhhhhh",
-        ],
-        num: 100,
-    },
-    {
-        id: "lllllllllllllllll",
-        title: 'Neurobiology of intelligence: science and ethics',
-        author: 'sisythus',
-        from: 'Nature',
-        time: 2025,
-        content: "The lateral prefrontal cortex is consistently activated during intelligence testing. Frontal and parietal brain regions implicated in working memory are also activated under test conditions. These data contribute to the debate on whether intelligence has a unitary (activation of a single brain region/functional unit) or multiple basis.",
-        label: [
-            "deep learning",
-            "hhhhhhhh",
-        ],
-        num: 100,
-    },
-])
+const searchItems = ref([])
 
 //表单
 const isShow = ref(false);
@@ -156,31 +86,83 @@ const closeClaimForm = () => {
 
 //分页
 const currentPage = ref(1)
-const totalPage = ref(100)
-const pageSize = ref(1)
+const totalPage = ref(5)
+const pageSize = ref(7)
 
-//筛选
-const selectedTags = ref({})
+//获取筛选数据
 const handleFilter = (selections) => {
-    selectedTags.value = selections
+    years.value = selections.years
+    journals.value = selections.journals
+    fields.value = selections.fields
+    advancedSearch()
 }
-const sendFilter = () => {
 
+//获取排序方式
+const handleSort = (sort) => {
+    sortBy.value = sort
+    search()
+    // advancedSearch()
 }
 
-//清除
-const clearMethod = ref(null)
-const receiveMethod = (method) => {
-    clearMethod.value = method
+watch(currentPage, () => {
+    console.log(currentPage.value);
+    search()
+    // advancedSearch()
+})
+
+const sortBy = ref(1)
+const years = ref([])
+const journals = ref([])
+const fields = ref([])
+const num = ref(0)
+const search = async () => {
+    try {
+        await axios.post(SEARCH_API, {
+            searchContent: searchContent.value,
+            isFiltered: false,
+            option: option.value,
+            sortBy: sortBy.value,
+            pageSize: pageSize.value,
+            currentPage: currentPage.value,
+        }).then(response => {
+            if (response.status == 200) {
+                menuItems.value[0].contents = response.data.years
+                menuItems.value[1].contents = response.data.fields
+                menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
+                searchItems.value = response.data.papers
+            }
+        })
+    } catch (error) {
+        console.error('Error fetching data:', error)
+    }
 }
-const callClearMethod = () => {
-    if (clearMethod.value) {
-        clearMethod.value();
+
+const advancedSearch = async () => {
+    try {
+        await axios.post('/api/academic/searchPublications', {
+            searchContent: searchContent.value,
+            isFiltered: true,
+            option: option.value,
+            sortBy: sortBy.value,
+            pageSize: pageSize.value,
+            currentPage: currentPage.value,
+            years: years.value,
+            journals: journals.value,
+            fields: fields.value
+        }).then(response => {
+            if (response.status == 200) {
+                searchItems.value = response.data.papers
+            }
+        })
+    } catch (error) {
+        console.error('Error fetching data:', error)
     }
 }
 </script>
 
 <style scoped>
+@import "../../assets/theme-colors.css";
+
 * {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -188,21 +170,22 @@ const callClearMethod = () => {
     user-select: none;
 }
 
-#search-body {
+#search-root {
     margin: 0 50px;
 }
 
 #mid {
-    height: 100vh;
     display: flex;
     margin: 30px auto;
     position: relative;
 }
 
 .left-bar {
+    margin-top: 20px;
     width: 20%;
-    transition: all 0.3s ease;
     overflow: hidden;
+    height: 100%;
+    transition: all .1s ease;
 }
 
 .left-bar.collapsed {
@@ -213,62 +196,42 @@ const callClearMethod = () => {
     width: 20px;
     height: 44px;
     position: absolute;
-    background-color: #92bad6;
+    background-color: var(--expand-button-background-color);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    left: -20px;
-    top: 10px;
-}
+    left: -21px;
+    top: 21px;
 
-.confirm {
-    font-size: 11px;
-    text-align: center;
-    width: 20px;
-    height: 44px;
-    position: absolute;
-    background-color: #92bad6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    left: -20px;
-    top: 70px;
-    color: white;
-}
-
-.clear {
-    font-size: 11px;
-    text-align: center;
-    width: 20px;
-    height: 44px;
-    position: absolute;
-    background-color: #92bad6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    left: -20px;
-    top: 130px;
-    color: white;
-}
-
-.left-expand:hover,
-.confirm:hover,
-.clear:hover {
-    background-color: #85a9c2;
+    &:hover {
+        background-color: var(--expand-button-hover-color);
+    }
 }
 
 .main {
     width: 75%;
-    height: 100%;
+    min-height: 80vh;
     margin: 0 auto;
     transition: all 0.3 ease;
-}
+    position: relative;
 
-.main.collapsed {
-    width: 90%;
+    .null {
+        width: 100%;
+        height: 70vh;
+        text-align: center;
+    }
+
+    &.collapsed {
+        width: 90%;
+    }
+
+    .page {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 
 .background {
@@ -282,27 +245,27 @@ const callClearMethod = () => {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
 
-.form {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    height: 400px;
-    width: 450px;
-    background-color: white;
-    margin: 0 auto;
-    border-radius: 10px;
-}
+    .form {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        height: 400px;
+        width: 450px;
+        background-color: white;
+        margin: 0 auto;
+        border-radius: 10px;
 
-.form .close {
-    font-size: 22px;
-    font-weight: 500;
-    position: absolute;
-    top: 8px;
-    right: 20px;
-    cursor: pointer;
-    color: grey;
+        .close {
+            font-size: 22px;
+            font-weight: 500;
+            position: absolute;
+            top: 8px;
+            right: 20px;
+            cursor: pointer;
+            color: var(--expand-button-background-color);
+        }
+    }
 }
 </style>

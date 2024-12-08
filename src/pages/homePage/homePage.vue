@@ -6,9 +6,10 @@ import {Histogram} from "@element-plus/icons-vue";
 import UserHistory from "~/components/home-page/userHistory.vue";
 import DailyStatsChart from "~/components/home-page/dailyStatisChart.vue";
 import PaperDetails from "~/components/home-page/paperIntros.vue";
+import HotTopics from "~/components/home-page/hotspot.vue";
 
 export default defineComponent({
-  components: {PaperDetails, DailyStatsChart, UserHistory, Histogram, LoggedNavBar},
+  components: {HotTopics, PaperDetails, DailyStatsChart, UserHistory, Histogram, LoggedNavBar},
   data(){
     return{
       userHistory: [
@@ -32,13 +33,14 @@ export default defineComponent({
     <logged-nav-bar class="nav-bar"/>
     <div class="components">
       <div class="left-component">
-        <UserHistory :history-data="userHistory" class="userHistory"/>
+        <UserHistory class="userHistory"/>
       </div>
       <div class="middle-component">
         <paper-details class="papers"/>
       </div>
       <div class="right-component">
         <daily-stats-chart class="chart"/>
+        <hot-topics class="hot-topics"/>
       </div>
     </div>
 
@@ -84,15 +86,15 @@ export default defineComponent({
   }
 }
 .middle-component{
-  //position: relative;
+  /* position: relative; */
   z-index: 50;
   padding-top: 60px;
   height: 100vh;
   flex-grow: 1;
-  //max-width: 40vw;
+/* /max-width: 40vw; */
   margin-left: calc(360px);
   margin-right:calc(3vw + 390px);
-  //overflow:scroll;
+  /* overflow:scroll;  */
 }
 .right-component{
   z-index: 50;
@@ -105,9 +107,14 @@ export default defineComponent({
   height: 100vh;
   display: flex;
   flex-direction: column;
-  //background-color: var(--page-barckground-color);
+  /* //background-color: var(--page-barckground-color); */
   .chart{
-    height: 20vh;
+    height: auto;
+  }
+  .hot-topics{
+    margin-top: 10px;
+    //margin-bottom: 20px;
+    height: calc(100% - 270px);
   }
 }
 

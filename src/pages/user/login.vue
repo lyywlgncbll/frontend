@@ -2,7 +2,7 @@
 import NavigationBar from "~/components/bar/unlogged-nav-bar.vue";
 import {defineComponent, ref,inject} from "vue";
 import {useRouter} from "vue-router";
-import axios from 'axios';
+import axios from '@/utils/axios';
 import {LOGIN_API} from "~/utils/request.js";
 
 export default defineComponent({
@@ -18,40 +18,40 @@ export default defineComponent({
     const mail = ref('');
     const password = ref('');
 
-    // 登录提交方法
-    // 登录提交方法
-    // const submitLogin = async () => {
-    //   try {
-    //     axios.post(LOGIN_API, {
-    //         username: username.value,
-    //         password: password.value
-    //     }).then(response => {
-    //       if (response.data === 'success'){
-    //         // globalUsername=username.value;
-    //         // localStorage.setItem('username', globalUsername);
-    //         console.log(response.data);
-    //         router.push('/about');
-    //       }
-    //     });
-    //   } catch (error) {
-    //     console.error('Login failed:', error);
-    //   }
-    //
-    // };
     const submitLogin = async () => {
       try {
+        // 发起 POST 请求
         const response = await axios.post(LOGIN_API, {
-          mail: mail.value,  // 使用 JSON 格式的数据
+          mail: mail.value,
           password: password.value
         });
-        if (response.data === 'success') {
-          console.log(response.data);
-          await router.push('/about');
+
+        // 检查 HTTP 状态码是否为 200
+        if (response.status === 200) {
+          console.log('登录成功:', response.data);
+
+          // 将 token 存储到 localStorage
+          if (response.data) {
+            localStorage.setItem('authToken', response.data);
+            console.log('Token 已保存到 localStorage'+response.data);
+          } else {
+            console.warn('响应中未包含 token');
+          }
+
+          // 跳转到 HomePage 页面
+          await router.push('/home');
+        } else {
+          console.error('登录失败，服务器未返回成功状态:', response.status);
         }
       } catch (error) {
-        console.error('Login failed:', error);
+        // 捕获错误并打印到控制台
+        console.error('登录失败:', error);
+
+        // 可选：显示友好的错误提示
+        alert('登录失败，请检查邮箱或密码');
       }
     };
+
 
 
     return {

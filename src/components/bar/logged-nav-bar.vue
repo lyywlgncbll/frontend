@@ -2,6 +2,7 @@
 import { ref} from "vue"
 import searchBar from "~/components/bar/logged-nav/search-bar.vue";
 import PersonalAvatar from "~/components/bar/logged-nav/personal-avatar.vue";
+import router from "@/router/index.js";
 
 export default {
   computed: {
@@ -15,10 +16,6 @@ export default {
   data(){
 
     return{
-      indexLink: {
-        type: String,
-        default: '#/'
-      },
       options:[
         {value:1, label:"高级搜索", action: this.advancedSearch},
         {value:2, label:"学者搜索", action: this.scholarSearch}
@@ -31,6 +28,10 @@ export default {
     },
     scholarSearch(){
       alert("跳转到学者搜索");
+    },
+    toHomePage(){
+      // alert("跳转到homePage")
+      router.push('/home');
     }
   }
 }
@@ -41,7 +42,10 @@ export default {
   <header>
     <nav id="bar-root" class="logged-nav-bar">
       <!--左边的logo-->
-      <a :href="indexLink"><img src="../../assets/logo/CCBridge.svg" alt="" class="logo"></a>
+      <button @click="toHomePage" class="logo-button" aria-label="Go to Home">
+        <img src="@/assets/logo/CCBridge.svg" alt="Logo" class="logo">
+      </button>
+
       <div class="options">
         <div
           class="option"
@@ -82,6 +86,7 @@ export default {
     width: 100px;
     height: auto;
     margin-left: 20px;
+    //cursor: pointer;
   }
   .options {
     position: absolute;

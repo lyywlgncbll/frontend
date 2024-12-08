@@ -237,7 +237,7 @@ import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
 import { ARTICLE_API, REFERENCE_API } from "~/utils/request.js"
 import Reader from './Reader.vue';
 //import Article from '.Article.vue';
-import axios from 'axios';
+import axios from '@/utils/axios.js';
 
 const routes = [
   {

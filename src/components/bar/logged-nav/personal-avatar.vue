@@ -59,7 +59,7 @@ export default {
 
     // 在组件挂载时添加监听器
     onMounted(() => {
-      avatarUrl.value = 'src/assets/defaultAvatar.jpeg'; // 头像路径
+      avatarUrl.value = '/src/assets/defaultAvatar.jpeg'; // 头像路径
       window.addEventListener('mousedown', handleClickOutside);
     });
 

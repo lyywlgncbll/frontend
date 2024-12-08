@@ -1,12 +1,15 @@
 <script>
+import router from "@/router/index.js";
+
 export default {
   data() {
     return {
       options: [
         { value: "1", label: "篇名" },
-        { value: "2", label: "作者" },
-        { value: "3", label: "摘要" },
-        { value: "4", label: "领域" },
+        { value: "2", label: "摘要" },
+        { value: "3", label: "领域" },
+        { value: "4", label: "作者" },
+        { value: "5", label: "刊物" },
       ],
       select: 1, // 当前选中的值
       input: "", // 输入框内容
@@ -50,7 +53,15 @@ export default {
           if(this.input.length===0){
             alert("请输入内容")
           }else{
-            alert("正在搜索");
+            localStorage.setItem('searchOption',this.select);
+            localStorage.setItem('searchString',this.input);
+            if (!this.$route.path.includes('search/result')) {
+              router.push('search/result');
+            } else{
+              window.location.reload();
+            }
+            
+            // alert("正在搜索");
           }
         }
       }
@@ -93,7 +104,7 @@ export default {
       <span class="selected-label">{{ selectedLabel }}</span>
       <i :class="['icon', optionsListActive ? 'up' : 'down']"></i>
     </div>
-    <img src="../../../assets/iconfonts/nav-bar/search1.svg" class="search-logo">
+    <img src="/src/assets/iconfonts/nav-bar/search1.svg" class="search-logo">
     <!-- 输入框 -->
     <input
         ref="searchInput"
