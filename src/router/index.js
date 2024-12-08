@@ -12,6 +12,13 @@ import userInfo from '../pages/userInfo.vue'
 import HomePage from "~/pages/homePage/homePage.vue"
 import ResetPassword from "~/pages/user/resetPassword.vue"
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
+import AdminInfo from '../pages/adminPages/adminInfo.vue'
+import Audit from '../components/AdminInfo/audit.vue'
+import PlatformOverview from '../components/AdminInfo/platform-overview.vue'
+import Scholars from '../components/AdminInfo/scholars.vue'
+import Login from "../pages/user/login.vue";
+import Register from "../pages/user/register.vue";
+import ResetPassword from "~/pages/user/resetPassword.vue";
 import SearchUserResult from "../pages/search/SearchUser.vue"
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
@@ -79,7 +86,22 @@ const routes = [
     },{
         path:"/hotTopic",
         component:HotTopic,
-    }
+    },{
+        path: "/admin",
+        component: AdminInfo,
+        redirect: "/admin/platformOverview",
+        children: [
+            {
+                path: "/admin/audit",
+                component: Audit,
+            },{
+                path: "/admin/platformOverview",
+                component: PlatformOverview,
+            },{
+                path: "/admin/scholars",
+                component: Scholars,
+            }]                  
+    },
 ]
 
 
