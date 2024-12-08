@@ -63,12 +63,14 @@
             <el-descriptions-item>
               <ul>
                 <li v-for="(reference, index) in paper.references" :key="index">
+                  
+                  <div v-if="reference.isLoaded">
                   <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
                     type="primary">{{ reference.title
                     }}</el-link>
                   <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
                     type="primary">{{
-                      reference.title }}</el-link>
+                      reference.title }}</el-link></div><div v-else></div>
                 </li>
               </ul>
             </el-descriptions-item>
@@ -252,12 +254,14 @@ export default defineComponent({
             title: "A Study on Neural Networks",
             authors: ["Doe, J.", "Smith, J."],
             isReachable: true,
+            isLoaded: false
           },
           {
             id: "2",
             title: "Ethics in AI Systems",
             authors: ["Johnson, A."],
             isReachable: false,
+            isLoaded: false
           },
         ],
         pdfUrl: "/test/test.pdf",
@@ -364,6 +368,7 @@ export default defineComponent({
         });
         ref.title = response.data.title;
         ref.isReachable = response.data.isReachable;
+        ref.isLoaded = true;
       } catch (error) {
         console.log("error")
       }
@@ -456,7 +461,7 @@ export default defineComponent({
         keywords: backendData.keywords,
         fields: backendData.fields,
         references: backendData.references.map((refId, index) => ({
-          id: refId.id, // 生成 ID
+          id: refId, // 生成 ID
           title: "null",
           authors: [], // 无法从后端 JSON 获取，默认设置为空
           isReachable: false, // 假设所有文献都可访问，后续可以根据业务逻辑调整
