@@ -95,7 +95,6 @@ watch(selectedContents, (newValue) => {
 
     .range {
         margin: 0 auto;
-        margin-top: 10px;
         width: 100%;
         height: 40px;
         display: flex;
@@ -131,7 +130,7 @@ watch(selectedContents, (newValue) => {
 }
 
 .menu-content.expand {
-    height: 50px;
+    height: 40px;
     padding: 0 10px;
 }
 

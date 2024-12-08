@@ -60,10 +60,6 @@ const routes = [
         meta: { requiresGradient: true }
     },
     {
-        path: "/search/searchUser/result",
-        component: SearchUserResult,
-    },
-    {
         path: "/search/result",
         component: searchArticle,
     },
