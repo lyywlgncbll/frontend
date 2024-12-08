@@ -1,7 +1,8 @@
 <template>
   <div class="paper-intros">
     <div v-for="(paper,index) in papers" :key="index" class="paper-container">
-      <h2 class="paper-title">{{ paper.title }}</h2>
+<!--      <button @click="goToArticle(paper.id)"></button>-->
+      <h2 class="paper-title" @click="goToArticle(paper.id)">{{ paper.title }}</h2>
       <p class="paper-author">作者: <span>{{ paper.authors.join(', ') }}</span></p>
       <p class="paper-author">期刊: <span>{{ paper.journal }}</span></p>
       <p class="paper-summary">{{ paper.abstract }}</p>
@@ -21,7 +22,8 @@ export default defineComponent({
   name: "PaperDetails",
   data(){
     return{
-      papers:[{
+      papers:[
+        {
         "citationCount": 55,
         "journal": "American Journal of Physical Anthropology",
         "year": 2013,
@@ -126,6 +128,12 @@ export default defineComponent({
           ]
         },]
     }
+  },
+  methods: {
+    goToArticle(id) {
+      // 使用 router.push 来进行路由跳转，传递 id 作为查询参数
+      this.$router.push({ path: "/article", query: { id } });
+    }
   }
 });
 </script>
@@ -160,12 +168,18 @@ export default defineComponent({
   color: #333;
   margin-bottom: 12px;
   line-height: 1.3;
-  //word-wrap: break-word;
   display: -webkit-box;
   -webkit-line-clamp: 2; /* 限制标题为 2 行 */
   -webkit-box-orient: vertical;
   overflow: hidden;
+  cursor: pointer;
+  //transition: color 0.3s ease;
 }
+
+.paper-title:hover {
+  color: #555;  /* 鼠标悬停时的颜色 */
+}
+
 
 .paper-author,
 .paper-summary {

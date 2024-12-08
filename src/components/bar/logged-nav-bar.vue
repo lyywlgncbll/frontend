@@ -46,14 +46,14 @@ export default {
         <img src="@/assets/logo/CCBridge.svg" alt="Logo" class="logo">
       </button>
 
-      <div class="options">
-        <div
-          class="option"
-          v-for="option in options"
-          :key="option.value"
-          @click="option.action"
-          >{{option.label}}</div>
-      </div>
+<!--      <div class="options">-->
+<!--        <div-->
+<!--          class="option"-->
+<!--          v-for="option in options"-->
+<!--          :key="option.value"-->
+<!--          @click="option.action"-->
+<!--          >{{option.label}}</div>-->
+<!--      </div>-->
       <search-bar class="search-bar"/>
       <div class="border"></div>
       <!--用户头像-->
