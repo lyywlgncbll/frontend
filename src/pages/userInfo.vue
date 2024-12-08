@@ -15,21 +15,29 @@
         <div class="pagetabs">
               <Tabs :tabs=this.tabs  @changeTab="handleTabChange" 
               />
+             
               <div class="tabdetail">
                 <div v-if="activeTab === 0">
-                  <div v-if="this.user.claim === null">
-                    <Claims 
-                      :userid="user.id"/>
-                    <button @click="sendVerification">点击我发送邮件</button>
-                    <button @click="sendCreateData">点击我发送注册信息</button>
-                    <button @click="sendLoginRequest">点击我发送登录请求</button>
-                    <button @click="sendGetMyInfo">点击我获取用户信息</button>
-                    <button @click="sendGetMyAvatar">点击我获取用户头像信息</button>
-                  </div>
-                  <div v-else>
-                    <References :references="references" :editable="isEditable"/>
-                    <p>我是发表文献</p>
-                  </div>
+                  
+                    <div v-if="this.user.claim === null">
+                      <Claims ref="Claims"
+                        :userid="user.id"
+                        :authorization="authorization"
+                        :myclaimRequests="this.userclaims"
+                        @updataUserClaim="handleUserClaimsUpdata"/>
+                      <button @click="sendVerification">点击我发送邮件</button>
+                      <button @click="sendCreateData">点击我发送注册信息</button>
+                      <button @click="sendLoginRequest">点击我发送登录请求</button>
+                      <button @click="sendGetMyInfo">点击我获取用户信息</button>
+                      <button @click="sendGetMyAvatar">点击我获取用户头像信息</button>
+                    </div>
+                    <div v-else>
+                        <References 
+                        :references="references" 
+                        :editable="isEditable"/>
+                      <p>我是发表文献</p>
+                    </div>
+                
                 </div>
                 <div v-if="activeTab === 1">
                   <div v-if="this.user.claim === null">
@@ -40,6 +48,7 @@
                   </div>
                 </div>
               </div>
+            
         </div>
         <div class="pagewriters">
           <AuthorList :authors="authorData" />
@@ -120,6 +129,12 @@ import Tabs from "../components/UserInfo/Tabs.vue";
             citations: 22
           }
         ],
+        userclaims:[
+
+        ],
+
+
+
       };
     },
     methods: {
@@ -151,6 +166,9 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       handleTabChange(index){
         this.activeTab = index;
       },
+      handleUserClaimsUpdata(newData){
+        this.userclaims=newData;
+      },
       //登录用户相关，测试用，可以删除
       sendVerification() {
         axios.post('http://localhost:8080/user/reg/verify', null, {
@@ -174,7 +192,8 @@ import Tabs from "../components/UserInfo/Tabs.vue";
           mail:'2399791927@qq.com',
           password:'2399791927',
           code:'Q5XOsY',
-        }, {
+        }, 
+        {
           headers: {
             'Content-Type': 'application/json', 
           },
@@ -235,12 +254,14 @@ import Tabs from "../components/UserInfo/Tabs.vue";
           params: { id }
         }).then(response => {
             this.user.avatar="data:image/jpeg;base64,"+response.data;
-            console.log("获取成功：",response.data);
+            console.log("获取头像成功");
         }).catch(error =>{
             console.error('获取失败:', error);
         });
       },
+      sendGetMyReferences(){
 
+      },
     },
     mounted(){
       this.sendLoginRequest()
@@ -248,13 +269,20 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         // 登录成功后再执行获取用户信息
         this.sendGetMyInfo()
           .then(() =>{
-            this.sendGetMyAvatar();
+            this.sendGetMyAvatar().then(() =>{
+              this.$refs.Claims.sendGetMyClaims();
+
+
+
+            }).catch(error =>{
+              console.error('登录请求个人头像失败',error)
+            });
           }).catch(error => {
-            console.error('登录请求头像失败:', error);
+            console.error('登录请求个人信息失败:', error);
           });
       })
       .catch(error => {
-        console.error('登录请求信息失败:', error);
+        console.error('登录发送信息失败:', error);
       });
     }
   };
