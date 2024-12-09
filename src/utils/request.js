@@ -1,6 +1,10 @@
-
+//预览页
 export const QIANFAN_ASKONCE = `/api/qianfan/askonce`
 export const QIANFAN_ASK = `/api/qianfan/ask`
+export const GET_HISTORY_RATE = `/api/history/getPercent`
+export const SEND_HISTORY_RATE = `/api/history/renewHistory`
+export const GET_PDF_BINARY = `res/proxy/fetch`
+
 export const USERSEARCH_API = `/user/search`;
 export const USERFIELDS_API = `/user/search/fields`
 export const USERAVATOR_API = `/user/avator/get`
@@ -17,6 +21,7 @@ export const GET_ALL_HISTORY_API='/api/history/getAllHistory';
 export const DELETE_HISTORY_API='/api/history/deleteHistory';
 export const GET_TOP_K_API='/topics/topk';
 export const GET_READ_CNT_API='/counter/get';
+export const INCREASE_READ_CNT_API='/counter/increase';
 export const GET_RECOMMEND_ARTICLE_API='/api/history/getRecommend';
 
 

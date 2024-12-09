@@ -32,7 +32,7 @@ const routes = [
         path: "/reader",
         name: "Reader",
         component: Reader,
-        props: (route) => ({ pdfurl: route.query.pdfurl })
+        props: (route) => ({ id: route.query.id })
     },
     {
         path: "/article",
@@ -58,10 +58,6 @@ const routes = [
         path: "/resetPassword",
         component: ResetPassword,
         meta: { requiresGradient: true }
-    },
-    {
-        path: "/search/searchUser/result",
-        component: SearchUserResult,
     },
     {
         path: "/search/result",

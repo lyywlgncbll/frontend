@@ -13,12 +13,9 @@
       />
       <div class="detail">
         <div class="pagetabs">
-              <Tabs :tabs=this.tabs  @changeTab="handleTabChange" 
-              />
-             
+              <Tabs :tabs=this.tabs  @changeTab="handleTabChange" />
               <div class="tabdetail">
                 <div v-if="activeTab === 0">
-                  
                     <div v-if="this.user.claim === null">
                       <Claims ref="Claims"
                         :userid="user.id"
@@ -50,9 +47,11 @@
               </div>
             
         </div>
-        <div class="pagewriters">
-          <AuthorList :authors="authorData" />
+
+        <div v-if="this.user.claim !== null" class="pagewriters">
+            <AuthorList :authors="authorData" />
         </div>
+
       </div>
     </div>
   </template>
@@ -132,9 +131,6 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         userclaims:[
 
         ],
-
-
-
       };
     },
     methods: {
@@ -147,7 +143,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         console.log("Edit profile clicked!!!!");
         this.isEditable = !this.isEditable;
         this.user.bio=newbio;
-        axios.post('http://113.44.131.146/user/data/mod', {
+        axios.post('/user/data/mod', {
           description: newbio, // 修正拼写错误
         },{
           headers: {
@@ -206,7 +202,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       },
       async sendGetMyInfo(){
         return new Promise((resolve, reject) => {
-            axios.get('http://113.44.131.146:8080/user/self').then(response => {
+            axios.get("/user/self").then(response => {
               // 请求成功，处理返回的 json 数据
               this.user.id=response.data.id;
               this.user.name = response.data.name;
@@ -228,18 +224,56 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       },
       async sendGetMyAvatar(){  
         const id = this.user.id;
-        axios.get('http://113.44.131.146:8080/user/avator/get',{
+        axios.get('/user/avator/get',{
           params: { id }
         }).then(response => {
             this.user.avatar="data:image/jpeg;base64,"+response.data;
             console.log("获取头像成功");
         }).catch(error =>{
-            console.error('获取失败:', error);
+            console.error('获取头像失败:', error);
         });
       },
       sendGetMyReferences(){
-
+        const id = this.user.id;
+        axios.get('/api/academic/getPublicationByUserId',{
+          params: { 
+            userId:id,
+          }
+        }).then(response => {   
+          console.log("获取文献了",response.data);
+          const formatted = response.data.papers.map(item => ({
+                title: item.title,
+                authors: item.authors.join(", "),
+                journal:item.journal,
+                date:item.publishYear,
+                citations:item.citations,
+            }));
+            // 更新数据
+            this.references = formatted;
+            console.log("获取文献成功",response.data);
+        }).catch(error =>{
+            console.error('获取文献失败:', error);
+        });
       },
+      sendGetMyCooperators(){
+        axios.get('/api/academic/getCooperatorsByUserID',{
+          params:{
+            userID:this.user.id
+          }
+        }).then(response => {   
+          console.log("获取合作作者了:",response.data);
+          const formatted = response.data.map(item => ({
+                name:item.claim,
+                university:item.institution,
+                avatar:default_pic,
+            }));
+            // 更新数据
+            this.authorData = formatted;
+            console.log("获取合作作者成功",this.authorData);
+        }).catch(error =>{
+            console.error('获取合作作者失败:', error);
+        });
+      }
     },
     mounted(){
 
@@ -247,7 +281,11 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         this.sendGetMyInfo()
           .then(() =>{
             this.sendGetMyAvatar().then(() =>{
-              this.$refs.Claims.sendGetMyClaims();
+              if(this.user.claim===null)this.$refs.Claims.sendGetMyClaims();
+              else{
+                this.sendGetMyReferences();
+                this.sendGetMyCooperators();
+              }
             }).catch(error =>{
               console.error('登录请求个人头像失败',error)
             });
@@ -269,7 +307,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
   .tabdetail{
     height: 70vh;
     background-color: white;
-    width: 60vw;
+    
   }
   .detail{
     display: flex;
@@ -277,6 +315,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
     align-items: stretch;
   }
   .pagetabs{
+    flex-grow: 1;
     align-items: stretch;
   }
   .pagewriters{

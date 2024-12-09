@@ -3,7 +3,6 @@
         <timeFilter :isExpand="isExpand" :item="menuItems[0]" @yearChanged="handleYearChanged"></timeFilter>
         <fieldFilter :isExpand="isExpand" :item="menuItems[1]" @fieldChanged="handleFieldChanged"></fieldFilter>
         <fieldFilter :isExpand="isExpand" :item="menuItems[2]" @fieldChanged="handleJournalChanged"></fieldFilter>
-        <fieldFilter :isExpand="isExpand" :item="menuItems[3]" @fieldChanged="handleAuthorChanged"></fieldFilter>
     </div>
 </template>
 
@@ -39,10 +38,6 @@ const handleFieldChanged = (selectedFields) => {
 }
 const handleJournalChanged = (selectedJournal) => {
     filter.value.journals = selectedJournal
-    emit('selectionChanged', filter.value)
-}
-const handleAuthorChanged = (selectedAuthor) => {
-    filter.value.authors = selectedAuthor
     emit('selectionChanged', filter.value)
 }
 

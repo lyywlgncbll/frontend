@@ -155,9 +155,9 @@ export default {
 
     // 颜色映射函数
     const getColor = (count) => {
-      if (count >= 10) return '#216E39';
-      if (count >= 7) return '#40C463';
-      if (count >= 5) return '#9BE9A8';
+      if (count >= 20) return '#216E39';
+      if (count >= 10) return '#40C463';
+      if (count > 0) return '#9BE9A8';
       return '#EBEDF0';
     };
     // 计算总阅读量
