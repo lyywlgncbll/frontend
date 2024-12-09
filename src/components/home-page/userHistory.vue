@@ -1,7 +1,7 @@
 <script>
 import {defineComponent, nextTick, onMounted, ref} from "vue";
 import axios from "@/utils/axios.js";
-import {DELETE_HISTORY_API, GET_ALL_HISTORY_API} from "@/utils/request.js";
+import {DELETE_HISTORY_API, GET_ALL_HISTORY_API, INCREASE_READ_CNT_API} from "@/utils/request.js";
 import router from "@/router/index.js";
 
 export default defineComponent({
@@ -28,8 +28,21 @@ export default defineComponent({
     const historyData = ref([]);  // 使用 ref 来存储动态的 historyData
     // For dynamic interaction, like marking as read
     const toRead = (id) => {
+      increaseReadCnt()
       router.push({ path: "/reader", query: { id } })
     };
+    const increaseReadCnt=async ()=>{
+      try{
+        const response=await axios.get(INCREASE_READ_CNT_API);
+        if(response.status===200){
+          console.log("用户阅读次数加一")
+        }else{
+          console.error("添加阅读次数失败",response.data.message)
+        }
+      }catch (error){
+        console.error("请求失败:", error)
+      }
+    }
     const markAsRead = async (paper) => {
       try {
         // 发送 DELETE 请求，传入 paper.id
