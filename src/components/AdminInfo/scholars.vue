@@ -71,7 +71,7 @@ export default{
               id: item.user.id,
               name: item.authorName || '未知',
               mail: item.user.mail || '无邮箱',
-              institution: '未知机构',
+              institution: item.org ||'未知机构',
               createTime: this.formatDate(item.registerDate) || '未知日期',
               articleCount: item.publicationsCount || 0
             }));
