@@ -22,7 +22,7 @@
             <td>
               <input type="checkbox" :checked="isSelected(row)" @click.stop="toggleRowSelection(row)" />
             </td>
-            <td class="name" @click="changeTo(row)">{{ row.user.name }}</td>
+            <td class="name" @click="changeTo(row)">{{ row.name }}</td>
             <td>{{ row.authorName }}</td>
             <td>{{ getTime(row.claim.createTime) }}</td>
             <td>{{ getStatusText(row.claim.status) }}</td>
@@ -133,29 +133,27 @@ export default {
       return `${year}-${month}-${day}`;
     },
     handleSelectedRows(status) {
+      const selectedRowsArray = Array.from(this.selectedRows);
       if(status === "ACCEPTED"){
-        console.log("一键通过")
+        selectedRowsArray.forEach(row => {
+          this.approve(row)
+        });
       }
       else{
-        console.log("一键拒绝")
+        selectedRowsArray.forEach(row => {
+          this.reject(row)
+        });
       }
-      const selectedRowsArray = Array.from(this.selectedRows);
-      selectedRowsArray.forEach(row => {
-        // 在这里处理每个选中的行
-        console.log(`正在处理 ${row.name} 的请求，当前状态: ${row.claim.status}`);
-        // 在这里修改状态，或做其他处理
-        row.claim.status = 'ACCEPTED'; // 示例处理
-      });
     },
   },
 };
 </script>
   
 <style scoped>
-.name {
-    text-decoration: underline;
-    color: rgb(53, 94, 255);
-    cursor: pointer;
+.name{
+  text-decoration: underline;
+  color: rgb(53, 94, 255);
+  cursor: pointer;
 }
 
 tr:first-child th {

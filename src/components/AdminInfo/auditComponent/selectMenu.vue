@@ -31,12 +31,11 @@
   
 <style scoped>
 .selectMenu {
-    padding: 2px 8px;
-    
-    width: 250px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  padding: 2px 8px;
+  width: 250px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
     
 }
 .selectMenu:hover{

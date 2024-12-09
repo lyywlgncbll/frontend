@@ -3,15 +3,15 @@
       <div class="title">
         <button class="titleButton" v-on:click="handleAcceptSelected"> 一键通过</button>
         <button class="titleButton" v-on:click="handleRejectedSelected">一键拒绝</button>  
-        <div class="select-menu-pos">
-          <div class="select-menu"> <selectMenu @updateTableTo="updateTableTo"/></div>
-        </div>
+        
       </div>  
-      
+      <div class="select-menu-pos">
+          <selectMenu class="select-menu" @updateTableTo="updateTableTo"/>
+        </div>
       <div class="claimTable-pos">
           <claimTable ref="claimTable" :tableData="tableData" :batchAction="handleBatchAction" @name-clicked="handleNameClick"/>
       </div>
-      <div style="text-align: center; margin-top: 1%;">
+      <div style="text-align: center; margin-top: 1%;margin-bottom: 4%;">
         <pageComponent class="pageComponent" v-model:currentPage="currentPage"
             v-model:totalPage="totalPage" @update:currentPage="updatePage" />
       </div>
@@ -23,12 +23,19 @@ import claimTable from './auditComponent/claimTable.vue'
 import pageComponent from '../pageComponent.vue';
 import axios from "@/utils/axios";
 import { GETCLAIMALL_API, GETUSER_API } from '@/utils/request.js'
-import { use } from 'echarts';
 
 export default{
   data(){
     return {
-      tableData: [],
+      tableData: [{
+        id:1,
+        user:{
+          name: 'test'
+        },
+        claim:{
+          id:15,status:"PENDING",
+        }
+      }],
       currentPage: 1,
       totalPage: 7,
       pageSize: 6,
@@ -67,7 +74,7 @@ export default{
       //调用接口获取数据
     },
     async updateAllUser(){
-      const promises = this.tableData.map(async (claim) => {
+      this.tableData.map(async (claim) => {
         const user = await this.getUser(claim.claim.userID);
         try{
           axios.get(GETUSER_API,{
@@ -76,7 +83,7 @@ export default{
               }
             }).then(response => {
               if (response.status === 200) {
-                claim.user = response.data;
+                claim.name = response.data.name;
               }
           });
         } catch (error) {
@@ -132,22 +139,19 @@ export default{
     },
     updatePage(page) {
       // 切页
+      this.getClaim();
     },
   }
 }
 </script>
 <style scoped>
 .menu-container {
-  display: flexbox;
+  display: relative;
   width: 90%;
-  justify-content: flex-start;
   padding: 50px;
   border: 2px solid #ccc; /* 设置边框 */
   border-radius: 10px; /* 设置圆角 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 设置阴影 */
-}
-.title{
-  display: flex;
 }
 .titleButton{
   border: 2px solid #ccc; /* 设置边框 */
@@ -157,23 +161,21 @@ export default{
   font-weight: 200;
 }
 .titleButton:hover {
-  background-color: #f0f0f0; /* Green */
+  background-color: #f0f0f0; 
 }
 .select-menu-pos{
-  position: fixed;
-  height: auto;
+  position: absolute;
   right: 12%;
+  top:160px;
 }
 .select-menu {
-  display: flex;
   align-items: center;
   cursor: pointer;
   border-right: 1px solid var(--bar-border-color);
-  padding: 8px 12px;
+  padding: 3px 10px;
   background-color: transparent;
   transition: 0.3s ease;
   color:var(--bar-font-color);
-  width: 25%;
   max-width: 90px;
   min-width: 80px;
 }

@@ -7,18 +7,19 @@
                 <button class="appScolarButton" v-on:click="changeToScholars"> 查看详细</button> 
             </div> 
             <div class="contentItem">文献总量：   {{ articleCount }}</div>
-            <div class="contentItem">学者总量：   {{ scholarCount }}</div>
+            <div class="contentItem">作者总量：   {{ scholarCount }}</div>
         </div>
-        <div class = readCountChart><readCountChart :dataAxis="readDate" :data="readCount"/></div>
+        <div class = readCountChart><readCountChart v-if="isDataLoaded" :dataAxis="readDate" :data="readCount"/></div>
     </div>
 </template>
 <script>
 import readCountChart from './overviewComponent/readCountChart.vue';
 import axios from "@/utils/axios";
-import { USERCOUNT_API,SCHOLARSCOUNT_API,ARTICLECOUNT_API,AUTHORCOUNT_API,GET_READ_CNT_API } from '@/utils/request.js'
+import { USERCOUNT_API,SCHOLARSCOUNT_API,ARTICLECOUNT_API,AUTHORCOUNT_API,GETALLREADCOUNT_API } from '@/utils/request.js'
 export default{
     data() {
         return {
+            isDataLoaded:false,
             userCount:10,
             articleCount:112101,
             scholarCount:541100,
@@ -62,17 +63,17 @@ export default{
                    this.scholarCount = response.data;
                 }
             });
-            axios.get(GET_READ_CNT_API).then(response => {
+            axios.get(GETALLREADCOUNT_API).then(response => {
                 if (response.status === 200) {
                     const responseData = response.data;
                     this.readDate.length = 0;
                     this.readCount.length = 0;
-
                     // 遍历响应数据，填充 readDate 和 readCount
                     responseData.forEach(item => {
                         this.readDate.push(item.date);
-                        this.readCount.push(item.count);
+                        this.readCount.push(item.total_count);
                     });
+                    this.isDataLoaded=true;
                 }
             });
         } catch (error) {

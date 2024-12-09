@@ -92,12 +92,15 @@ const routes = [
             {
                 path: "/admin/audit",
                 component: Audit,
+                meta:{ keepAlive: true}
             },{
                 path: "/admin/platformOverview",
                 component: PlatformOverview,
+                meta:{ keepAlive: true}
             },{
                 path: "/admin/scholars",
                 component: Scholars,
+                meta:{ keepAlive: true}
             }]                  
     },
 ]
