@@ -27,3 +27,17 @@ export const GET_RECOMMEND_ARTICLE_API='/api/history/getRecommend';
 
 //搜索
 export const SEARCH_API='/api/academic/searchPublications';
+
+
+//管理员
+export const USERCOUNT_API='/user/total';
+export const SCHOLARSCOUNT_API='/portal/count/claimed';
+export const ARTICLECOUNT_API='/api/academic/count/publication';
+export const AUTHORCOUNT_API='/api/academic/count/author'
+export const GETALLREADCOUNT_API='/counter/getAll'
+
+export const GETCLAIMALL_API='/portal/claim/getAll';
+export const UPDATECLIAM_API='/portal/op/claim/close';
+export const GETUSER_API='/user/get'
+
+export const GETSCOLARS_API='/user/search/authors'
