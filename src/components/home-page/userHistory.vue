@@ -29,7 +29,14 @@ export default defineComponent({
     // For dynamic interaction, like marking as read
     const toRead = (id) => {
       increaseReadCnt()
-      router.push({ path: "/reader", query: { id } })
+      const url = router.resolve({
+        path: "/reader",
+        query: { id }
+      }).href;
+
+// 使用 window.open 打开新标签页
+      window.open(url, "_blank");
+
     };
     const increaseReadCnt=async ()=>{
       try{
