@@ -14,6 +14,8 @@ import HotTopic from "@/pages/hotTopic/hotTopic.vue"
 import HomePage from "~/pages/homePage/homePage.vue"
 
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
+
+import ResetPassword from "~/pages/user/resetPassword.vue";
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
 import Login from "../pages/user/login.vue"

@@ -20,7 +20,8 @@
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <template v-else>
         <el-row class="paper-metadata" gutter="20">
-          <el-button v-for="field in paper.fields" :key="field" type="primary" class="keyword-button" round>
+          <el-button v-for="field in paper.fields" :key="field" type="primary" class="keyword-button" round
+          @click="goToFieldPage(field)">
             {{ field }}
           </el-button>
         </el-row>
@@ -215,23 +216,23 @@ import Reader from './Reader.vue';
 //import Article from '.Article.vue';
 import axios from '@/utils/axios.js';
 import { defineComponent } from "vue";
+import router from "@/router/index.js";
 
-const routes = [
-  {
-    path: '/reader',
-    name: 'Reader',
-    component: Reader,
-    props: (route) => ({ url: route.query.url }), // 将 query 参数映射为 props
-  },
-];
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
+// const routes = [
+//   {
+//     path: '/reader',
+//     name: 'Reader',
+//     component: Reader,
+//     props: (route) => ({ url: route.query.url }), // 将 query 参数映射为 props
+//   },
+// ];
+// const router = createRouter({
+//   history: createWebHistory(),
+//   routes,
+// });
 //const id = "https://openalex.org/W1481824024"
 export default defineComponent({
   components: { LoggedNavBar },
-  router,
   name: "PaperDetail",
   props: {
     id: {
@@ -444,9 +445,17 @@ export default defineComponent({
     },
     goToAuthorPage(author) {
       this.$message({
-        message: `Redirecting to ${author}'s profile...`,
+        message: `Redirecting to ${author}'s articles...`,
         type: "info",
       });
+      localStorage.setItem('searchOption', 4);
+      localStorage.setItem('searchString', author);
+      localStorage.setItem('topic', '')
+      if (!this.$route.path.includes('search/result')) {
+        router.push('/search/result');
+      } else {
+        window.location.reload();
+      }
     },
     goToKeywordPage(keyword) {
       this.$message({
@@ -455,6 +464,20 @@ export default defineComponent({
       });
       localStorage.setItem('searchOption', 5);
       localStorage.setItem('searchString', keyword);
+      localStorage.setItem('topic', '')
+      if (!this.$route.path.includes('search/result')) {
+        router.push('search/result');
+      } else {
+        window.location.reload();
+      }
+    },
+    goToFieldPage(field) {
+      this.$message({
+        message: `Redirecting to articles related to ${field}...`,
+        type: "info",
+      });
+      localStorage.setItem('searchOption', 3);
+      localStorage.setItem('searchString', field);
       localStorage.setItem('topic', '')
       if (!this.$route.path.includes('search/result')) {
         router.push('search/result');
@@ -632,7 +655,6 @@ export default defineComponent({
   /* 次要文字颜色 */
   text-align: justify;
   /* 使文本两端对齐 */
-  font-style: italic;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   /* 设置最多显示3行 */
@@ -707,7 +729,7 @@ export default defineComponent({
   position: fixed;
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  top: 10%;
   width: 22%;
   right: 3%;
   margin-left: 30px;
