@@ -169,19 +169,19 @@ onMounted(() => {
       loadStatus.value = LoadStatus.Failed
     })
   })
-  // config = {
-  //   method: 'post',
-  //   url: GET_HISTORY_RATE + `?articleId=${props.id}`,
-  // }
-  // axios(config).then((response:AxiosResponse) => {
-  //   const config = {
-  //     method: 'post',
-  //     url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${response.data.progress}`
-  //   }
-  //   axios(config).then(() => {
-  //     console.log("get and send") 
-  //   })
-  // })
+  config = {
+    method: 'post',
+    url: GET_HISTORY_RATE + `?articleId=${props.id}`,
+  }
+  axios(config).then((response:AxiosResponse) => {
+    const config = {
+      method: 'post',
+      url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${response.data.progress}`
+    }
+    axios(config).then(() => {
+      console.log("get and send") 
+    })
+  })
   // state.source = `D:/40995/Documents/课程资料/软分/frontend/dist/test/01.pdf`
   // state.source = url
   // state.source = "test/01.pdf"
@@ -209,7 +209,6 @@ const sendHistoryProgress = () => {
     console.log(response)
   })
   console.log("call send")
-  alert("send rate")
 }
 
 const isInput = ref(false)
