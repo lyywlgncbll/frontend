@@ -7,7 +7,12 @@
           <p class="author-name">{{ author.name }}</p>
           <p class="author-university">{{ author.university }}</p>
         </div>
-        <span class="arrow">➔</span>
+        <a
+          :href="`/authorInfo/${encodeURIComponent(author.authorid)}`"
+          class="arrow"
+          @click="forceRefresh">
+          ➔
+        </a>
       </div>
     </div>
   </template>
@@ -21,7 +26,15 @@
         required: true,
         default: () => [],
       }
-    }
+    },
+    methods: {
+    forceRefresh(event) {
+      // 阻止 Vue Router 默认行为
+      event.preventDefault();
+      // 使用原生刷新页面
+      window.location.href = event.target.href;
+    },
+  },
   };
   </script>
   

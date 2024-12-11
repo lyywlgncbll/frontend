@@ -49,7 +49,13 @@ export default defineComponent({
   methods: {
     goToArticle(id) {
       // 使用 router.push 来进行路由跳转，传递 id 作为查询参数
-      this.$router.push({ path: "/article", query: { id } });
+      // this.$router.push({ path: "/article", query: { id } });
+      const url = this.$router.resolve({
+        path: '/article',
+        query: { id }
+      }).href;
+      // 在新标签页中打开
+      window.open(url, "_blank");
     }
   }
 });

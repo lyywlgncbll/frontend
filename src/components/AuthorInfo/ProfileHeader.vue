@@ -1,16 +1,15 @@
 <template>
   <div class="profile-header">
-    <img :src="avatar" alt="加载中" class="avatar">
-    </img>
+    <div class="avatar" v-if="avatar">
+      <img :src="avatar" alt="加载中" class="avatar">
+    </div>
+    <div class="avatar-placeholder" v-else>
+      {{ getInitial }}
+    </div>
     <div class="profile-info">
-      <h2 class="name">{{ name }}</h2>
+      <h2 class="name">{{ claim }}</h2>
       <p class="institution">{{ institution }}</p>
-      <p class="research-areas">
-        <span v-for="(area, index) in researchAreas" :key="index">
-          {{ area }}<span v-if="index < researchAreas.length - 1"> / </span>
-        </span>
-      </p>
-      <p class="bio">{{ bio }}</p> 
+      <p class="bio" v-if="bio">{{ bio }}</p>
     </div>
   </div>
 </template>
@@ -19,15 +18,15 @@
 export default {
   name: "ProfileHeader",
   props: {
-    editable: {
-      type: Boolean,
-      default: false, // 默认非编辑状态
-    },
     avatar: {
       type: String,
       required: true,
     },
     name: {
+      type: String,
+      required: true,
+    },
+    claim: {
       type: String,
       required: true,
     },
@@ -44,9 +43,15 @@ export default {
       default: '生动有趣的个人描述更容易让别人认识你~',
     },
   },
+  computed: {
+    getInitial() {
+      // 返回 name 的第一个字母的大写形式
+      return this.claim ? this.claim.charAt(0).toUpperCase() : "";
+    },
+  },
   data() {
     return {
-     
+      
     };
   },
   methods: {
@@ -72,6 +77,20 @@ export default {
   border-radius: 50%;
   margin-right: 16px;
 }
+.avatar-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 48px;
+  font-weight: bold;
+  margin-right: 16px;
+}
+
 
 .profile-info {
   flex: 1;
