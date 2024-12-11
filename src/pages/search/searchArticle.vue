@@ -40,8 +40,13 @@ import { SEARCH_API } from '../../utils/request.js'
 const searchContent = ref("learning")
 const option = ref(2)
 onMounted(() => {
-    searchContent.value = localStorage.getItem('searchString')
-    option.value = Number(localStorage.getItem('searchOption'))
+    if (localStorage.getItem('topicObj')) {
+        searchContent.value = JSON.parse(localStorage.getItem('topicObj')).name
+        option.value = 6
+    } else {
+        searchContent.value = localStorage.getItem('searchString')
+        option.value = Number(localStorage.getItem('searchOption'))
+    }
     // console.log(searchContent.value, option.value);
     search()
 })
