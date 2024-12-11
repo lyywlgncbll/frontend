@@ -204,6 +204,7 @@ onUnmounted(() => {
 })
 
 const sendHistoryProgress = () => {
+  
   const articleId = props.id
   const rate = calReadingProgressRate()
   const config = {
@@ -214,6 +215,10 @@ const sendHistoryProgress = () => {
     console.log(response)
   })
   console.log("call send")
+  // const xhr = new XMLHttpRequest()
+  // xhr.open('POST', SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${rate}`, false)
+  // xhr.send(null)
+
 }
 
 const isInput = ref(false)
