@@ -210,7 +210,7 @@
 <script>
 import { createRouter, createWebHistory } from 'vue-router';
 import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
-import { ARTICLE_API, REFERENCE_API } from "~/utils/request.js"
+import { ARTICLE_API, REFERENCE_API, INCREASE_READ_CNT_API } from "~/utils/request.js"
 import Reader from './Reader.vue';
 //import Article from '.Article.vue';
 import axios from '@/utils/axios.js';
@@ -304,7 +304,7 @@ export default defineComponent({
         },
       ],
       isLoading: true,
-      isLoadingReference: true,
+      isLoadingReference: false,
       isExpanded: false
     };
   },
@@ -370,6 +370,7 @@ export default defineComponent({
         ref.title = response.data.title;
         ref.isReachable = response.data.isReachable;
         ref.isLoaded = true;
+        this.isLoadingReference = false;
       } catch (error) {
         console.log("error")
       }
@@ -432,10 +433,14 @@ export default defineComponent({
         message: "Preview...",
         type: "success",
       });
-      this.$router.push({
-        name: "Reader", // 路由名称，需在路由配置中定义
-        query: { id: this.id },
-      });
+      this.increaseReadCnt();
+      const url = this.$router.resolve({ name: 'Reader', query: { id: this.id } }).href;
+      console.log(url);
+      // this.$router.push({
+      //   name: "Reader", // 路由名称，需在路由配置中定义
+      //   query: { id: this.id },
+      // });
+      window.open(url, '_blank');
     },
     goToAuthorPage(author) {
       this.$message({
@@ -448,6 +453,14 @@ export default defineComponent({
         message: `Redirecting to articles related to ${keyword}...`,
         type: "info",
       });
+      localStorage.setItem('searchOption', 5);
+      localStorage.setItem('searchString', keyword);
+      localStorage.setItem('topic', '')
+      if (!this.$route.path.includes('search/result')) {
+        router.push('search/result');
+      } else {
+        window.location.reload();
+      }
     },
     gotoArticlePage(paperId) {
       this.$router.push({
@@ -491,6 +504,18 @@ export default defineComponent({
     },
     toggleExpand() {
       this.isExpanded = !this.isExpanded;
+    },
+    async increaseReadCnt() {
+      try {
+        const response = await axios.get(INCREASE_READ_CNT_API);
+        if (response.status === 200) {
+          console.log("用户阅读次数加一")
+        } else {
+          console.error("添加阅读次数失败", response.data.message)
+        }
+      } catch (error) {
+        console.error("请求失败:", error)
+      }
     }
   },
 });
