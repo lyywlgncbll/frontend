@@ -14,8 +14,7 @@
             <div :class="{ main: true, collapsed: !isExpand }">
                 <searchNav @sortChanged="handleSort" :totalEntries="totalEntries"></searchNav>
                 <searchTopic></searchTopic>
-                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
-                    @openClaimForm="showClaimForm">
+                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index">
                 </searchItem>
                 <div class="page">
                     <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPages"></pageComponent>
@@ -175,7 +174,6 @@ const advancedSearch = async () => {
     display: flex;
     margin: 30px auto;
     position: relative;
-    transition: all 1s ease;
 }
 
 .left-bar {
@@ -185,11 +183,10 @@ const advancedSearch = async () => {
     width: 20%;
     overflow: hidden;
     height: 100%;
-    transition: all .1s ease;
 }
 
 .left-bar.collapsed {
-    width: 0;
+    width: 0%;
 }
 
 .left-expand {
@@ -213,17 +210,10 @@ const advancedSearch = async () => {
     width: 75%;
     min-height: 80vh;
     margin: 0 auto;
-    transition: all 0.3 ease;
     position: relative;
 
-    .null {
-        width: 100%;
-        height: 70vh;
-        text-align: center;
-    }
-
     &.collapsed {
-        width: 90%;
+        width: 95%;
     }
 
     .page {
