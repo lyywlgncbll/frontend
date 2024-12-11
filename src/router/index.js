@@ -14,11 +14,8 @@ import HotTopic from "@/pages/hotTopic/hotTopic.vue"
 import HomePage from "~/pages/homePage/homePage.vue"
 
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
-<<<<<<< Updated upstream
 
 import ResetPassword from "~/pages/user/resetPassword.vue";
-=======
->>>>>>> Stashed changes
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
 import Login from "../pages/user/login.vue"
