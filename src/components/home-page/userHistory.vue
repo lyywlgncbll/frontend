@@ -107,7 +107,7 @@ export default defineComponent({
 <template>
   <div class="history-container" id="page-root">
     <h2 class="history-title">阅读历史记录</h2>
-    <div v-if="historyData" class="history-list">
+    <div v-if="historyData && historyData.length>0" class="history-list">
       <div v-for="(item, index) in historyData" :key="index" class="history-item">
         <div class="paper-info">
           <h3 class="paper-title" :title="item.title">{{ item.title }}</h3>

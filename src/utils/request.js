@@ -13,6 +13,7 @@ export const REFERENCE_API = `/api/academic/getReferenceById`
 
 //登录注册页
 export const LOGIN_API = `/user/auth/login`;
+export const ADMIN_LOGIN_API = `/op/login`;
 export const SEND_EMAIL_API = `/user/reg/verify`;
 export const REGISTER_API = `/user/reg/create`;
 

@@ -65,7 +65,7 @@ import ProfileHeader from "../components/UserInfo/ProfileHeader.vue";
 import References from '../components/UserInfo/References.vue';
 import Tabs from "../components/UserInfo/Tabs.vue";
   export default {
-    name: "Index",
+    name: "userInfo",
     components: {
       ProfileHeader,
       Tabs,
