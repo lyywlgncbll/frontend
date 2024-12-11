@@ -12,10 +12,9 @@ import userInfo from '../pages/userInfo.vue'
 
 import HotTopic from "@/pages/hotTopic/hotTopic.vue"
 import HomePage from "~/pages/homePage/homePage.vue"
-import ResetPassword from "~/pages/user/resetPassword.vue"
+
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
-import Login from "../pages/user/login.vue";
-import Register from "../pages/user/register.vue";
+
 import ResetPassword from "~/pages/user/resetPassword.vue";
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
