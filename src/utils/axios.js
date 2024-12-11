@@ -5,7 +5,7 @@ const BASE_URL = `http://${BASE_IP}:${BASE_PORT}`;
 // 创建 Axios 实例
 const instance = axios.create({
     baseURL: BASE_URL,  // 配置你的基础 API 地址
-    timeout: 10000  // 设置请求超时
+    timeout: 100000  // 设置请求超时
 });
 
 // 请求拦截器：在请求发送前动态设置请求头
