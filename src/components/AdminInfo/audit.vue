@@ -1,26 +1,22 @@
 <template>
-    <div class="menu-container">
-      <div class="title">
-        <button class="titleButton" v-on:click="handleAcceptSelected"> 通过已选</button>
-        <button class="titleButton" v-on:click="handleRejectedSelected">拒绝已选</button>  
-        
-      </div>  
-      <div class="select-menu-pos">
-          <selectMenu @updateTableTo="updateTableTo"/>
-      </div>
-      <el-empty v-if="this.tableData.length === 0" description="暂无数据"></el-empty>
-      <div v-else>
-        <div class="claimTable-pos">
-          <claimTable ref="claimTable" :tableData="tableData" :batchAction="handleBatchAction" @name-clicked="handleNameClick"/>
-        </div>
-        <div style="text-align: center; margin-top: 1%;margin-bottom: 4%;">
-          <pageComponent class="pageComponent" v-model:currentPage="currentPage"
-              v-model:totalPage="totalPage" @update:currentPage="updatePage" />
-        </div>
-      </div>
-        
-      
+  <div class="menu-container">
+    <div class="title">
+      <button class="titleButton" v-on:click="handleAcceptSelected"> 通过已选</button>
+      <button class="titleButton" v-on:click="handleRejectedSelected">拒绝已选</button>
     </div>
+    <div class="select-menu-pos">
+      <selectMenu @updateTableTo="updateTableTo" />
+    </div>
+    <el-empty v-if="this.tableData.length === 0" description="暂无数据"></el-empty>
+    <div v-else>
+      <div class="claimTable-pos">
+        <claimTable ref="claimTable" :tableData="tableData" :batchAction="handleBatchAction"
+          @name-clicked="handleNameClick" />
+      </div>
+      <pageComponent class="pageComponent" v-model:currentPage="currentPage" v-model:totalPage="totalPage"
+        @update:currentPage="updatePage" />
+    </div>
+  </div>
 </template>
 <script>
 import selectMenu from './auditComponent/selectMenu.vue';
@@ -29,8 +25,8 @@ import pageComponent from '../search/pageComponent.vue';
 import axios from "@/utils/axios";
 import { GETCLAIMALL_API, GETUSER_API } from '@/utils/request.js'
 
-export default{
-  data(){
+export default {
+  data() {
     return {
       tableData: [],
       currentPage: 1,
@@ -39,86 +35,86 @@ export default{
       filterStatus: "pending_only",
     };
   },
-  components:{
+  components: {
     selectMenu,
     claimTable,
     pageComponent
   },
-  created(){
+  created() {
     this.getClaim();
   },
-  methods:{
-    getClaim(){
+  methods: {
+    getClaim() {
       try {
-          axios.get(GETCLAIMALL_API,{
-            params: {
-                keyword: this.keyword,
-                pageSize: this.pageSize,
-                page: this.currentPage,
-                queryMode: this.filterStatus
-              }
-            }).then(response => {
-              if (response.status === 200) {
-                this.tableData = response.data.view;
-                this.totalPage = response.data.totalPage;
-              }
-          }).then(()=>{
-              this.updateAllUser();
-          });
-        } catch (error) {
-            console.error('update failed:', error);
-        }
+        axios.get(GETCLAIMALL_API, {
+          params: {
+            keyword: this.keyword,
+            pageSize: this.pageSize,
+            page: this.currentPage,
+            queryMode: this.filterStatus
+          }
+        }).then(response => {
+          if (response.status === 200) {
+            this.tableData = response.data.view;
+            this.totalPage = response.data.totalPage;
+          }
+        }).then(() => {
+          this.updateAllUser();
+        });
+      } catch (error) {
+        console.error('update failed:', error);
+      }
       //调用接口获取数据
     },
-    async updateAllUser(){
+    async updateAllUser() {
       this.tableData.map(async (claim) => {
         const user = await this.getUser(claim.claim.userID);
-        try{
-          axios.get(GETUSER_API,{
+        try {
+          axios.get(GETUSER_API, {
             params: {
               userID: claim.claim.userID
-              }
-            }).then(response => {
-              if (response.status === 200) {
-                claim.name = response.data.name;
-              }
+            }
+          }).then(response => {
+            if (response.status === 200) {
+              claim.name = response.data.name;
+            }
           });
         } catch (error) {
           console.error('update failed:', error);
         }
       })
     },
-    async getUser(userID){
+    async getUser(userID) {
       try {
-          axios.get(GETUSER_API,{
-            params: {
-              userID: userID
-              }
-            }).then(response => {
-              if (response.status === 200) {
-                return response.data;
-              }
-          });
-        } catch (error) {
-          console.error('update failed:', error);
-        }
+        axios.get(GETUSER_API, {
+          params: {
+            userID: userID
+          }
+        }).then(response => {
+          if (response.status === 200) {
+            return response.data;
+          }
+        });
+      } catch (error) {
+        console.error('update failed:', error);
+      }
     },
-    updateTableTo(status){
+    updateTableTo(status) {
       this.filterStatus = this.getFilterStatus(status);
       this.getClaim();
       //更新（搜索）指定状态的表单
     },
-    handleAcceptSelected(){
+    handleAcceptSelected() {
       this.handleBatchAction("ACCEPTED");
     },
-    handleRejectedSelected(){
+    handleRejectedSelected() {
       this.handleBatchAction("REJECTED");
     },
     handleNameClick(row) {
       console.log('Clicked on name:', row);
     },
-    getFilterStatus(status){
-      switch(status){
+    getFilterStatus(status) {
+      switch (status) {
         case "pending":
           return "pending_only";
         case "accepted":
@@ -143,39 +139,47 @@ export default{
 </script>
 <style scoped>
 .menu-container {
-  display: relative;
+  position: relative;
+  height: 700px;
   width: 90%;
   padding: 50px;
-  border: 2px solid #ccc; /* 设置边框 */
-  border-radius: 10px; /* 设置圆角 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 设置阴影 */
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-.titleButton{
-  border: 2px solid #ccc; /* 设置边框 */
-  padding: 0px 10px; /* 调整上下和左右的内边距 */
+
+.titleButton {
+  border: 2px solid #ccc;
+  /* 设置边框 */
+  padding: 0px 10px;
+  /* 调整上下和左右的内边距 */
   margin: 2px;
   font-size: medium;
   font-weight: 200;
 }
+
 .titleButton:hover {
-  background-color: #f0f0f0; 
-}
-.select-menu-pos{
-  position: absolute;
-  right: 12%;
-  top:160px;
+  background-color: #f0f0f0;
 }
 
+.select-menu-pos {
+  position: absolute;
+  right: 50px;
+  top: 50px;
+}
 
 .selected-label {
   margin-right: 10px;
 }
-.claimTable-pos{
+
+.claimTable-pos {
   margin: 50px 0px;
 }
-.pageComponent{
+
+.pageComponent {
   position: absolute;
+  bottom: 10px;
   left: 50%;
-  /* transform: translateX(-50%); */
+  transform: translateX(-50%);
 }
 </style>

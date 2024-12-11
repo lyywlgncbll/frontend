@@ -2,7 +2,7 @@
     <div class="container">
         <div class="tools">
             <div class="cite">
-                <img src="/src/assets/search/icon/cite.svg" alt="cite" width="20px" height="20px">
+                <img src="/src/assets/iconfonts/search/cite.svg" alt="cite" width="20px" height="20px">
                 <p>引用 ( {{ searchItem.citationCount }} )</p>
             </div>
         </div>

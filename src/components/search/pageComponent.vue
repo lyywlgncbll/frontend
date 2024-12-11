@@ -4,7 +4,7 @@
     <!-- 上一页按钮 -->
     <el-button :disabled="currentPage === 1" @click="changePage(currentPage - 1)" :circle="true" type="primary"
       size="small" class="changePageButton">
-      <img src="/src/assets/search/icon/down-expand2.svg" class="changePageButtonIcon" style="transform: rotate(90deg);">
+      <img src="/src/assets/iconfonts/search/down-expand2.svg" class="changePageButtonIcon" style="transform: rotate(90deg);">
     </el-button>
     <!-- 页码按钮 -->
     <el-button :type="page === currentPage ? 'primary' : ''" :plain="true" v-for="page in pages" :key="page"
@@ -15,7 +15,7 @@
     <!-- 下一页按钮 -->
     <el-button :disabled="currentPage === totalPage" @click="changePage(currentPage + 1)" circle="true" type="primary"
       size="small" class="changePageButton">
-      <img src="/src/assets/search/icon/down-expand2.svg" class="changePageButtonIcon" style="transform: rotate(-90deg);">
+      <img src="/src/assets/iconfonts/search/down-expand2.svg" class="changePageButtonIcon" style="transform: rotate(-90deg);">
     </el-button>
   </div>
 </template>

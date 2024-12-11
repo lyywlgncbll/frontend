@@ -3,7 +3,7 @@
     <div id="search-root">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
-                <img src="/src/assets/search/icon/down-expand.svg" width="15px" height="15px"
+                <img src="/src/assets/iconfonts/search/down-expand.svg" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
