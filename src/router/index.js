@@ -12,8 +12,10 @@ import userInfo from '../pages/userInfo.vue'
 
 import HotTopic from "@/pages/hotTopic/hotTopic.vue"
 import HomePage from "~/pages/homePage/homePage.vue"
-import ResetPassword from "~/pages/user/resetPassword.vue"
+
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
+
+import ResetPassword from "~/pages/user/resetPassword.vue";
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
 import Login from "../pages/user/login.vue"
@@ -74,17 +76,21 @@ const routes = [
     {
         path: "/transfer/transferRequest",
         component: TransferRequest,
-    }, {
+    }, 
+    {
         path: "/selectCharacter",
         component: SelectCharacter,
         meta: { requiresGradient: true }
-    }, {
+    }, 
+    {
         path: "/home",
         component: HomePage,
-    }, {
+    }, 
+    {
         path: "/hotTopic",
         component: HotTopic,
-    }, {
+    }, 
+    {
         path: "/admin",
         component: AdminInfo,
         redirect: "/admin/platformOverview",
