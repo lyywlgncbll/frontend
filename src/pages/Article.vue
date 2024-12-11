@@ -63,14 +63,16 @@
             <el-descriptions-item>
               <ul>
                 <li v-for="(reference, index) in paper.references" :key="index">
-                  
+
                   <div v-if="reference.isLoaded">
-                  <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
-                    type="primary">{{ reference.title
-                    }}</el-link>
-                  <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
-                    type="primary">{{
-                      reference.title }}</el-link></div><div v-else></div>
+                    <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
+                      type="primary">{{ reference.title
+                      }}</el-link>
+                    <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
+                      type="primary">{{
+                        reference.title }}</el-link>
+                  </div>
+                  <div v-else></div>
                 </li>
               </ul>
             </el-descriptions-item>
@@ -359,7 +361,6 @@ export default defineComponent({
     },
     async fetchReferenceData(ref) {
       try {
-        console.log(ref);
         console.log(ref.id);
         const response = await axios.get(REFERENCE_API, {
           params: {
@@ -378,9 +379,12 @@ export default defineComponent({
       await this.delay(2000);
       // 并行请求所有引用数据
       //const referencePromises = 
-      this.paper.references.map(ref =>
-        this.fetchReferenceData(ref)
-      );
+      for (const ref of this.paper.references) {
+        // Wait until the reference is loaded
+        while (!ref.isLoaded) {
+          await this.fetchReferenceData(ref);  // Fetch data asynchronously and wait
+        }
+      }
 
       // 等待所有引用数据请求都完成
       //await Promise.all(referencePromises);
@@ -419,7 +423,7 @@ export default defineComponent({
         console.error('下载失败', error);
       }
     },
-    getReferenceLength(){
+    getReferenceLength() {
       return this.paper.references.length;
     },
     preview() {
