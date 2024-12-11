@@ -173,6 +173,11 @@ onMounted(() => {
     method: 'post',
     url: GET_HISTORY_RATE + `?articleId=${props.id}`,
   }
+  // axios.post(GET_HISTORY_RATE + `?articleId=${props.id}`).then((response) => {
+  //   axios.post(SEND_HISTORY_RATE + `?articleId=${props.id}&readingProgress=${response.data.progress}`).then(() => {
+  //     console.log("get and send")
+  //   })
+  // })
   axios(config).then((response:AxiosResponse) => {
     const config = {
       method: 'post',
