@@ -54,7 +54,7 @@ export default {
   padding-top: 60px;
   width: 300px;
   max-width: 300px;
-  min-width: 280px;
+  min-width: 190px;
   height: 100vh;
   border-right: 1px solid var(--page-border-color);
   display: flex;

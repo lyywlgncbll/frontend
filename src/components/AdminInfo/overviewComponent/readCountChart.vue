@@ -56,8 +56,6 @@ export default {
     },
     // 获取图表的配置
     getChartOptions() {
-      const maxData = Math.max(...this.data);
-      const maxLimit = maxData > 0 ? maxData * 1.2 : 1; 
       const totalDataPoints = this.data.length;
       const startIndex = totalDataPoints > 10 ? totalDataPoints - 10 : 0;
 
@@ -92,7 +90,6 @@ export default {
           axisLabel: {
             color: '#999',
           },
-          max: maxLimit, // 设置 y 轴的最大值为最大数据值的 1.2 倍
         },
         dataZoom: [
           {
