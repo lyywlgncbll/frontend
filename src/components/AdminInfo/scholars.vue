@@ -13,7 +13,7 @@
 </template>
 <script>
 import scholarsTable from './scholarsComponent/scholarsTable.vue';
-import pageComponent from '../pageComponent.vue';
+import pageComponent from '../search/pageComponent.vue';
 import axios from "@/utils/axios";
 import { SCHOLARSCOUNT_API,GETSCOLARS_API } from '@/utils/request.js'
 export default{
@@ -54,7 +54,8 @@ export default{
   },
   methods:{
     updatePage(page) {
-      // 切页
+      this.currentPage = page;
+      this.updateContent();
     },
     updateContent(){
       try{
@@ -71,7 +72,7 @@ export default{
               id: item.user.id,
               name: item.authorName || '未知',
               mail: item.user.mail || '无邮箱',
-              institution: '未知机构',
+              institution: item.org ||'未知机构',
               createTime: this.formatDate(item.registerDate) || '未知日期',
               articleCount: item.publicationsCount || 0
             }));

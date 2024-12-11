@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { handleError, ref, watch } from 'vue'
+import { ref } from 'vue'
 import timeFilter from '@/components/search/filter/timeFilter.vue'
 import fieldFilter from '@/components/search/filter/fieldFilter.vue'
 
@@ -61,11 +61,7 @@ const handleJournalChanged = (selectedJournal) => {
     transition: all 0.3s ease;
     min-width: 150px;
     border: 1px solid var(--bar-border-color);
-    border-radius: 4px;
+    border-radius: 5px;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-}
-
-.sidebar.collapsed {
-    transform: translateX(-100%);
 }
 </style>

@@ -1,43 +1,40 @@
 <template>
     <div class="menu-container">
       <div class="title">
-        <button class="titleButton" v-on:click="handleAcceptSelected"> 一键通过</button>
-        <button class="titleButton" v-on:click="handleRejectedSelected">一键拒绝</button>  
+        <button class="titleButton" v-on:click="handleAcceptSelected"> 通过已选</button>
+        <button class="titleButton" v-on:click="handleRejectedSelected">拒绝已选</button>  
         
       </div>  
       <div class="select-menu-pos">
-          <selectMenu class="select-menu" @updateTableTo="updateTableTo"/>
-        </div>
-      <div class="claimTable-pos">
+          <selectMenu @updateTableTo="updateTableTo"/>
+      </div>
+      <el-empty v-if="this.tableData.length === 0" description="暂无数据"></el-empty>
+      <div v-else>
+        <div class="claimTable-pos">
           <claimTable ref="claimTable" :tableData="tableData" :batchAction="handleBatchAction" @name-clicked="handleNameClick"/>
+        </div>
+        <div style="text-align: center; margin-top: 1%;margin-bottom: 4%;">
+          <pageComponent class="pageComponent" v-model:currentPage="currentPage"
+              v-model:totalPage="totalPage" @update:currentPage="updatePage" />
+        </div>
       </div>
-      <div style="text-align: center; margin-top: 1%;margin-bottom: 4%;">
-        <pageComponent class="pageComponent" v-model:currentPage="currentPage"
-            v-model:totalPage="totalPage" @update:currentPage="updatePage" />
-      </div>
+        
+      
     </div>
 </template>
 <script>
 import selectMenu from './auditComponent/selectMenu.vue';
 import claimTable from './auditComponent/claimTable.vue'
-import pageComponent from '../pageComponent.vue';
+import pageComponent from '../search/pageComponent.vue';
 import axios from "@/utils/axios";
 import { GETCLAIMALL_API, GETUSER_API } from '@/utils/request.js'
 
 export default{
   data(){
     return {
-      tableData: [{
-        id:1,
-        user:{
-          name: 'test'
-        },
-        claim:{
-          id:15,status:"PENDING",
-        }
-      }],
+      tableData: [],
       currentPage: 1,
-      totalPage: 7,
+      totalPage: 1,
       pageSize: 6,
       filterStatus: "pending_only",
     };
@@ -168,21 +165,7 @@ export default{
   right: 12%;
   top:160px;
 }
-.select-menu {
-  align-items: center;
-  cursor: pointer;
-  border-right: 1px solid var(--bar-border-color);
-  padding: 3px 10px;
-  background-color: transparent;
-  transition: 0.3s ease;
-  color:var(--bar-font-color);
-  max-width: 90px;
-  min-width: 80px;
-}
-.select-menu:hover{
-  transition: background-color 0.3s ease;
-  background-color: var(--button-hover-color);
-}
+
 
 .selected-label {
   margin-right: 10px;

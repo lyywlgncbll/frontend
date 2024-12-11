@@ -27,10 +27,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, onUnmounted } from 'vue';
 import searchFilter from '/src/components/search/searchFilter.vue';
 import searchItem from '/src/components/search/searchItem.vue';
-import pageComponent from '/src/components/pageComponent.vue';
+import pageComponent from '/src/components/search/pageComponent.vue';
 import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
 import searchNav from '@/components/search/searchNav.vue';
 import searchTopic from '@/components/search/searchTopic.vue';
@@ -40,10 +40,21 @@ import { SEARCH_API } from '../../utils/request.js'
 const searchContent = ref("learning")
 const option = ref(2)
 onMounted(() => {
-    searchContent.value = localStorage.getItem('searchString')
-    option.value = Number(localStorage.getItem('searchOption'))
+    if (localStorage.getItem('topicObj')) {
+        searchContent.value = JSON.parse(localStorage.getItem('topicObj')).name
+        option.value = 6
+    } else {
+        searchContent.value = localStorage.getItem('searchString')
+        option.value = Number(localStorage.getItem('searchOption'))
+    }
     // console.log(searchContent.value, option.value);
     search()
+})
+
+onUnmounted(() => {
+    localStorage.setItem('topicObj', '')
+    localStorage.setItem('searchString', '')
+    localStorage.setItem('searchOption', 1)
 })
 
 //侧边栏是否展开
@@ -59,25 +70,9 @@ const menuItems = ref([
 ])
 
 const searchItems = ref([])
-
-//表单
-const isShow = ref(false);
-const formId = ref(null);
-const formAuthor = ref(null)
-const formTitle = ref(null)
-const showClaimForm = (id, title, author) => {
-    isShow.value = true
-    formId.value = id
-    formTitle.value = title
-    formAuthor.value = author
-}
-const closeClaimForm = () => {
-    isShow.value = false
-}
-
 //分页
 const currentPage = ref(1)
-const totalPages = ref(5)
+const totalPages = ref(1)
 const pageSize = ref(7)
 
 //获取筛选数据
@@ -85,6 +80,7 @@ const handleFilter = (selections) => {
     years.value = selections.years
     journals.value = selections.journals
     fields.value = selections.fields
+    currentPage.value = 1
     advancedSearch()
 }
 
@@ -97,8 +93,8 @@ const handleSort = (sort) => {
 
 watch(currentPage, () => {
     // console.log(currentPage.value);
-    // search()
-    advancedSearch()
+    search()
+    // advancedSearch()
 })
 
 const totalEntries = ref(0)
@@ -106,7 +102,6 @@ const sortBy = ref(1)
 const years = ref([])
 const journals = ref([])
 const fields = ref([])
-const num = ref(0)
 const search = async () => {
     try {
         await axios.post(SEARCH_API, {
@@ -118,7 +113,7 @@ const search = async () => {
             currentPage: currentPage.value,
         }).then(response => {
             if (response.status == 200) {
-                console.log("初级", response.data);
+                // console.log("初级", response.data);
                 menuItems.value[0].contents = response.data.years
                 menuItems.value[1].contents = response.data.fields
                 menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
@@ -148,7 +143,7 @@ const advancedSearch = async () => {
             fields: fields.value
         }).then(response => {
             if (response.status == 200) {
-                console.log("高级", response.data);
+                // console.log("高级", response.data);
                 searchItems.value = response.data.papers
                 totalPages.value = response.data.totalPages
                 totalEntries.value = response.data.totalEntries

@@ -31,15 +31,23 @@
   
 <style scoped>
 .selectMenu {
-  padding: 2px 8px;
-  width: 250px;
+  cursor: pointer;
+  padding: 3px 10px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
-    
+  max-width: 90px;
+  min-width: 80px;
+  align-items: center;
 }
-.selectMenu:hover{
-
+.select-menu {
+  background-color: transparent;
+  transition: 0.3s ease;
+  color:var(--bar-font-color);
+}
+.select-Menu:hover{
+  transition: background-color 0.3s ease;
+  background-color: var(--button-hover-color);
 }
 </style>
   

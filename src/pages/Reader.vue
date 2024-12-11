@@ -3,7 +3,7 @@
 
   </div>
   <div class="pdf-preview">
-    <div class="pdf-wrap">
+    <div class="pdf-wrap" v-if="loadStatus === LoadStatus.Success">
       <vue-pdf-embed 
         class="vue-pdf-embed" 
         :source="state.data" 
@@ -13,10 +13,23 @@
         @loaded="afterPDFLoaded"
       />
     </div>
+    <div class="middle loading" v-if="loadStatus === LoadStatus.Failed">
+      <p>对不起，该链接无法打开</p>
+    </div>
+    <div class="middle loading" v-if="loadStatus === LoadStatus.Loading">
+      <el-header>
+        <el-icon class="is-loading" size="160px">
+          <Loading />
+        </el-icon>
+      </el-header>
+      <el-footer>
+        <!-- <p>加载中</p> -->
+      </el-footer>
+    </div>
   </div>
-  <div class="AI-reading">
+  <div class="AI-reading" v-if="showAIReading">
     <el-header class="header">
-      <!-- <el-icon class="close" @click="showAIReading = false"><Close /></el-icon> -->
+      <el-icon class="close" @click="showAIReading = false"><Close /></el-icon>
     </el-header>
     <el-main class="main">
       <div v-for="QAndA in QAndAList" :key="QAndA.index">
@@ -69,7 +82,7 @@
           />
         </el-col>
         <el-col :span="3">
-          <el-icon class="middle" color="grey" size="32px" @click="AIReading(), state.data=`test/01.pdf`"><Top /></el-icon>
+          <el-icon class="middle" color="grey" size="32px" @click="AIReading(), sendHistoryProgress()"><Top /></el-icon>
         </el-col>
       </el-row>
     </el-footer>
@@ -82,6 +95,7 @@ import VuePdfEmbed from "vue-pdf-embed";
 import { createLoadingTask } from "vue3-pdfjs";
 import { QIANFAN_ASK, GET_HISTORY_RATE, SEND_HISTORY_RATE, GET_PDF_BINARY, ARTICLE_API } from "@/utils/request"
 import { ElNotification } from 'element-plus'
+import { AxiosError, AxiosResponse } from "axios";
 const props = defineProps({
   //for pdf render
   id:{
@@ -100,15 +114,26 @@ const state = reactive({
 
 var loadedPageNum = 0
 
+enum LoadStatus {
+  Loading = "Loading",
+  Success = "Success",
+  Failed = "Failed",
+}
+
+const showAIReading = ref(true)
+
+const loadStatus = ref<LoadStatus>(LoadStatus.Loading);
+
 onMounted(() => {
   loadedPageNum = 0
   //for pdf render
   console.log(props.id)
+  const articleId = props.id
   var config = {
     method: 'get',
     url: ARTICLE_API + `?publicationId=${props.id}`
   }
-  axios(config).then((response:any) => {
+  axios(config).then((response:AxiosResponse) => {
     const url = response.data.pdfurl
     console.log("url: ", url)
     config = {
@@ -117,6 +142,8 @@ onMounted(() => {
       responseType: 'blob',
     }
     axios(config).then((response: any) => {
+      loadStatus.value = LoadStatus.Success
+
       // window.atob(response.data)
       const blob = response.data;  // 获取 Blob 数据
   
@@ -137,8 +164,28 @@ onMounted(() => {
   
       // 读取 Blob 数据为 Data URL
       reader.readAsDataURL(blob);
+    }).catch((error:AxiosError) => {
+      console.log(error)
+      loadStatus.value = LoadStatus.Failed
     })
-
+  })
+  config = {
+    method: 'post',
+    url: GET_HISTORY_RATE + `?articleId=${props.id}`,
+  }
+  // axios.post(GET_HISTORY_RATE + `?articleId=${props.id}`).then((response) => {
+  //   axios.post(SEND_HISTORY_RATE + `?articleId=${props.id}&readingProgress=${response.data.progress}`).then(() => {
+  //     console.log("get and send")
+  //   })
+  // })
+  axios(config).then((response:AxiosResponse) => {
+    const config = {
+      method: 'post',
+      url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${response.data.progress}`
+    }
+    axios(config).then(() => {
+      console.log("get and send") 
+    })
   })
   // state.source = `D:/40995/Documents/课程资料/软分/frontend/dist/test/01.pdf`
   // state.source = url
@@ -152,15 +199,16 @@ onMounted(() => {
 
 onUnmounted(() => {
   // for history progress 
+  sendHistoryProgress()
   window.removeEventListener('beforeunload', sendHistoryProgress)
 })
 
 const sendHistoryProgress = () => {
-  const articleId = "1"
+  const articleId = props.id
   const rate = calReadingProgressRate()
   const config = {
     method: 'post',
-    url: SEND_HISTORY_RATE + `?articleId="${articleId}"&readingProgress=${rate}`
+    url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${rate}`
   }
   axios(config).then((response:any) => {
     console.log(response)
@@ -184,14 +232,14 @@ const handleInput = (event : KeyboardEvent) => {
     AIReading()
   }
 }
-
+const token = localStorage.getItem('authToken')
 const AIReading = () => {
   if (textarea.value == null || textarea.value === "") {
     return
   }
   const question = textarea.value
   AIconfig.data.question = question
-  AIconfig.data.sessionId = "1"
+  AIconfig.data.sessionId = token == null ? "" : token
   sendAIReadingRequest(AIconfig).then((answer : string) => {
       if (answer != null) {
         answer = formatString(answer)
@@ -220,7 +268,7 @@ const AIconfig = {
   method: 'post',
   url: QIANFAN_ASK,
   data: {
-    sessionId: "1",
+    sessionId: token,
     question: "",
   },
 }
@@ -284,10 +332,10 @@ const afterPDFLoaded = () => {// 每加载一个页面就会调用一次该函�
 }
 
 const scrollTo = () => {
-  const articleId = "1"
+  const articleId = props.id
   const config = {
     method: 'post',
-    url: GET_HISTORY_RATE + `?articleId="` + articleId + `"`,
+    url: GET_HISTORY_RATE + `?articleId=` + articleId,
   }
   axios(config).then((resopnse:any) => {
     console.log(resopnse)
@@ -295,7 +343,7 @@ const scrollTo = () => {
     const scrollHeight = document.documentElement.scrollHeight
     const clientHeight = document.documentElement.clientHeight
     const top = rate/100*(scrollHeight - clientHeight)
-    console.log("in scrollTo " + top + " " + scrollHeight + " " + clientHeight)
+    console.log("in scrollTo top = " + top + " rate = " + rate)
     console.log("call function scrollTo")
     if (top != 0) {
       ElNotification({
@@ -332,9 +380,16 @@ const scrollTo = () => {
 .pdf-wrap {
   overflow-y: auto;
 }
+.loading {
+  position: absolute;
+  z-index: 100;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%);
+}
 .AI-reading {
   position: fixed;
-  z-index: 100;
+  z-index: 50;
   top: 0%;
   left: 0%;
   width: 25%;
@@ -346,7 +401,7 @@ const scrollTo = () => {
   transform: translateX(-50%);
 }
 .header {
-  height: 0%;
+  height: 3%;
   padding: 0;
   display: flex;
   justify-content: flex-end;
@@ -357,7 +412,7 @@ const scrollTo = () => {
   right: calc((3vh - 16px)/2);
 }
 .main {
-  height: calc(100vh - 94px - 16px);
+  height: calc(97vh - 94px - 16px);
   overflow-y: scroll;
   padding-top: 2.5%;
   padding-bottom: 2.5%;
@@ -377,6 +432,7 @@ const scrollTo = () => {
 .question {
   display: flex;
   justify-content: flex-end;
+  padding-bottom: 5px;
 }
 .msg {
   border: 2px solid grey;

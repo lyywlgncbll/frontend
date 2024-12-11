@@ -38,6 +38,12 @@ export default{
     methods:{
         changeToScholars(){
             this.$router.push('/admin/scholars');
+        },
+        formatDate(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
     },
     created(){
@@ -66,14 +72,28 @@ export default{
             axios.get(GETALLREADCOUNT_API).then(response => {
                 if (response.status === 200) {
                     const responseData = response.data;
+                    console.log(responseData);
                     this.readDate.length = 0;
                     this.readCount.length = 0;
-                    // 遍历响应数据，填充 readDate 和 readCount
-                    responseData.forEach(item => {
-                        this.readDate.push(item.date);
-                        this.readCount.push(item.total_count);
+                    // 获取当前日期
+                    const today = new Date();
+                    const last15Days = [];
+                    for(let i = 14; i >= 0; i--) {
+                        const date = new Date(today);
+                        date.setDate(today.getDate() - i);
+                        last15Days.push(this.formatDate(date)); 
+                    }
+                    last15Days.forEach(date => {
+                        const item = responseData.find(item => item.date === date);
+                        if (item) {
+                            this.readDate.push(item.date);
+                            this.readCount.push(item.total_count);
+                        } else {
+                            this.readDate.push(date);
+                            this.readCount.push(0);
+                        }
                     });
-                    this.isDataLoaded=true;
+                    this.isDataLoaded = true;
                 }
             });
         } catch (error) {

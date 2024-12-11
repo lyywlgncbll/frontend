@@ -1,7 +1,7 @@
 <template>
     <div id="topic-item" class="topicItem">
         <div class="index">{{ index + 1 }}</div>
-        <div class="topic" :title="'Topic'" @click="clickTopic(item.name)">
+        <div class="topic" :title="'Topic'" @click="clickTopic()">
             {{ item.name }}
         </div>
         <div class="info">
@@ -27,14 +27,15 @@ const props = defineProps({
     index: Number
 })
 
-const clickTopic = (content) => {
-    localStorage.setItem('searchOption', 2)
-    localStorage.setItem('searchString', content)
-    localStorage.setItem('topic', content)
+const clickTopic = () => {
+    localStorage.setItem('searchOption', 1)
+    localStorage.setItem('searchString', '')
+    localStorage.setItem('topicObj', JSON.stringify(props.item))
     router.push('search/result')
 }
 const clickKeyword = (content) => {
-    localStorage.setItem('searchOption', 2)
+    localStorage.setItem('searchOption', 5)
+    localStorage.setItem('topicObj', '')
     localStorage.setItem('searchString', content)
     router.push('search/result')
 }
