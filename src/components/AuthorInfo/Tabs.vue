@@ -45,7 +45,6 @@ export default {
 
 <style scoped>
 .tabs {
-  width: 60vw;
   display: flex;
   border-bottom: 2px solid #e0e0e0;
   background-color: white;

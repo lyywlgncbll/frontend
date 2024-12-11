@@ -1,29 +1,47 @@
 <template>
   <div class="profile-header">
-    <img :src="avatar" alt="加载中" class="avatar" />
+    <img :src="avatar" alt="加载中" class="avatar">
+    </img>
     <div class="profile-info">
       <h2 class="name">{{ name }}</h2>
+      <p class="institution">{{ institution }}</p>
+      <p class="research-areas">
+        <span v-for="(area, index) in researchAreas" :key="index">
+          {{ area }}<span v-if="index < researchAreas.length - 1"> / </span>
+        </span>
+      </p>
+      <p class="bio">{{ bio }}</p> 
     </div>
   </div>
 </template>
 
 <script>
-
-
 export default {
   name: "ProfileHeader",
   props: {
+    editable: {
+      type: Boolean,
+      default: false, // 默认非编辑状态
+    },
+    avatar: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
     },
-    authorization:{
+    institution: {
       type: String,
       required: true,
     },
-    avatar: {  // 添加 avatar 这个 prop
+    researchAreas: {
+      type: Array,
+      default: () => [],
+    },
+    bio: {  // 个人描述字段
       type: String,
-      required: true,
+      default: '生动有趣的个人描述更容易让别人认识你~',
     },
   },
   data() {
@@ -31,14 +49,9 @@ export default {
      
     };
   },
-  watch: {
-   
-
-
-  },
   methods: {
-
-  }
+    
+  },
 };
 </script>
 
@@ -47,9 +60,7 @@ export default {
   margin-bottom: 10px;
   height: 35vh;
   display: flex;
-  flex-direction: column; 
   align-items: center;
-  justify-content: center;
   border-bottom: 1px solid #e0e0e0;
   padding: 16px;
   background-color: white;
@@ -59,11 +70,12 @@ export default {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  margin-bottom: 16px;
+  margin-right: 16px;
 }
 
 .profile-info {
-  text-align: center; 
+  flex: 1;
+  padding-right: 50px;
 }
 
 .name {
