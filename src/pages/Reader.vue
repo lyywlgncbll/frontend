@@ -3,7 +3,7 @@
 
   </div>
   <div class="pdf-preview">
-    <div class="pdf-wrap" v-if="false">
+    <div class="pdf-wrap" v-if="loadStatus === LoadStatus.Success">
       <vue-pdf-embed 
         class="vue-pdf-embed" 
         :source="state.data" 
@@ -13,10 +13,10 @@
         @loaded="afterPDFLoaded"
       />
     </div>
-    <div class="middle loading" v-if="true">
+    <div class="middle loading" v-if="loadStatus === LoadStatus.Failed">
       <p>对不起，该链接无法打开</p>
     </div>
-    <div class="middle loading" v-if="true">
+    <div class="middle loading" v-if="loadStatus === LoadStatus.Loading">
       <p>加载中</p>
     </div>
   </div>
@@ -121,6 +121,7 @@ onMounted(() => {
   loadedPageNum = 0
   //for pdf render
   console.log(props.id)
+  const articleId = props.id
   var config = {
     method: 'get',
     url: ARTICLE_API + `?publicationId=${props.id}`
@@ -159,6 +160,19 @@ onMounted(() => {
     }).catch((error:AxiosError) => {
       console.log(error)
       loadStatus.value = LoadStatus.Failed
+    })
+  })
+  config = {
+    method: 'post',
+    url: GET_HISTORY_RATE + `?articleId="${props.id}"`,
+  }
+  axios(config).then((response:AxiosResponse) => {
+    const config = {
+      method: 'post',
+      url: SEND_HISTORY_RATE + `?articleId="${articleId}"&readingProgress=${response.data.progress}`
+    }
+    axios(config).then(() => {
+      console.log("get and send") 
     })
   })
   // state.source = `D:/40995/Documents/课程资料/软分/frontend/dist/test/01.pdf`
