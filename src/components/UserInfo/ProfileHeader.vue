@@ -32,23 +32,7 @@
 
        <!-- 编辑 Institution -->
        <p class="institution">{{ institution }}</p>
-      
-
-       <!-- 编辑 Research Areas -->
-       <p class="research-areas" v-if="!editable">
-        <span v-for="(area, index) in researchAreas" :key="index">
-          {{ area }}<span v-if="index < researchAreas.length - 1"> / </span>
-        </span>
-      </p>
-      <textarea
-        v-if="editable"
-        v-model="researchAreasLocal"
-        class="research-areas-edit"
-        placeholder="用逗号分隔研究方向，例如：AI, Machine Learning"
-      ></textarea>
-
-
-
+       
 
 
       <p class="bio" v-if="!editable">{{ bio }}</p> 

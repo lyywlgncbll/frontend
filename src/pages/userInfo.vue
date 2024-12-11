@@ -85,8 +85,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
           claim: null,
           researchAreas: ["Computer Vision", "Computer Graphics"],
           avatar: '',
-          institution: "Beihang University",
-          
+          institution: '未提供所属机构信息',
         },
         tabs:['认领门户','增值服务'],
         activeTab:0,
