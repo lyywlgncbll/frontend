@@ -1,18 +1,56 @@
 <template>
   <div class="profile-header">
-    <img :src="avatar" alt="加载中" class="avatar" @click="triggerFileInput" >
-      <form @submit.prevent="uploadAvatar" ref="avatarForm" style="display: none;">
-        <input type="file" ref="fileInput" @change="uploadAvatar" style="display: none;" />
-      </form> 
-    </img>
+    <div class="avatar-container" @click="triggerFileInput">
+      <img
+        v-if="avatar"
+        :src="avatar"
+        alt="加载中"
+        class="avatar"
+      />
+      <div v-else class="default-avatar">{{ getInitial }}</div>
+    </div>
+    <form @submit.prevent="uploadAvatar" ref="avatarForm" style="display: none;">
+      <input
+        type="file"
+        ref="fileInput"
+        @change="uploadAvatar"
+        style="display: none;"
+      />
+    </form>
     <div class="profile-info">
-      <h2 class="name">{{ name }}</h2>
-      <p class="institution">{{ institution }}</p>
-      <p class="research-areas">
+
+      
+       <!-- 编辑 Name -->
+       <h2 class="name" v-if="!editable">{{ name }}</h2>
+       <input
+        v-if="editable"
+        v-model="nameLocal"
+        class="name-edit"
+        type="text"
+        placeholder="输入姓名"
+       />
+
+       <!-- 编辑 Institution -->
+       <p class="institution">{{ institution }}</p>
+      
+
+       <!-- 编辑 Research Areas -->
+       <p class="research-areas" v-if="!editable">
         <span v-for="(area, index) in researchAreas" :key="index">
           {{ area }}<span v-if="index < researchAreas.length - 1"> / </span>
         </span>
       </p>
+      <textarea
+        v-if="editable"
+        v-model="researchAreasLocal"
+        class="research-areas-edit"
+        placeholder="用逗号分隔研究方向，例如：AI, Machine Learning"
+      ></textarea>
+
+
+
+
+
       <p class="bio" v-if="!editable">{{ bio }}</p> 
       <textarea v-if="editable" v-model="bioLocal" class="bio-edit"></textarea>
     </div>
@@ -57,23 +95,47 @@ export default {
   },
   data() {
     return {
-      bioLocal: this.bio, // 绑定到本地变量
+      nameLocal: this.name,
+      institutionLocal: this.institution,
+      researchAreasLocal: this.researchAreas.join(', '),
+      bioLocal: this.bio,
     };
   },
   watch: {
-    bio(newVal){
-      this.bioLocal=newVal;
-    }
+    name(newVal) { this.nameLocal = newVal; },
+    institution(newVal) { this.institutionLocal = newVal; },
+    researchAreas(newVal) { this.researchAreasLocal = newVal.join(', '); },
+    bio(newVal) { this.bioLocal = newVal; },
   },
+  computed: {
+    getInitial() {
+      // 返回 name 的第一个字母的大写形式
+      return this.name ? this.name.charAt(0).toUpperCase() : "";
+    },
+  },
+
   methods: {
+
     editProfile() {
       // 可以在这里触发编辑事件，比如显示一个编辑框
       this.$emit("editProfile");
     },
     saveProfile() {
-      // 触发保存事件，保存修改后的bio
-      this.$emit("saveProfile", this.bioLocal);
+      const updatedResearchAreas = this.researchAreasLocal.split(',').map(area => area.trim());
+      this.$emit("saveProfile", {
+        name: this.nameLocal,
+        institution: this.institutionLocal,
+        researchAreas: updatedResearchAreas,
+        bio: this.bioLocal,
+      });
     },
+
+
+
+
+
+
+
 
     // 通过ref触发input的click事件，模拟点击文件选择框
     triggerFileInput() {
@@ -134,16 +196,40 @@ export default {
   background-color: white;
 }
 
-.avatar {
+.avatar-container {
   width: 120px;
   height: 120px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
   margin-right: 16px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.default-avatar {
+  font-size: 48px;
+  color: #fff;
+  background-color: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .profile-info {
   flex: 1;
   padding-right: 50px;
+  flex-direction: column;
 }
 
 .name {
@@ -159,13 +245,46 @@ export default {
   font-size: 14px;
   color: #333;
 }
+
+.name-edit {
+  all: unset; /* 清除默认输入框样式 */
+  font-size: 24px; /* h2 的样式 */
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  border: none; /* 移除边框 */
+  width: 100%; /* 保证宽度一致 */
+}
+
+.institution-edit {
+  all: unset; /* 清除默认输入框样式 */
+  font-size: 16px; /* p 的样式 */
+  color: #666;
+  margin: 0;
+  padding: 0;
+  border: none; /* 移除边框 */
+  width: 100%; /* 保证宽度一致 */
+  
+}
+
+.research-areas-edit {
+  all: unset; /* 清除默认文本域样式 */
+  font-size: 14px; /* p 的样式 */
+  color: #333;
+  margin: 0;
+  margin-bottom: -25px;
+  padding: 0;
+  width: 100%; /* 保证宽度一致 */
+  resize: none; /* 禁止调整大小 */
+  
+}
+
 .bio {
   font-size: 16px;
   color: #333;
   background-color: #f7f7f7;
   border-left: 4px solid #4CAF50;
   padding: 10px 16px;
-  margin-top: 12px;
   border-radius: 8px;
   line-height: 1.5;
   max-height: 100px;
@@ -179,7 +298,6 @@ export default {
   background-color: #f7f7f7;
   border-left: 4px solid #4CAF50;
   padding: 10px 16px;
-  margin-top: 12px;
   border-radius: 8px;
   line-height: 1.5;
   width: 100%;  /* 让输入框的宽度填满可用空间 */

@@ -7,7 +7,8 @@
           <p class="author-name">{{ author.name }}</p>
           <p class="author-university">{{ author.university }}</p>
         </div>
-        <span class="arrow">➔</span>
+        <router-link :to="`/authorInfo/${encodeURIComponent(author.authorid)}`" class="arrow">➔</router-link>
+
       </div>
     </div>
   </template>

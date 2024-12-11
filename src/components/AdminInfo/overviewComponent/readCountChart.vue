@@ -1,12 +1,12 @@
 <template>
-    <div ref="chartContainer" style="width: 100%; height: 400px;"></div>
-  </template>
-  
+  <div ref="chartContainer" style="width: 100%; height: 400px;"></div>
+</template>
+
 <script>
-  import * as echarts from 'echarts';
-  export default {
-    name: 'BarChart',
-    props: {
+import * as echarts from 'echarts';
+export default {
+  name: 'BarChart',
+  props: {
     dataAxis: {
       type: Array,
       required: true
@@ -56,8 +56,9 @@
     },
     // 获取图表的配置
     getChartOptions() {
-      const maxData = Math.max(...this.data);
-      const maxLimit = maxData > 0 ? maxData * 1.2 : 1; 
+      const totalDataPoints = this.data.length;
+      const startIndex = totalDataPoints > 10 ? totalDataPoints - 10 : 0;
+
       return {
         title: {
           text: '近期用户阅读量',
@@ -89,11 +90,12 @@
           axisLabel: {
             color: '#999',
           },
-          max: maxLimit, // 设置 y 轴的最大值为最大数据值的 1.2 倍
         },
         dataZoom: [
           {
             type: 'inside',
+            startValue: this.dataAxis[startIndex],
+            endValue: this.dataAxis[totalDataPoints - 1], // 显示后 10 个数据
           },
         ],
         series: [

@@ -17,7 +17,14 @@
       <p>对不起，该链接无法打开</p>
     </div>
     <div class="middle loading" v-if="loadStatus === LoadStatus.Loading">
-      <p>加载中</p>
+      <el-header>
+        <el-icon class="is-loading" size="160px">
+          <Loading />
+        </el-icon>
+      </el-header>
+      <el-footer>
+        <!-- <p>加载中</p> -->
+      </el-footer>
     </div>
   </div>
   <div class="AI-reading" v-if="showAIReading">
@@ -75,7 +82,7 @@
           />
         </el-col>
         <el-col :span="3">
-          <el-icon class="middle" color="grey" size="32px" @click="AIReading()"><Top /></el-icon>
+          <el-icon class="middle" color="grey" size="32px" @click="AIReading(), sendHistoryProgress()"><Top /></el-icon>
         </el-col>
       </el-row>
     </el-footer>
@@ -110,7 +117,7 @@ var loadedPageNum = 0
 enum LoadStatus {
   Loading = "Loading",
   Success = "Success",
-  Failed = "failed",
+  Failed = "Failed",
 }
 
 const showAIReading = ref(true)
@@ -164,12 +171,17 @@ onMounted(() => {
   })
   config = {
     method: 'post',
-    url: GET_HISTORY_RATE + `?articleId="${props.id}"`,
+    url: GET_HISTORY_RATE + `?articleId=${props.id}`,
   }
+  // axios.post(GET_HISTORY_RATE + `?articleId=${props.id}`).then((response) => {
+  //   axios.post(SEND_HISTORY_RATE + `?articleId=${props.id}&readingProgress=${response.data.progress}`).then(() => {
+  //     console.log("get and send")
+  //   })
+  // })
   axios(config).then((response:AxiosResponse) => {
     const config = {
       method: 'post',
-      url: SEND_HISTORY_RATE + `?articleId="${articleId}"&readingProgress=${response.data.progress}`
+      url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${response.data.progress}`
     }
     axios(config).then(() => {
       console.log("get and send") 
@@ -187,21 +199,26 @@ onMounted(() => {
 
 onUnmounted(() => {
   // for history progress 
+  sendHistoryProgress()
   window.removeEventListener('beforeunload', sendHistoryProgress)
 })
 
 const sendHistoryProgress = () => {
+  
   const articleId = props.id
   const rate = calReadingProgressRate()
   const config = {
     method: 'post',
-    url: SEND_HISTORY_RATE + `?articleId="${articleId}"&readingProgress=${rate}`
+    url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${rate}`
   }
   axios(config).then((response:any) => {
     console.log(response)
   })
   console.log("call send")
-  alert("send rate")
+  // const xhr = new XMLHttpRequest()
+  // xhr.open('POST', SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${rate}`, false)
+  // xhr.send(null)
+
 }
 
 const isInput = ref(false)
@@ -256,7 +273,7 @@ const AIconfig = {
   method: 'post',
   url: QIANFAN_ASK,
   data: {
-    sessionId: "1",
+    sessionId: token,
     question: "",
   },
 }
@@ -323,7 +340,7 @@ const scrollTo = () => {
   const articleId = props.id
   const config = {
     method: 'post',
-    url: GET_HISTORY_RATE + `?articleId="` + articleId + `"`,
+    url: GET_HISTORY_RATE + `?articleId=` + articleId,
   }
   axios(config).then((resopnse:any) => {
     console.log(resopnse)
@@ -369,8 +386,11 @@ const scrollTo = () => {
   overflow-y: auto;
 }
 .loading {
+  position: absolute;
   z-index: 100;
-
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%);
 }
 .AI-reading {
   position: fixed;

@@ -102,12 +102,12 @@ export default {
     },
     updateClaim(claim){
       try {
-        axios.get(UPDATECLIAM_API,{
-          params: {
+        axios.post(UPDATECLIAM_API,{}, {
+          params:{
             id: claim.id,
             status: claim.status
-            }
-          });
+          }
+        });
       } catch (error) {
         console.error('update failed:', error);
       }
