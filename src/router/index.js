@@ -14,7 +14,6 @@ import SelectCharacter from "~/pages/user/selectCharacter.vue"
 import Login from "../pages/user/login.vue";
 import Register from "../pages/user/register.vue";
 import ResetPassword from "~/pages/user/resetPassword.vue";
-import SearchUserResult from "../pages/search/SearchUser.vue"
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
 import HotTopic from "@/pages/hotTopic/hotTopic.vue";
@@ -70,17 +69,21 @@ const routes = [
     {
         path: "/transfer/transferRequest",
         component: TransferRequest,
-    }, {
+    }, 
+    {
         path: "/selectCharacter",
         component: SelectCharacter,
         meta: { requiresGradient: true }
-    }, {
+    }, 
+    {
         path: "/home",
         component: HomePage,
-    },{
-        path:"/hotTopic",
-        component:HotTopic,
-    },{
+    }, 
+    {
+        path: "/hotTopic",
+        component: HotTopic,
+    }, 
+    {
         path: "/admin",
         component: AdminInfo,
         redirect: "/admin/platformOverview",
@@ -88,16 +91,16 @@ const routes = [
             {
                 path: "/admin/audit",
                 component: Audit,
-                meta:{ keepAlive: true}
-            },{
+                meta: { keepAlive: true }
+            }, {
                 path: "/admin/platformOverview",
                 component: PlatformOverview,
-                meta:{ keepAlive: true}
-            },{
+                meta: { keepAlive: true }
+            }, {
                 path: "/admin/scholars",
                 component: Scholars,
-                meta:{ keepAlive: true}
-            }]                  
+                meta: { keepAlive: true }
+            }]
     },
 ]
 
