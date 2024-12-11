@@ -74,10 +74,6 @@ export default {
   align-items: center;
 }
 
-.logo {
-  /* 样式 */
-}
-
 .user-info {
   cursor: pointer;
 }
@@ -87,11 +83,7 @@ export default {
   z-index: 50;
   padding-left: 25%;
   padding-top: 110px;
-  /* 样式 */
 }
 
-.footer {
-  /* 样式 */
-}
 </style>
 

@@ -54,7 +54,8 @@ export default{
   },
   methods:{
     updatePage(page) {
-      // 切页
+      this.currentPage = page;
+      this.updateContent();
     },
     updateContent(){
       try{

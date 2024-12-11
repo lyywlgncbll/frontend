@@ -20,7 +20,11 @@ export default defineComponent({
     const submitLogin = async () => {
       try {
         const loginEndpoint = isAdmin.value ? ADMIN_LOGIN_API : LOGIN_API; // 区分登录接口
-        const response = await axios.post(loginEndpoint, {
+        const response = isAdmin.value ?
+        await axios.post(loginEndpoint, {
+          login: mail.value,
+          password: password.value
+        }) : await axios.post(loginEndpoint, {
           mail: mail.value,
           password: password.value
         });
@@ -35,7 +39,7 @@ export default defineComponent({
             console.warn('响应中未包含 token');
           }
 
-          const redirectPath = isAdmin.value ? '/admin/dashboard' : '/home';
+          const redirectPath = isAdmin.value ? '/admin' : '/home';
           await router.push(redirectPath);
         } else {
           console.error('登录失败，服务器未返回成功状态:', response.status);

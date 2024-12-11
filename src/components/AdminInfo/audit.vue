@@ -1,8 +1,8 @@
 <template>
     <div class="menu-container">
       <div class="title">
-        <button class="titleButton" v-on:click="handleAcceptSelected"> 一键通过</button>
-        <button class="titleButton" v-on:click="handleRejectedSelected">一键拒绝</button>  
+        <button class="titleButton" v-on:click="handleAcceptSelected"> 通过已选</button>
+        <button class="titleButton" v-on:click="handleRejectedSelected">拒绝已选</button>  
         
       </div>  
       <div class="select-menu-pos">
