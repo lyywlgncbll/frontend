@@ -82,7 +82,7 @@ const closeClaimForm = () => {
 
 //分页
 const currentPage = ref(1)
-const totalPages = ref(5)
+const totalPages = ref(1)
 const pageSize = ref(7)
 
 //获取筛选数据
