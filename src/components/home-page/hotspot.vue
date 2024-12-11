@@ -225,7 +225,7 @@ export default {
   max-height: 1000px; /* 或者设置为你需要的最大值 */
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease, box-shadow 0.3s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease;
 }
 
 .topic-card .topic-details {
