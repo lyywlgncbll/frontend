@@ -3,16 +3,14 @@
         <div class="tools">
             <div class="cite">
                 <img src="/src/assets/search/icon/cite.svg" alt="cite" width="20px" height="20px">
-                <p>引用</p>
-            </div>
-            <div class="claim" @click="openForm">
-                <p>认领</p>
+                <p>引用 ( {{ searchItem.citationCount }} )</p>
             </div>
         </div>
         <div class="title" :title="searchItem.title">{{ searchItem.title }}</div>
         <div class="info">
             <span class="author" v-for="author in searchItem.authors.slice(0, 3)">{{ author }}</span>
-            <span class="from" :title="searchItem.journal + ' - ' + searchItem.year">{{ searchItem.journal }} - {{ searchItem.year }}</span>
+            <span class="from" :title="searchItem.journal + ' - ' + searchItem.year">{{ searchItem.journal }} - {{
+                searchItem.year }}</span>
         </div>
         <div class="content">{{ searchItem.abstract }}</div>
         <div class="line"></div>
@@ -59,8 +57,7 @@ const openForm = () => {
     right: 10px;
 }
 
-.cite,
-.claim {
+.cite {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,38 +66,17 @@ const openForm = () => {
     border: 1px solid #d1d9e0;
     padding: 5px;
     background-color: #eff2f5;
-    width: 60px;
+    min-width: 60px;
+
+    &:hover {
+        background-color: #d7dfe6;
+    }
+
+    p{
+        font-size: 13px;
+        color: grey;
+    }
 }
-
-.claim {
-    background-color: #1599db;
-    color: white;
-
-}
-
-.cite:hover {
-    background-color: #d7dfe6;
-}
-
-.claim:hover {
-    background-color: #0687d7;
-}
-
-.cite p,
-.claim p {
-    font-size: 13px;
-}
-
-.cite p {
-    color: grey;
-}
-
-.claim p {
-    color: white;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-
 
 /* 内容 */
 .container {

@@ -1,6 +1,6 @@
 <template>
   <div class="hot-topics-container" id="page-root">
-    <h2 class="section-title">热点话题</h2>
+    <h2 class="section-title" @click="toHotTopic">热点话题</h2>
     <div class="topics-list">
       <div
           v-for="(topic, index) in topics"
@@ -36,17 +36,23 @@
 import {onMounted, ref} from "vue";
 import {GET_TOP_K_API} from "@/utils/request.js";
 import axios from "@/utils/axios.js";
+import router from "@/router/index.js";
 
 export default {
   name: 'HotTopics',
+  methods:{
+    toHotTopic(){
+      router.push('/hotTopic');
+    }
+  },
   setup() {
     const topics=ref([]);
     const getTopK=async ()=>{
       try {
-        const response = await axios.get(GET_TOP_K_API+"?k=3");
+        const response = await axios.get(GET_TOP_K_API+"?k=10");
 
         if (response.data && response.status === 200) {
-          console.log("获取topic成功"+response.data);
+          console.log("获取topic成功");
           // 遍历 response.data 数组中的每个项
           topics.value = response.data.map(item => {
             if (item.keywords) {
@@ -184,6 +190,7 @@ export default {
   color: #333;
   margin-bottom: 15px;
   text-align: center;
+  cursor: pointer;
 }
 
 .topics-list {
@@ -218,7 +225,7 @@ export default {
   max-height: 1000px; /* 或者设置为你需要的最大值 */
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease, box-shadow 0.3s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease;
 }
 
 .topic-card .topic-details {

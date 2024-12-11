@@ -36,3 +36,24 @@
     --sort-i-color:#383740;
     --sort-slide-background-color:#c0bfbf;
 }
+
+#hot-topic{
+    --p-color:#7d7f82;
+    --border-color:#d1d9e0;
+    --background-color:#f6f8fa;
+    --div-color:#636a72;
+    --button-color:#3d434a;
+}
+
+#topic-item{
+    --border-color:#d1d9e0b3;
+    --info-color:#767a7b;
+    --content-border-color:#808080;
+    --content-color:#767a7b;
+    --content-background-color:#f6f8fa;
+    --keyword-background-color:#ddf4ff;
+    --keyword-color:#0969da;
+    --keyword-hover-color:#fff;
+    --index-background-from-color:#808080;
+    --index-background-to-color:#C0C0C0;
+}

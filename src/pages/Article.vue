@@ -16,6 +16,15 @@
       </el-row>
       <el-divider />
       <!-- 元数据 -->
+      <h2 class="section-title">领域</h2>
+      <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
+      <template v-else>
+        <el-row class="paper-metadata" gutter="20">
+          <el-button v-for="field in paper.fields" :key="field" type="primary" class="keyword-button" round>
+            {{ field }}
+          </el-button>
+        </el-row>
+      </template>
       <h2 class="section-title">关键词</h2>
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <template v-else>
@@ -24,65 +33,24 @@
             @click="goToKeywordPage(keyword)">
             {{ keyword }}
           </el-button>
-          <!-- <el-descriptions border>
-            <el-descriptions-item min-width="100%">
-              <el-button v-for="keyword in paper.keywords" :key="keyword"  type="primary" class="keyword-button" circle
-                @click="goToKeywordPage(keyword)">
-                {{ keyword }}
-              </el-button>
-            </el-descriptions-item>
-          </el-descriptions> -->
-          <!-- <el-col :span="8">
-            <el-descriptions title="作者" border>
-              <el-descriptions-item>
-                <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
-                  @click="goToAuthorPage(author)">
-                  {{ author }}
-                </el-button>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-col> -->
-
-          <!-- 关键词 -->
-          <!-- <el-col :span="8">
-            <el-descriptions title="关键词" border>
-              <el-descriptions-item>
-                <el-button v-for="keyword in paper.keywords" :key="keyword" type="text" class="keyword-button"
-                  @click="goToKeywordPage(keyword)">
-                  {{ keyword }}
-                </el-button>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-col>
-
-          <el-col :span="8">
-            <el-descriptions title="发布日期" border>
-              <el-descriptions-item>
-                {{ paper.publishedDate }}
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-col> -->
         </el-row>
-
-        <!-- 发表日期 -->
-        <!-- <el-row class="paper-date" gutter="20"> -->
-
-
-        <!-- <el-col :span="12">
-        <el-descriptions title="语言" border>
-          <el-descriptions-item>
-            {{ paper.language }}
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-col> -->
-        <!-- </el-row> -->
       </template>
       <!-- 摘要 -->
       <h2 class="section-title">论文概述</h2>
       <el-row class="paper-abstract">
         <el-col :span="24">
           <el-skeleton v-if="isLoading" :rows="3" animated></el-skeleton>
-          <p v-else class="abstract">{{ paper.abstract }}</p>
+          <p v-else class="abstract" :class="{ 'collapsed': !isExpanded }">
+            {{ paper.abstract }}
+          </p>
+          <el-button v-if="!isLoading && paper.abstract.length > 100" @click="toggleExpand" type="text">
+            <el-icon v-if="isExpanded">
+              <ArrowUpBold />
+            </el-icon>
+            <el-icon v-else>
+              <ArrowDownBold />
+            </el-icon>
+          </el-button>
         </el-col>
       </el-row>
 
@@ -95,12 +63,14 @@
             <el-descriptions-item>
               <ul>
                 <li v-for="(reference, index) in paper.references" :key="index">
+                  
+                  <div v-if="reference.isLoaded">
                   <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
                     type="primary">{{ reference.title
                     }}</el-link>
                   <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
                     type="primary">{{
-                      reference.title }}</el-link>
+                      reference.title }}</el-link></div><div v-else></div>
                 </li>
               </ul>
             </el-descriptions-item>
@@ -205,25 +175,29 @@
         <el-row class="stat-footer">
           <span>引用次数</span>
           <div class="stat-number">
-            <span>10</span>
+            <span>{{ getReferenceLength() }}</span>
           </div>
         </el-row>
       </div>
       <el-row><span>&emsp;</span></el-row>
       <el-tooltip class="box-item" effect="dark" content="下载论文" placement="right">
-        <el-button circle class="stat-button" size="large" type="primary"><el-icon size="25px">
+        <el-button circle class="stat-button" size="large" type="primary" @click="downloadPaper()"><el-icon size="25px">
             <Download />
           </el-icon></el-button>
       </el-tooltip>
-      <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right" @click="preview()">
-        <el-button circle class="stat-button" size="large" type="success"><el-icon size="25px">
+      <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right">
+        <el-button circle class="stat-button" size="large" type="success" @click="preview()"><el-icon size="25px">
             <View />
           </el-icon></el-button>
       </el-tooltip>
       <el-tooltip class="box-item" effect="dark" content="收藏论文" placement="right">
         <el-button circle class="stat-button" size="large" @click="toggleFavorite()" type="warning">
-          <el-icon v-if="isFavorite" size="25px"><StarFilled /></el-icon>
-          <el-icon v-else size="25px"><Star /></el-icon>
+          <el-icon v-if="isFavorite" size="25px">
+            <StarFilled />
+          </el-icon>
+          <el-icon v-else size="25px">
+            <Star />
+          </el-icon>
         </el-button>
       </el-tooltip>
     </div>
@@ -238,6 +212,7 @@ import { ARTICLE_API, REFERENCE_API } from "~/utils/request.js"
 import Reader from './Reader.vue';
 //import Article from '.Article.vue';
 import axios from '@/utils/axios.js';
+import { defineComponent } from "vue";
 
 const routes = [
   {
@@ -247,13 +222,13 @@ const routes = [
     props: (route) => ({ url: route.query.url }), // 将 query 参数映射为 props
   },
 ];
-
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 //const id = "https://openalex.org/W1481824024"
-export default {
+export default defineComponent({
+  components: { LoggedNavBar },
   router,
   name: "PaperDetail",
   props: {
@@ -272,18 +247,21 @@ export default {
         abstract:
           "This paper explores the latest advancements in artificial intelligence (AI), covering topics such as neural networks, natural language processing, and the ethical implications of AI systems.",
         keywords: ["AI", "Neural Networks", "Ethics", "NLP", "Machine Learning", "AI", "Neural Networks", "Ethics", "NLP", "Machine Learning"],
+        fields: ["AI", "Neural Networks", "Ethics"],
         references: [
           {
             id: "1",
             title: "A Study on Neural Networks",
             authors: ["Doe, J.", "Smith, J."],
             isReachable: true,
+            isLoaded: false
           },
           {
             id: "2",
             title: "Ethics in AI Systems",
             authors: ["Johnson, A."],
             isReachable: false,
+            isLoaded: false
           },
         ],
         pdfUrl: "/test/test.pdf",
@@ -324,7 +302,8 @@ export default {
         },
       ],
       isLoading: true,
-      isLoadingReference: true
+      isLoadingReference: true,
+      isExpanded: false
     };
   },
   mounted() {
@@ -380,6 +359,8 @@ export default {
     },
     async fetchReferenceData(ref) {
       try {
+        console.log(ref);
+        console.log(ref.id);
         const response = await axios.get(REFERENCE_API, {
           params: {
             referenceId: ref.id
@@ -387,6 +368,7 @@ export default {
         });
         ref.title = response.data.title;
         ref.isReachable = response.data.isReachable;
+        ref.isLoaded = true;
       } catch (error) {
         console.log("error")
       }
@@ -395,12 +377,13 @@ export default {
       await this.fetchData(id);
       await this.delay(2000);
       // 并行请求所有引用数据
-      const referencePromises = this.paper.references.map(ref =>
+      //const referencePromises = 
+      this.paper.references.map(ref =>
         this.fetchReferenceData(ref)
       );
 
       // 等待所有引用数据请求都完成
-      await Promise.all(referencePromises);
+      //await Promise.all(referencePromises);
 
       this.isLoadingReference = false;
     },
@@ -414,11 +397,30 @@ export default {
     },
     downloadPaper() {
       this.downloads++;
+      this.downloadPdf(this.paper.pdfUrl);
       this.$message({
         message: "Downloading PDF...",
         type: "info",
       });
+    },
+    async downloadPdf(pdfUrl) {
+      try {
+        const response = await fetch(pdfUrl);
+        if (!response.ok) {
+          throw new Error('网络错误');
+        }
 
+        const blob = await response.blob(); // 将响应体转换为 Blob 对象
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob); // 创建 Blob URL
+        link.download = pdfUrl.split('/').pop(); // 设置文件名为 URL 的最后一部分
+        link.click(); // 模拟点击链接，触发下载
+      } catch (error) {
+        console.error('下载失败', error);
+      }
+    },
+    getReferenceLength(){
+      return this.paper.references.length;
     },
     preview() {
       this.views++;
@@ -428,7 +430,7 @@ export default {
       });
       this.$router.push({
         name: "Reader", // 路由名称，需在路由配置中定义
-        query: { pdfurl: "/test/test.pdf" },
+        query: { id: this.id },
       });
     },
     goToAuthorPage(author) {
@@ -457,6 +459,7 @@ export default {
         publishedDate: `${backendData.publishedYear}-01-01`, // 默认设置为每年 1 月 1 日
         abstract: backendData.abstract,
         keywords: backendData.keywords,
+        fields: backendData.fields,
         references: backendData.references.map((refId, index) => ({
           id: refId, // 生成 ID
           title: "null",
@@ -467,11 +470,26 @@ export default {
       };
       return paper;
     },
-    toggleFavorite(){
+    toggleFavorite() {
       this.isFavorite = !this.isFavorite;
+      if (this.isFavorite) {
+        this.$message({
+          message: "收藏成功",
+          type: "info",
+        });
+      }
+      else {
+        this.$message({
+          message: "取消收藏成功",
+          type: "info",
+        });
+      }
+    },
+    toggleExpand() {
+      this.isExpanded = !this.isExpanded;
     }
   },
-};
+});
 
 </script>
 
@@ -481,8 +499,16 @@ export default {
   src: url('../assets/fonts/times_new_roman.ttf') format('truetype');
 }
 
+* {}
+
+.article-page {
+  display: flex;
+  height: 100vh;
+}
+
 .paper-detail {
   margin: 20px;
+  margin-top: 80px;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
@@ -546,7 +572,7 @@ export default {
 }
 
 .paper-metadata {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .paper-date {
@@ -578,6 +604,26 @@ export default {
   text-align: justify;
   /* 使文本两端对齐 */
   font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* 设置最多显示3行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.abstract.collapsed {
+  -webkit-line-clamp: 3;
+  /* 限制显示3行 */
+}
+
+.abstract:not(.collapsed) {
+  -webkit-line-clamp: unset;
+  /* 不限制行数，显示完整内容 */
+}
+
+.el-button {
+  margin-top: 10px;
 }
 
 .paper-references {
@@ -622,17 +668,19 @@ export default {
 .nav-bar {
   position: fixed;
   z-index: 100;
-  height: auto;
+  height: 60px;
   left: 0;
   right: 0;
+  top: 0;
 }
 
 .statistics-container {
+  position: fixed;
   display: flex;
   flex-direction: column;
   margin-top: 20px;
-  width: 25%;
-  right: 0%;
+  width: 22%;
+  right: 3%;
   margin-left: 30px;
 }
 
