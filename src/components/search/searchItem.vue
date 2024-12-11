@@ -6,13 +6,13 @@
                 <p>引用 ( {{ searchItem.citationCount }} )</p>
             </div>
         </div>
-        <div class="title" :title="searchItem.title">{{ searchItem.title }}</div>
+        <div class="title" :title="searchItem.title" @click="goToArticle(searchItem.id)">{{ searchItem.title }}</div>
         <div class="info">
             <span class="author" v-for="author in searchItem.authors.slice(0, 3)">{{ author }}</span>
             <span class="from" :title="searchItem.journal + ' - ' + searchItem.year">{{ searchItem.journal }} - {{
                 searchItem.year }}</span>
         </div>
-        <div class="content">{{ searchItem.abstract }}</div>
+        <div class="content" @click="goToArticle(searchItem.id)">{{ searchItem.abstract }}</div>
         <div class="line"></div>
         <div class="label">
             <div class="label-item" v-for="(field, index) in searchItem.fields">{{ field }}</div>
@@ -23,6 +23,8 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const props = defineProps({
     searchItem: {
         type: Object,
@@ -35,6 +37,10 @@ const emit = defineEmits(['openClaimForm']);
 const openForm = () => {
     emit('openClaimForm', props.searchItem.id, props.searchItem.title);
 };
+
+const goToArticle = (id) => {
+    router.push({ path: "/article", query: { id } });
+}
 
 </script>
 
@@ -72,7 +78,7 @@ const openForm = () => {
         background-color: #d7dfe6;
     }
 
-    p{
+    p {
         font-size: 13px;
         color: grey;
     }

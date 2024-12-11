@@ -6,23 +6,25 @@ import {
 import Index from '~/pages/index.vue'
 import searchArticle from '~/pages/search/searchArticle.vue'
 import Article from '../pages/Article.vue'
+import authorInfo from '../pages/authorInfo.vue'
 import Reader from '../pages/Reader.vue'
 import userInfo from '../pages/userInfo.vue'
 
+import HotTopic from "@/pages/hotTopic/hotTopic.vue"
 import HomePage from "~/pages/homePage/homePage.vue"
+
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
-import Login from "../pages/user/login.vue";
-import Register from "../pages/user/register.vue";
+
 import ResetPassword from "~/pages/user/resetPassword.vue";
-import SearchUserResult from "../pages/search/SearchUser.vue"
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
-import HotTopic from "@/pages/hotTopic/hotTopic.vue";
+import Login from "../pages/user/login.vue"
+import Register from "../pages/user/register.vue"
 
-import AdminInfo from '../pages/adminPages/adminInfo.vue'
 import Audit from '../components/AdminInfo/audit.vue'
 import PlatformOverview from '../components/AdminInfo/platform-overview.vue'
 import Scholars from '../components/AdminInfo/scholars.vue'
+import AdminInfo from '../pages/adminPages/adminInfo.vue'
 const routes = [
     {
         path: "/",
@@ -43,6 +45,10 @@ const routes = [
     {
         path: "/userInfo",
         component: userInfo,
+    },
+    {
+        path: "/authorInfo",
+        component: authorInfo,
     },
     {
         path: "/login",
@@ -70,17 +76,21 @@ const routes = [
     {
         path: "/transfer/transferRequest",
         component: TransferRequest,
-    }, {
+    }, 
+    {
         path: "/selectCharacter",
         component: SelectCharacter,
         meta: { requiresGradient: true }
-    }, {
+    }, 
+    {
         path: "/home",
         component: HomePage,
-    },{
-        path:"/hotTopic",
-        component:HotTopic,
-    },{
+    }, 
+    {
+        path: "/hotTopic",
+        component: HotTopic,
+    }, 
+    {
         path: "/admin",
         component: AdminInfo,
         redirect: "/admin/platformOverview",
@@ -88,16 +98,16 @@ const routes = [
             {
                 path: "/admin/audit",
                 component: Audit,
-                meta:{ keepAlive: true}
-            },{
+                meta: { keepAlive: true }
+            }, {
                 path: "/admin/platformOverview",
                 component: PlatformOverview,
-                meta:{ keepAlive: true}
-            },{
+                meta: { keepAlive: true }
+            }, {
                 path: "/admin/scholars",
                 component: Scholars,
-                meta:{ keepAlive: true}
-            }]                  
+                meta: { keepAlive: true }
+            }]
     },
 ]
 
