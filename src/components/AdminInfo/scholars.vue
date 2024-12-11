@@ -13,7 +13,7 @@
 </template>
 <script>
 import scholarsTable from './scholarsComponent/scholarsTable.vue';
-import pageComponent from '../pageComponent.vue';
+import pageComponent from '../search/pageComponent.vue';
 import axios from "@/utils/axios";
 import { SCHOLARSCOUNT_API,GETSCOLARS_API } from '@/utils/request.js'
 export default{

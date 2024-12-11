@@ -20,7 +20,7 @@
 <script>
 import selectMenu from './auditComponent/selectMenu.vue';
 import claimTable from './auditComponent/claimTable.vue'
-import pageComponent from '../pageComponent.vue';
+import pageComponent from '../search/pageComponent.vue';
 import axios from "@/utils/axios";
 import { GETCLAIMALL_API, GETUSER_API } from '@/utils/request.js'
 
