@@ -139,23 +139,30 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         console.log("Edit profile clicked");
         this.isEditable = !this.isEditable; 
       },
-      handleSaveEditProfile(newbio){
+      handleSaveEditProfile(profile){
         console.log("Edit profile clicked!!!!");
         this.isEditable = !this.isEditable;
-        this.user.bio=newbio;
+        console.log(profile.researchAreas);
+         // 更新用户数据
+        this.user.name = profile.name;
+        this.user.researchAreas = profile.researchAreas;
+        this.user.bio = profile.bio;
+
+
         axios.post('/user/data/mod', {
-          description: newbio, // 修正拼写错误
+          name: profile.name,
+          fieldsOfStudy: profile.researchAreas,
+          description: profile.bio, // 对应的字段名
         },{
           headers: {
             Authorization: this.authorization,
           },
         }).then(response => {
           console.log('修改个人描述成功:', response.data);
-          window.location.reload();
         })
         .catch(error => {
           console.error('修改个人描述失败:', error);
-          window.location.reload();
+          // window.location.reload();
         });
       },
       //处理切换子页面
@@ -210,6 +217,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
               this.user.bio=response.data.description;
               this.user.claim=response.data.claim;
               this.user.researchAreas=response.data.fieldsOfStudy;
+              this.user.institution;
               if(this.user.claim!=null){
                 this.tabs=['发表文献','学术研究']
               }
@@ -242,6 +250,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         }).then(response => {   
           console.log("获取文献了",response.data);
           const formatted = response.data.papers.map(item => ({
+                id:item.articleId,
                 title: item.title,
                 authors: item.authors.join(", "),
                 journal:item.journal,
@@ -250,7 +259,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
             }));
             // 更新数据
             this.references = formatted;
-            console.log("获取文献成功",response.data);
+            console.log("获取文献成功",this.references);
         }).catch(error =>{
             console.error('获取文献失败:', error);
         });
@@ -266,6 +275,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
                 name:item.claim,
                 university:item.institution,
                 avatar:default_pic,
+                authorid:item.authorid,
             }));
             // 更新数据
             this.authorData = formatted;

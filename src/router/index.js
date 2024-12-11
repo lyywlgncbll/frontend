@@ -45,7 +45,8 @@ const routes = [
         component: userInfo,
     },
     {
-        path: "/authorInfo",
+        path: '/authorInfo/:authorid(.*)',
+        name: 'authorInfo',
         component: authorInfo,
     },
     {
