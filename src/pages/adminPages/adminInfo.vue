@@ -18,6 +18,7 @@
 <script>
 import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
 import LeftTab from "~/components/AdminInfo/LeftTab.vue";
+
 export default {
   data() {
     return {

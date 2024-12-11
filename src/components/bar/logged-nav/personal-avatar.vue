@@ -21,6 +21,7 @@
 
 <script>
 import {ref, onMounted, onBeforeUnmount} from 'vue';
+import router from "@/router/index.js";
 
 export default {
   name: 'personal-avatar',
@@ -31,7 +32,8 @@ export default {
     // 定义显示个人中心和退出登录的操作
     const showProfile = () => {
       optionsListActive.value = false; // 点击后隐藏下拉菜单
-      alert('跳转到个人中心'); // 这里可以加入跳转逻辑
+      router.push('/userInfo')
+      // alert('跳转到个人中心'); // 这里可以加入跳转逻辑
     };
     const exit = () => {
       optionsListActive.value = false;

@@ -9,7 +9,7 @@
       >
         <!-- Display name, worksCount, and citedByCount initially -->
         <div class="topic-info">
-          <h3 class="topic-title">{{ topic.name }}</h3>
+          <h3 class="topic-title" @click="searchHotTopic(topic)">{{ topic.name }}</h3>
           <p class="topic-stats">
             <span>Works: {{ topic.worksCount }}</span>
             <span>Cited By: {{ topic.citedByCount }}</span>
@@ -24,6 +24,7 @@
                 v-for="(tag, tagIndex) in topic.keywords"
                 :key="tagIndex"
                 class="topic-tag"
+                @click="searchKeyWord(tag)"
             >{{ tag }}</span>
           </div>
         </div>
@@ -43,6 +44,18 @@ export default {
   methods:{
     toHotTopic(){
       router.push('/hotTopic');
+    },
+    searchHotTopic(topic){
+      localStorage.setItem('searchOption', 1)
+      localStorage.setItem('searchString', '')
+      localStorage.setItem('topicObj', JSON.stringify(topic))
+      router.push('search/result')
+    },
+    searchKeyWord(keyword){
+      localStorage.setItem('searchOption', 5)
+      localStorage.setItem('topicObj', '')
+      localStorage.setItem('searchString', keyword)
+      router.push('search/result')
     }
   },
   setup() {
@@ -225,7 +238,7 @@ export default {
   max-height: 1000px; /* 或者设置为你需要的最大值 */
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease, box-shadow 0.3s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease, max-height 0.4s ease;
 }
 
 .topic-card .topic-details {
@@ -244,6 +257,7 @@ export default {
   //font-size: 18px;
   font-weight: 600;
   color: #333;
+  cursor: pointer;
 }
 
 .topic-stats {
