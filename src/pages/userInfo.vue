@@ -177,10 +177,13 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       handleUserClaimsUpdata(newData){
         this.userclaims=newData;
       },
-      sendGetMyClaim(){
+      sendGetMyInstitution(){
         axios.get('/user/selforg').then(response => {
               console.log("获取用户的机构信息了",response.data);
-              this.user.institution=response.data.org.name;
+              if(response.data.org.name!=null)this.user.institution=response.data.org.name;
+              else{
+                this.user.institution='未提供所属机构信息';
+              }
               console.log("获取用户的机构信息成功",this.user.institution);
             }).catch(error => {
               console.error('获取用户的机构信息失败', error);
@@ -285,7 +288,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
             this.sendGetMyAvatar().then(() =>{
               if(this.user.claim===null)this.$refs.Claims.sendGetMyClaims();
               else{
-                this.sendGetMyClaim();
+                this.sendGetMyInstitution();
                 this.sendGetMyReferences();
                 this.sendGetMyCooperators();
                 this.sendGetMychartData();
