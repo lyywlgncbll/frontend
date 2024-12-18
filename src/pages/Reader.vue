@@ -376,7 +376,7 @@ const scrollTo = () => {
   height: 100vh;
   /* padding: 20px 0; */
   box-sizing: border-box;
-  background: rgb(66, 66, 66);
+  /* background: rgb(66, 66, 66); */
 }
 .vue-pdf-embed {
   text-align: center;
