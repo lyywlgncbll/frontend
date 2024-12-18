@@ -80,6 +80,7 @@ const handleFilter = (selections) => {
     journals.value = selections.journals
     fields.value = selections.fields
     currentPage.value = 1
+    console.log(selections);
     advancedSearch()
 }
 
@@ -200,7 +201,7 @@ const advancedSearch = async () => {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
+    z-index: 999;
     &:hover {
         background-color: var(--expand-button-hover-color);
     }

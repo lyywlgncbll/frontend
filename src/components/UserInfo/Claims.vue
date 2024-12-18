@@ -153,6 +153,7 @@
         if (!this.searchQuery) return; // 如果没有选择认领对象，直接返回
         const authorid = this.filteredClaims.find(a => a.claim === this.searchQuery).authorid;
         this.isSubmitting = true;
+        console.log(authorid)
         axios.post(
             "/portal/claim/open", // 请求的 URL
             { 

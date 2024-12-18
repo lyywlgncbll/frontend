@@ -42,7 +42,6 @@ const selectedContents = ref([])
 watch([beginYear, endYear], ([newBeginYear, newEndYear]) => {
     if (newBeginYear && newEndYear && newBeginYear > 1900 && newEndYear >= newBeginYear) {
         selectedContents.value = Array.from({ length: newEndYear - newBeginYear + 1 }, (_, i) => newBeginYear + i);
-        console.log(selectedContents.value);
     } else {
         selectedContents.value = []
     }
