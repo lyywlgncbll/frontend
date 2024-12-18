@@ -18,6 +18,8 @@
                 />
               </div>
               <div v-if="activeTab === 1">
+                <Chart
+                    :chartData="chartData"/>
                 <p>我是学术研究</p>
               </div>
             </div>
@@ -33,6 +35,7 @@
 
 <script>
 import AuthorList from "@/components/AuthorInfo/AuthorList.vue";
+import Chart from "@/components/AuthorInfo/Chart.vue";
 import ProfileHeader from "@/components/AuthorInfo/ProfileHeader.vue";
 import References from "@/components/AuthorInfo/References.vue";
 import Tabs from "@/components/AuthorInfo/Tabs.vue";
@@ -45,6 +48,7 @@ export default {
     Tabs,
     AuthorList,
     References,
+    Chart,
   },
   data() {
     return {
@@ -99,6 +103,10 @@ export default {
           citations: 22
         }
       ],
+      chartData:[
+          {'year':2014, 'paper_num':4},
+          {'year':2016, 'paper_num':1},
+        ],
     };
   },
   created() {
@@ -192,13 +200,26 @@ export default {
             console.error('获取合作作者失败:', error);
         });
     },
+    sendGetHischartData(){
+        axios.get('/api/academic/authorpub/byYear',{
+          params:{
+            authorId:this.authorid,
+          }
+        }).then(response => {   
+          console.log("获取该作者的年份论文信息了:",response.data);
+            // 更新数据
+            this.chartData = response.data;
+            console.log("获取该作者的年份论文信息成功",this.chartDataData);
+        }).catch(error =>{
+            console.error('获取该作者的年份论文信息失败:', error);
+        });
+      }
   },
   mounted(){
+    this.sendGetHisReferences();
     this.sendGetHisAuthorUser();
     this.sendGetHisCooperators();
-    this.sendGetHisReferences();
-    
-     
+    this.sendGetHischartData();
   }
     
 }
@@ -212,22 +233,27 @@ export default {
   height: 100%;
 }
 .tabdetail{
-  height: 70vh;
+  width: 110vh;
+  height: 60vh;
   background-color: white;
   
 }
 .detail{
+  max-height: 45vw;
   display: flex;
-  gap: 30px;
+  gap: 10px;
   align-items: stretch;
 }
 .pagetabs{
+  max-height: 45vw;
   flex-grow: 1;
   align-items: stretch;
 }
 .pagewriters{
   background-color: white;
   width: 40vw;
+  max-height: 45vw;
+  overflow-y: auto;
   align-items: stretch;
 }
 </style>

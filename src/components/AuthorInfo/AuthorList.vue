@@ -8,7 +8,7 @@
           <p class="author-university">{{ author.university }}</p>
         </div>
         <a
-          :href="`/authorInfo/${encodeURIComponent(author.authorid)}`"
+          :href="`/authorInfo/${author.authorid}`"
           class="arrow"
           @click="forceRefresh">
           ➔

@@ -41,6 +41,8 @@
                     <p>我是增值服务</p>
                   </div>
                   <div v-else>
+                    <Chart
+                    :chartData="chartData"/>
                     <p>我是学术研究</p>
                   </div>
                 </div>
@@ -57,13 +59,15 @@
   </template>
   
   <script>
-  import axios from '@/utils/axios.js';
+  import Chart from '@/components/UserInfo/Chart.vue';
+import axios from '@/utils/axios.js';
 import default_pic from "../assets/default.png";
 import AuthorList from "../components/UserInfo/AuthorList.vue";
 import Claims from "../components/UserInfo/Claims.vue";
 import ProfileHeader from "../components/UserInfo/ProfileHeader.vue";
 import References from '../components/UserInfo/References.vue';
 import Tabs from "../components/UserInfo/Tabs.vue";
+
   export default {
     name: "userInfo",
     components: {
@@ -72,6 +76,7 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       AuthorList,
       References,
       Claims,
+      Chart,
     },
     data() {
       return {
@@ -127,8 +132,9 @@ import Tabs from "../components/UserInfo/Tabs.vue";
             citations: 22
           }
         ],
-        userclaims:[
-
+        chartData:[
+          {'year':2014, 'paper_num':4},
+          {'year':2016, 'paper_num':1},
         ],
       };
     },
@@ -171,40 +177,14 @@ import Tabs from "../components/UserInfo/Tabs.vue";
       handleUserClaimsUpdata(newData){
         this.userclaims=newData;
       },
-      //登录用户相关，测试用，可以删除
-      sendVerification() {
-        axios.post('http://localhost:8080/user/reg/verify', null, {
-          headers: {
-            'Content-Type': 'text/plain', 
-          },
-          params: {
-            mail: '2399791927@qq.com',  
-          }
-        }).then(response => {
-          console.log('发送成功:', response.data);
-        })
-        .catch(error => {
-          console.error('发送失败:', error);
-        });
-      },
-      sendCreateData() {
-        axios.post('http://localhost:8080/user/reg/create', 
-        {
-          name:'huangwenjie',
-          mail:'2399791927@qq.com',
-          password:'2399791927',
-          code:'Q5XOsY',
-        }, 
-        {
-          headers: {
-            'Content-Type': 'application/json', 
-          },
-        }).then(response => {
-          console.log('发送成功:', response.data);
-        })
-        .catch(error => {
-          console.error('发送失败:', error);
-        });
+      sendGetMyClaim(){
+        axios.get('/user/selforg').then(response => {
+              console.log("获取用户的机构信息了",response.data);
+              this.user.institution=response.data.org.name;
+              console.log("获取用户的机构信息成功",this.user.institution);
+            }).catch(error => {
+              console.error('获取用户的机构信息失败', error);
+            });
       },
       async sendGetMyInfo(){
         return new Promise((resolve, reject) => {
@@ -281,6 +261,20 @@ import Tabs from "../components/UserInfo/Tabs.vue";
         }).catch(error =>{
             console.error('获取合作作者失败:', error);
         });
+      },
+      sendGetMychartData(){
+        axios.get('/api/academic/authorpub/byYear',{
+          params:{
+            authorId:this.user.claim,
+          }
+        }).then(response => {   
+          console.log("获取该作者的年份论文信息了:",response.data);
+            // 更新数据
+            this.chartData = response.data;
+            console.log("获取该作者的年份论文信息成功",this.chartDataData);
+        }).catch(error =>{
+            console.error('获取该作者的年份论文信息失败:', error);
+        });
       }
     },
     mounted(){
@@ -291,8 +285,10 @@ import Tabs from "../components/UserInfo/Tabs.vue";
             this.sendGetMyAvatar().then(() =>{
               if(this.user.claim===null)this.$refs.Claims.sendGetMyClaims();
               else{
+                this.sendGetMyClaim();
                 this.sendGetMyReferences();
                 this.sendGetMyCooperators();
+                this.sendGetMychartData();
               }
             }).catch(error =>{
               console.error('登录请求个人头像失败',error)
@@ -313,20 +309,26 @@ import Tabs from "../components/UserInfo/Tabs.vue";
     height: 100%;
   }
   .tabdetail{
-    height: 70vh;
+    max-height: 45vw;
     background-color: white;
-    
+    width: 110vh;
+    overflow-y: auto;
   }
   .detail{
+    max-height: 45vw;
+    
     display: flex;
-    gap: 30px;
+    gap: 10px;
     align-items: stretch;
   }
   .pagetabs{
+    
     flex-grow: 1;
     align-items: stretch;
   }
   .pagewriters{
+    max-height: 45vw;
+    overflow-y: auto;
     background-color: white;
     width: 40vw;
     align-items: stretch;
