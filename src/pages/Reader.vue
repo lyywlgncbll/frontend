@@ -14,7 +14,7 @@
       />
     </div>
     <div class="middle loading" v-if="loadStatus === LoadStatus.Failed">
-      <p>对不起，该链接无法打开</p>
+      <p style="font-size: large;">对不起，该链接无法打开</p>
     </div>
     <div class="middle loading" v-if="loadStatus === LoadStatus.Loading">
       <el-header>
@@ -27,10 +27,10 @@
       </el-footer>
     </div>
   </div>
-  <div class="AI-reading" v-if="showAIReading">
-    <el-header class="header">
+  <div class="AI-reading" v-if="loadStatus === LoadStatus.Success">
+    <!-- <el-header class="header">
       <el-icon class="close" @click="showAIReading = false"><Close /></el-icon>
-    </el-header>
+    </el-header> -->
     <el-main class="main">
       <div v-for="QAndA in QAndAList" :key="QAndA.index">
         <el-divider v-if="QAndA.index != 0"/>
@@ -43,11 +43,11 @@
           </el-col>
           <el-col :span="18">
             <el-row class="question">
-              <div v-html="QAndA.question" class="msg"></div>
+                <div v-html="QAndA.question" class="msg question_msg"></div>
             </el-row>
           </el-col>
-          <el-col :span="2" class="question">
-            <el-icon size="20"><QuestionFilled /></el-icon>
+          <el-col :span="2">
+            <el-icon size="20" style="float: right;"><QuestionFilled /></el-icon>
           </el-col>
         </el-row>
         <el-row style="padding-top: 1%;padding-bottom: 1%;">
@@ -56,7 +56,7 @@
           </el-col>
           <el-col :span="18">
             <el-row class="answer">
-              <div v-html="QAndA.answer" class="msg"></div>
+              <div v-html="QAndA.answer" class="msg answer_msg"></div>
             </el-row>
           </el-col>
           <el-col :span="2">
@@ -82,7 +82,7 @@
           />
         </el-col>
         <el-col :span="3">
-          <el-icon class="middle" color="grey" size="32px" @click="AIReading(), sendHistoryProgress()"><Top /></el-icon>
+          <el-icon class="middle" color="grey" size="32px" @click="AIReading(), sendHistoryProgress(null)"><Top /></el-icon>
         </el-col>
       </el-row>
     </el-footer>
@@ -199,11 +199,12 @@ onMounted(() => {
 
 onUnmounted(() => {
   // for history progress 
-  sendHistoryProgress()
-  window.removeEventListener('beforeunload', sendHistoryProgress)
+  // sendHistoryProgress()
+  window.removeEventListener('beforeunload',sendHistoryProgress)
 })
 
-const sendHistoryProgress = () => {
+const sendHistoryProgress = (event:BeforeUnloadEvent) => {
+  event.preventDefault()
   const articleId = props.id
   const rate = calReadingProgressRate()
   const config = {
@@ -212,8 +213,15 @@ const sendHistoryProgress = () => {
   }
   axios(config).then((response:any) => {
     console.log(response)
+  }).then(() => {
+    setTimeout(() => {
+      window.close()
+    }, 1000)
   })
   console.log("call send")
+  setTimeout(() => {
+    window.close()
+  }, 2000)
 }
 
 const isInput = ref(false)
@@ -240,6 +248,7 @@ const AIReading = () => {
   const question = textarea.value
   AIconfig.data.question = question
   AIconfig.data.sessionId = token == null ? "" : token
+  console.log(AIconfig)
   sendAIReadingRequest(AIconfig).then((answer : string) => {
       if (answer != null) {
         answer = formatString(answer)
@@ -367,7 +376,7 @@ const scrollTo = () => {
   height: 100vh;
   /* padding: 20px 0; */
   box-sizing: border-box;
-  background: rgb(66，66，66);
+  background: rgb(66, 66, 66);
 }
 .vue-pdf-embed {
   text-align: center;
@@ -394,7 +403,7 @@ const scrollTo = () => {
   left: 0%;
   width: 25%;
   height: 100%;
-  background-color: rgb(250, 250, 250);
+  background-color: #fff;
 }
 .middle {
   left: 50%;
@@ -412,7 +421,7 @@ const scrollTo = () => {
   right: calc((3vh - 16px)/2);
 }
 .main {
-  height: calc(97vh - 94px - 16px);
+  height: calc(100vh - 94px - 16px - 16px);
   overflow-y: scroll;
   padding-top: 2.5%;
   padding-bottom: 2.5%;
@@ -420,6 +429,7 @@ const scrollTo = () => {
 .footer {
   height: 94px;
   padding-bottom: 16px;
+  padding-top: 16px;
   padding-right: 0%;
 }
 .background {
@@ -430,13 +440,33 @@ const scrollTo = () => {
   background-color: rgb(240, 240, 240);
 }
 .question {
+  max-width: 100%;
   display: flex;
-  justify-content: flex-end;
+  align-self: flex-end;
+  flex-direction: column;
   padding-bottom: 5px;
+  border-radius: 5px;
+}
+.answer {
+  
+  border-radius: 5px;
 }
 .msg {
-  border: 2px solid grey;
-  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
   border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  background-color: #f3f3f3;
+}
+.question_msg {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+}
+.answer_msg {
+  text-align: left;
 }
 </style>

@@ -1,18 +1,16 @@
 <template>
     <div class="reference-container">
       <div class="header">
-        <span v-if="editable" class="header-editable-title">已有文献</span>
-        <span v-else class="header-title">文献</span>
+        <span class="header-title">文献</span>
         <span class="header-date">日期</span>
         <span class="header-citations">引用次数</span>
-        <span v-if="editable" class="header-manage">管理</span>
       </div>
       <div class="reference-item" 
            v-for="(reference, index) in references" 
-           :key="index"
-      >
+           :key="index">
         <div class="reference-info">
-          <h3 class="reference-title">{{ reference.title }}</h3>
+          <h3 class="reference-title" @click="goToArticle(reference.id)">{{ reference.title }}
+          </h3>
           <p class="reference-authors">{{ reference.authors }}</p>
           <p class="reference-journal">{{ reference.journal }}</p>
         </div>
@@ -38,14 +36,14 @@
     },
     data() {
       return {
-        deleteDialog: {
-            visible: false,
-            index: null, // 当前需要删除的文献索引
-      },
+        
       };
     },
     methods: {
-       
+      goToArticle(id) {
+          // 使用 router.push 来进行路由跳转，传递 id 作为查询参数
+          this.$router.push({ path: "/article", query: { id } });
+        },
     },
 
 
@@ -99,7 +97,14 @@
     font-weight: bold;
     word-break: break-word;
     margin: 0;
-  }
+    cursor: pointer; /* 添加鼠标手型 */
+    transition: color 0.3s; /* 添加过渡效果 */
+}
+
+.reference-title:hover {
+    color: #007BFF; /* 鼠标悬停时改变文字颜色 */
+    text-decoration: underline; /* 鼠标悬停时添加下划线 */
+}
   
   .reference-authors,
   .reference-journal {
