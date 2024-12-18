@@ -21,7 +21,7 @@
       <template v-else>
         <el-row class="paper-metadata" gutter="20">
           <el-button v-for="field in paper.fields" :key="field" type="primary" class="keyword-button" round
-          @click="goToFieldPage(field)">
+            @click="goToFieldPage(field)">
             {{ field }}
           </el-button>
         </el-row>
@@ -56,7 +56,7 @@
       </el-row>
 
       <!-- 引用数据 -->
-      <h2 class="section-title">论文引用</h2>
+      <!-- <h2 class="section-title">论文引用</h2>
       <el-row class="paper-references">
         <el-col :span="24">
           <el-skeleton v-if="isLoadingReference" :rows="2" animated></el-skeleton>
@@ -79,7 +79,50 @@
             </el-descriptions-item>
           </el-descriptions>
         </el-col>
+      </el-row> -->
+
+      <h2 class="section-title">论文引用</h2>
+      <el-row class="paper-references">
+        <el-col :span="24">
+          <el-skeleton v-if="isLoadingReference" :rows="2" animated></el-skeleton>
+          <el-descriptions border v-else>
+            <el-descriptions-item>
+              <!-- 显示前10条引用 -->
+              <ul>
+                <li v-for="(reference, index) in visibleReferences" :key="index">
+                  <div v-if="reference.isLoaded">
+                    <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
+                      type="primary">
+                      {{ reference.title }}
+                    </el-link>
+                    <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
+                      type="primary">
+                      {{ reference.title }}
+                    </el-link>
+                  </div>
+                  <div v-else></div>
+                </li>
+              </ul>
+
+              <!-- 如果引用数量超过10条，显示“查看更多引用”按钮 -->
+              <!-- <div v-if="paper.references.length > 10 && !isReferenceExpanded">
+                <el-button @click="toggleExpand" type="text" class="expand-button">查看更多引用</el-button>
+              </div> -->
+              <el-button v-if="currentLoadedReferenceCount > 10" @click="toggleReferenceExpand()" type="text">
+                <el-icon v-if="isReferenceExpanded">
+                  <ArrowUpBold />
+                </el-icon>
+                <el-icon v-else>
+                  <ArrowDownBold />
+                </el-icon>
+              </el-button>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-col>
       </el-row>
+
+      <h2 class="section-title">论文推荐</h2>
+      <paper-details class="papers" />
 
       <!-- <h2 class="section-title">数据统计</h2>
       <el-row>
@@ -140,7 +183,7 @@
         <el-row class="stat-footer">
           <span>下载次数</span>
           <div class="stat-number">
-            <span>{{ downloads }}</span>
+            <span>{{ paper.downloads }}</span>
           </div>
         </el-row>
       </div>
@@ -159,7 +202,7 @@
         <el-row class="stat-footer">
           <span>浏览次数</span>
           <div class="stat-number">
-            <span>{{ views }}</span>
+            <span>{{ paper.views }}</span>
           </div>
         </el-row>
       </div>
@@ -176,9 +219,15 @@
         <div class="striped-divider2"></div>
 
         <el-row class="stat-footer">
-          <span>引用次数</span>
+          <span>引用文章次数</span>
           <div class="stat-number">
             <span>{{ getReferenceLength() }}</span>
+          </div>
+        </el-row>
+        <el-row class="stat-footer">
+          <span>被引用次数</span>
+          <div class="stat-number">
+            <span>{{ paper.citation }}</span>
           </div>
         </el-row>
       </div>
@@ -211,12 +260,14 @@
 <script>
 import { createRouter, createWebHistory } from 'vue-router';
 import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
-import { ARTICLE_API, REFERENCE_API, INCREASE_READ_CNT_API } from "~/utils/request.js"
+import { ARTICLE_API, REFERENCE_API, INCREASE_READ_CNT_API, ADD_DOWNLOADS_API, ADD_VIEWS_API } from "~/utils/request.js"
 import Reader from './Reader.vue';
 //import Article from '.Article.vue';
 import axios from '@/utils/axios.js';
 import { defineComponent } from "vue";
 import router from "@/router/index.js";
+//import PaperDetails from "~/components/article/paperIntro.vue";
+import PaperDetails from "~/components/article/paperIntro.vue";
 
 // const routes = [
 //   {
@@ -232,7 +283,7 @@ import router from "@/router/index.js";
 // });
 //const id = "https://openalex.org/W1481824024"
 export default defineComponent({
-  components: { LoggedNavBar },
+  components: { LoggedNavBar, PaperDetails },
   name: "PaperDetail",
   props: {
     id: {
@@ -268,16 +319,16 @@ export default defineComponent({
           },
         ],
         pdfUrl: "/test/test.pdf",
-        isFavorite: false
+        isFavorite: false,
+        views: 0,
+        downloads: 0
       },
       // stats: [
       //   { icon: 'path/to/icon1.png', number: 101, label: 'Views' },
       //   { icon: 'path/to/icon2.png', number: 1001, label: 'Downloads' },
       //   { icon: 'path/to/icon3.png', number: 10, label: 'Admins' },
       //   // 添加更多统计项
-      // ],
-      views: "101",
-      downloads: "1001",
+      // ],,
       recommendations: [
         {
           id: "1",
@@ -306,24 +357,18 @@ export default defineComponent({
       ],
       isLoading: true,
       isLoadingReference: false,
-      isExpanded: false
+      isExpanded: false,
+      isReferenceExpanded: false,
+      currentLoadedReferenceCount: 0
     };
   },
   mounted() {
     // 从 localStorage 中加载数据
     this.views = localStorage.getItem("views") || 101; // 默认值101
     this.downloads = localStorage.getItem("downloads") || 1001; // 默认值1001
-    this.fetchAllData(this.id);;
+    this.fetchAllData(this.id);
   },
   watch: {
-    views(newVal) {
-      // 当 views 更新时，将新值存储到 localStorage
-      localStorage.setItem("views", newVal);
-    },
-    downloads(newVal) {
-      // 当 downloads 更新时，将新值存储到 localStorage
-      localStorage.setItem("downloads", newVal);
-    },
     '$route.query.id': {
       immediate: true,
       handler(newId) {
@@ -342,6 +387,12 @@ export default defineComponent({
     //   },
     //   immediate: true, // 初始化时也调用一次
     // },
+  },
+  computed: {
+    visibleReferences() {
+      // 如果展开了，显示所有引用；否则只显示前10条引用
+      return this.isReferenceExpanded ? this.paper.references : this.paper.references.slice(0, 10);
+    }
   },
   methods: {
     async fetchData(id) {
@@ -362,7 +413,6 @@ export default defineComponent({
     },
     async fetchReferenceData(ref) {
       try {
-        console.log(ref.id);
         const response = await axios.get(REFERENCE_API, {
           params: {
             referenceId: ref.id
@@ -372,6 +422,7 @@ export default defineComponent({
         ref.isReachable = response.data.isReachable;
         ref.isLoaded = true;
         this.isLoadingReference = false;
+        this.currentLoadedReferenceCount++;
       } catch (error) {
         console.log("error")
       }
@@ -401,13 +452,20 @@ export default defineComponent({
     delay(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     },
-    downloadPaper() {
+    async downloadPaper() {
       this.downloads++;
-      this.downloadPdf(this.paper.pdfUrl);
+      console.log(this.id);
+      //this.downloadPdf(this.paper.pdfUrl);
       this.$message({
         message: "Downloading PDF...",
         type: "info",
       });
+      const response = await axios.post(ADD_DOWNLOADS_API, null, {
+        params: {
+          publicationId: this.id
+        }
+      });
+      this.paper.downloads = response.data.downloads;
     },
     async downloadPdf(pdfUrl) {
       try {
@@ -428,12 +486,19 @@ export default defineComponent({
     getReferenceLength() {
       return this.paper.references.length;
     },
-    preview() {
+    async preview() {
       this.views++;
       this.$message({
         message: "Preview...",
         type: "success",
       });
+      console.log(this.id);
+      const response = await axios.post(ADD_VIEWS_API, null, {
+        params: {
+          publicationId: this.id
+        }
+      });
+      this.paper.views = response.data.views;
       this.increaseReadCnt();
       const url = this.$router.resolve({ name: 'Reader', query: { id: this.id } }).href;
       console.log(url);
@@ -507,6 +572,9 @@ export default defineComponent({
           isReachable: false, // 假设所有文献都可访问，后续可以根据业务逻辑调整
         })),
         pdfUrl: backendData.pdfurl,
+        downloads: backendData.downloads,
+        views: backendData.views,
+        citation: backendData.citation
       };
       return paper;
     },
@@ -527,6 +595,9 @@ export default defineComponent({
     },
     toggleExpand() {
       this.isExpanded = !this.isExpanded;
+    },
+    toggleReferenceExpand() {
+      this.isReferenceExpanded = !this.isReferenceExpanded;
     },
     async increaseReadCnt() {
       try {
@@ -839,4 +910,6 @@ export default defineComponent({
   margin-left: 0%;
   padding: 25px 25px;
 }
+
+.papers {}
 </style>
