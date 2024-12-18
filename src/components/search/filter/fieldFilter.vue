@@ -3,15 +3,15 @@
         <div class="menu-title" @click="handleDExpand">
             {{ item.title }}
             <span>
-                <img v-if="dexpand" src="/src/assets/search/icon/down-expand2.svg" alt="" width="15px" height="15px">
-                <img v-else src="/src/assets/search/icon/down-expand2.svg" alt="" width="15px" height="15px"
+                <img v-if="dexpand" src="/src/assets/iconfonts/search/down-expand2.svg" alt="" width="15px" height="15px">
+                <img v-else src="/src/assets/iconfonts/search/down-expand2.svg" alt="" width="15px" height="15px"
                     :style="{ transform: 'rotate(180deg)' }">
             </span>
         </div>
         <div class="menu-content" :class="{ expand: dexpand }">
             <input type="text" v-model="searchQuery" :placeholder="'查找' + item.title" />
 
-            <div class="buttons">
+            <div class="buttons" :class="{collapsed:!isExpand}">
                 <div v-for="(content, i) in filteredContents" :key="i" class="content-button"
                     :class="{ 'selected': isChecked(content) }" @click="handleSelection(content)">
                     {{ content }}
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
     isExpand: Boolean,

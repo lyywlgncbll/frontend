@@ -34,7 +34,7 @@ const clickTopic = () => {
     router.push('search/result')
 }
 const clickKeyword = (content) => {
-    localStorage.setItem('searchOption', 5)
+    localStorage.setItem('searchOption', 6)
     localStorage.setItem('topicObj', '')
     localStorage.setItem('searchString', content)
     router.push('search/result')

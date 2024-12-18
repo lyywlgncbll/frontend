@@ -1,41 +1,41 @@
 <template>
-    <div>
-      <table class="custom-table" :style="{ width: '100%' }">
-        <thead class="table-head">
-          <tr>
-            <th>
-              <input type="checkbox" @click="toggleAllSelection" :checked="isAllSelected" />
-            </th>
-            <th>姓名</th>
-            <th>认领对应作者</th>
-            <th>创建时间</th>
-            <th>状态</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(row, index) in tableData"
-            :key="index"
-            :class="{ selected: isSelected(row) }"
-          >
-            <td>
-              <input type="checkbox" :checked="isSelected(row)" @click.stop="toggleRowSelection(row)" />
-            </td>
-            <td class="name" @click="changeTo(row)">{{ row.name }}</td>
-            <td>{{ row.authorName }}</td>
-            <td>{{ getTime(row.claim.createTime) }}</td>
-            <td>{{ getStatusText(row.claim.status) }}</td>
-            <td>
-              <button @click.stop="approve(row)">通过</button>
-              <button @click.stop="reject(row)">拒绝</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div>
+    <table class="custom-table" :style="{ width: '100%' }">
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" @click="toggleAllSelection" :checked="isAllSelected" />
+          </th>
+          <th>姓名</th>
+          <th>认领对应作者</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(row, index) in tableData" :key="index" :class="{ selected: isSelected(row) }">
+          <td>
+            <input type="checkbox" :checked="isSelected(row)" @click.stop="toggleRowSelection(row)" />
+          </td>
+          <td class="name" @click="changeTo(row)">{{ row.name }}</td>
+          <td class="authorName">{{ row.authorName }}</td>
+          <td class="time">{{ getTime(row.claim.createTime) }}</td>
+          <td v-if="row.claim.status === 'ACCEPTED'" class="option">
+            <el-tag type="success">已通过</el-tag>
+          </td>
+          <td v-else-if="row.claim.status === 'REJECTED'" class="option">
+            <el-tag type="danger">已拒绝</el-tag>
+          </td>
+          <td v-else class="option">
+            <button @click.stop="approve(row)" >通过</button>
+            <button @click.stop="reject(row)">拒绝</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
-  
+
 <script>
 import axios from "@/utils/axios";
 import { UPDATECLIAM_API } from '@/utils/request.js'
@@ -100,10 +100,10 @@ export default {
       row.claim.status = 'REJECTED';
       this.updateClaim(row.claim)
     },
-    updateClaim(claim){
+    updateClaim(claim) {
       try {
-        axios.post(UPDATECLIAM_API,{}, {
-          params:{
+        axios.post(UPDATECLIAM_API, {}, {
+          params: {
             id: claim.id,
             status: claim.status
           }
@@ -112,20 +112,7 @@ export default {
         console.error('update failed:', error);
       }
     },
-    // 状态转义方法
-    getStatusText(status) {
-      switch (status) {
-        case 'PENDING':
-          return '未处理';
-        case 'ACCEPTED':
-          return '已通过';
-        case 'REJECTED':
-          return '已拒绝';
-        default:
-          return status;
-      }
-    },
-    getTime(time){
+    getTime(time) {
       const date = new Date(time);
       const year = date.getUTCFullYear();
       const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以要加1，并确保两位数
@@ -134,12 +121,12 @@ export default {
     },
     handleSelectedRows(status) {
       const selectedRowsArray = Array.from(this.selectedRows);
-      if(status === "ACCEPTED"){
+      if (status === "ACCEPTED") {
         selectedRowsArray.forEach(row => {
           this.approve(row)
         });
       }
-      else{
+      else {
         selectedRowsArray.forEach(row => {
           this.reject(row)
         });
@@ -148,63 +135,80 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
-.name{
-  text-decoration: underline;
-  color: rgb(53, 94, 255);
-  cursor: pointer;
+tbody {
+  .name {
+    text-decoration: underline;
+    color: rgb(53, 94, 255);
+    cursor: pointer;
+    width: 150px;
+    overflow: hidden;
+  }
+  .authorName{
+    font-style: italic;
+    width: 280px;
+    max-width: 280px;
+  }
+  .time{
+    width: 150px;
+    max-width: 150px;
+  }
+  .option{
+    width: 250px;
+    max-width: 250px;
+  }
 }
 
+
 tr:first-child th {
-    background-color: #ffffff;
-    font-size: medium;
-    font-weight: 600;
+  background-color: #ffffff;
+  font-size: medium;
+  font-weight: 600;
 }
-  
+
 .custom-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
 }
-  
+
 .custom-table th,
 .custom-table td {
-    padding: 15px;
-    /* border: 1px solid #ddd; */
-    font-weight: 400;
-    text-align: center;
+  padding: 15px;
+  font-weight: 400;
+  text-align: center;
 }
-  
+
 .custom-table th {
-    background-color: #f4f4f4;
+  background-color: #f4f4f4;
 }
-  
+
 .custom-table tr.selected {
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
-  
+
 .custom-table input[type="checkbox"] {
-    cursor: default;
+  cursor: default;
 }
-  
+
 .custom-table button {
-    margin: 0px 5px;
-    padding: 2px 10px;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    color: black;
-    border: none;
-    border-radius: 10px;
-    transition: background-color 0.3s;
+  margin: 0px 5px;
+  padding: 2px 10px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  transition: all  0.3s;
+  font-size: 15px;
 }
-  
+
 .custom-table button:hover {
-    background-color: rgb(101, 101, 101) !important;
-    color: #fffbfb;
+  background-color: rgb(121, 197, 138) !important;
+  transform: translateY(-2px);
+  color: #fffbfb;
 }
-  
+
 .custom-table button:last-child:hover {
-    background-color: rgb(227, 151, 151) !important;
+  background-color: rgb(227, 151, 151) !important;
 }
 </style>
-  
