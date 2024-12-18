@@ -10,6 +10,8 @@ export const USERFIELDS_API = `/user/search/fields`
 export const USERAVATOR_API = `/user/avator/get`
 export const ARTICLE_API = `/api/academic/getPublicationById`
 export const REFERENCE_API = `/api/academic/getReferenceById`
+export const ADD_DOWNLOADS_API = `/api/academic/addDownloads`
+export const ADD_VIEWS_API = `/api/academic/addViews`
 
 //登录注册页
 export const LOGIN_API = `/user/auth/login`;
