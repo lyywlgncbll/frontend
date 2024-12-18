@@ -27,7 +27,7 @@
       </el-footer>
     </div>
   </div>
-  <div class="AI-reading" v-if="LoadStatus === LoadStatus.Success">
+  <div class="AI-reading" v-if="loadStatus === LoadStatus.Success">
     <!-- <el-header class="header">
       <el-icon class="close" @click="showAIReading = false"><Close /></el-icon>
     </el-header> -->
@@ -376,7 +376,7 @@ const scrollTo = () => {
   height: 100vh;
   /* padding: 20px 0; */
   box-sizing: border-box;
-  background: #fff;
+  background: rgb(66, 66, 66);
 }
 .vue-pdf-embed {
   text-align: center;
@@ -388,7 +388,6 @@ const scrollTo = () => {
 }
 .pdf-wrap {
   overflow-y: auto;
-  background-color: rgb(66, 66, 66);
 }
 .loading {
   position: absolute;
