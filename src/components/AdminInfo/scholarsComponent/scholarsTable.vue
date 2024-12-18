@@ -16,10 +16,10 @@
             :key="index"
           >
             <td class="name" @click="changeTo(row)">{{ row.name }}</td>
-            <td>{{ row.mail }}</td>
-            <td>{{ row.institution }}</td>
-            <td>{{ row.createTime }}</td>
-            <td>{{ row.articleCount }}</td>
+            <td class="mail">{{ row.mail }}</td>
+            <td class="institution">{{ row.institution }}</td>
+            <td class="createTime">{{ row.createTime }}</td>
+            <td class="articleCount">{{ row.articleCount }}</td>
           </tr>
         </tbody>
       </table>
@@ -50,12 +50,6 @@
 </script>
   
 <style scoped>
-.name {
-    text-decoration: underline;
-    color: rgb(53, 94, 255);
-    cursor: pointer;
-}
-  
 tr:first-child th {
     background-color: #ffffff;
     font-size: medium;
@@ -65,6 +59,27 @@ tr:first-child th {
 .custom-table {
     width: 100%;
     border-collapse: collapse;
+    .mail{
+      width: 200px;
+    }
+    .institution{
+      font-style: italic;
+      width: 200px;
+    }
+    .name{
+      text-decoration: underline;
+      color: rgb(41, 73, 199);
+      cursor: pointer;
+      width: 150px;
+    }
+    .createTime{
+      width: 150px;
+      max-width: 150px;
+    }
+    .articleCount{
+      width: 150px;
+      max-width: 150px;
+    }
 }
   
 .custom-table th,
@@ -86,6 +101,5 @@ tr:first-child th {
 .custom-table input[type="checkbox"] {
     cursor: default;
 }
-  
 </style>
   

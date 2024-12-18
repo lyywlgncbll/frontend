@@ -105,7 +105,7 @@ export default {
 </script>
 <style scoped>
 .menu-container {
-    height: 700px;
+    height: 620px;
     display: flexbox;
     width: 90%;
     justify-content: flex-start;
