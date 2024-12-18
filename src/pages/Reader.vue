@@ -47,12 +47,12 @@
             </el-row>
           </el-col>
           <el-col :span="2">
-            <el-icon size="20" style="float: right;"><QuestionFilled /></el-icon>
+            <el-icon size="20" style="float: right; padding-top: 8px;"><QuestionFilled /></el-icon>
           </el-col>
         </el-row>
         <el-row style="padding-top: 1%;padding-bottom: 1%;">
           <el-col :span="2">
-            <el-icon size="20"><ChatDotRound /></el-icon>
+            <el-icon size="20" style="padding-top: 8px;"><ChatDotRound /></el-icon>
           </el-col>
           <el-col :span="18">
             <el-row class="answer">
@@ -218,10 +218,6 @@ const sendHistoryProgress = (event:BeforeUnloadEvent) => {
       window.close()
     }, 1000)
   })
-  console.log("call send")
-  setTimeout(() => {
-    window.close()
-  }, 2000)
 }
 
 const isInput = ref(false)
