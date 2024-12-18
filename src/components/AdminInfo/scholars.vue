@@ -57,21 +57,27 @@ export default {
           }
         }).then(response => {
           if (response.status === 200) {
+            console.log(response.data)
             this.totalPage = response.data.totalPage;
             const backendData = response.data.view;
             this.tableData = backendData.map(item => ({
               id: item.user.id,
               name: item.authorName || '未知',
               mail: item.user.mail || '无邮箱',
-              institution: item.org || '未知机构',
+              institution: this.getInsititution(item.org) || '未知机构',
               createTime: this.formatDate(item.registerDate) || '未知日期',
-              articleCount: item.publicationsCount || 0
+              articleCount: item.publicationsCount || 0,
+              authorId: item.authorId
             }));
           }
         })
       } catch (error) {
         console.log(error)
       }
+    },
+    getInsititution(org){
+      if(!org) return null;
+      return org.name;
     },
     formatDate(isoString) {
       if (!isoString) return null;
@@ -83,7 +89,7 @@ export default {
       return `${year}-${month}-${day}`;
     },
     handleNameClick(row) {
-      //跳转到学者主页
+      this.$router.push('/authorInfo/'+row.authorId);
       console.log('Clicked on name:', row);
     },
   }
@@ -91,7 +97,7 @@ export default {
 </script>
 <style scoped>
 .menu-container {
-  height: 700px;
+  height: 620px;
   display: flexbox;
   width: 90%;
   justify-content: flex-start;
@@ -108,7 +114,7 @@ export default {
 }
 
 .scholarsTable {
-  margin-top: 20px;
+  margin-top: 50px;
 }
 
 .pageComponent {

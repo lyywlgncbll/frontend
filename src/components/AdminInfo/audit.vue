@@ -7,7 +7,7 @@
     <div class="select-menu-pos">
       <selectMenu @updateTableTo="updateTableTo" />
     </div>
-    <el-empty v-if="this.tableData.length === 0" description="暂无数据"></el-empty>
+    <el-empty v-if="this.tableData.length === 0" :image-size="230" description="暂无数据"></el-empty>
     <div v-else>
       <div class="claimTable-pos">
         <claimTable ref="claimTable" :tableData="tableData" :batchAction="handleBatchAction"
@@ -140,7 +140,7 @@ export default {
 <style scoped>
 .menu-container {
   position: relative;
-  height: 700px;
+  height: 620px;
   width: 90%;
   padding: 50px;
   border: 2px solid #ccc;
@@ -149,17 +149,43 @@ export default {
 }
 
 .titleButton {
-  border: 2px solid #ccc;
-  /* 设置边框 */
-  padding: 0px 10px;
-  /* 调整上下和左右的内边距 */
-  margin: 2px;
-  font-size: medium;
-  font-weight: 200;
+ appearance: none;
+ background-color: transparent;
+ border: 0.125em solid #9e9e9e;
+ border-radius: 0.9375em;
+ box-sizing: border-box;
+ color: #3B3B3B;
+ cursor: pointer;
+ display: inline-block;
+ font-size: 16px;
+ font-weight: 500;
+ line-height: normal;
+ margin: 5px;
+ min-width: 0;
+ outline: none;
+ padding: 3px 15px;
+ text-align: center;
+ text-decoration: none;
+ transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+ user-select: none;
+ -webkit-user-select: none;
+ touch-action: manipulation;
+ will-change: transform;
+}
+
+.titleButton:disabled {
+ pointer-events: none;
 }
 
 .titleButton:hover {
-  background-color: #f0f0f0;
+ color: #fff;
+ background-color:  rgb(99, 99, 99);
+ transform: translateY(-2px);
+}
+
+.titleButton:active {
+ box-shadow: none;
+ transform: translateY(0);
 }
 
 .select-menu-pos {
@@ -173,7 +199,7 @@ export default {
 }
 
 .claimTable-pos {
-  margin: 50px 0px;
+  margin: 40px 0px;
 }
 
 .pageComponent {

@@ -7,7 +7,7 @@
           <p class="author-name">{{ author.name }}</p>
           <p class="author-university">{{ author.university }}</p>
         </div>
-        <router-link :to="`/authorInfo/${encodeURIComponent(author.authorid)}`" class="arrow">➔</router-link>
+        <router-link :to="`/authorInfo/${author.authorid}`" class="arrow">➔</router-link>
 
       </div>
     </div>

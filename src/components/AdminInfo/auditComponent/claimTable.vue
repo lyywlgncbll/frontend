@@ -1,7 +1,7 @@
 <template>
   <div>
     <table class="custom-table" :style="{ width: '100%' }">
-      <thead class="table-head">
+      <thead>
         <tr>
           <th>
             <input type="checkbox" @click="toggleAllSelection" :checked="isAllSelected" />
@@ -9,7 +9,6 @@
           <th>姓名</th>
           <th>认领对应作者</th>
           <th>创建时间</th>
-          <th>状态</th>
           <th>操作</th>
         </tr>
       </thead>
@@ -21,8 +20,13 @@
           <td class="name" @click="changeTo(row)">{{ row.name }}</td>
           <td class="authorName">{{ row.authorName }}</td>
           <td class="time">{{ getTime(row.claim.createTime) }}</td>
-          <td class="status">{{ getStatusText(row.claim.status) }}</td>
-          <td>
+          <td v-if="row.claim.status === 'ACCEPTED'" class="option">
+            <el-tag type="success">已通过</el-tag>
+          </td>
+          <td v-else-if="row.claim.status === 'REJECTED'" class="option">
+            <el-tag type="danger">已拒绝</el-tag>
+          </td>
+          <td v-else class="option">
             <button @click.stop="approve(row)" >通过</button>
             <button @click.stop="reject(row)">拒绝</button>
           </td>
@@ -108,19 +112,6 @@ export default {
         console.error('update failed:', error);
       }
     },
-    // 状态转义方法
-    getStatusText(status) {
-      switch (status) {
-        case 'PENDING':
-          return '未处理';
-        case 'ACCEPTED':
-          return '已通过';
-        case 'REJECTED':
-          return '已拒绝';
-        default:
-          return status;
-      }
-    },
     getTime(time) {
       const date = new Date(time);
       const year = date.getUTCFullYear();
@@ -155,10 +146,17 @@ tbody {
     overflow: hidden;
   }
   .authorName{
+    font-style: italic;
+    width: 280px;
     max-width: 280px;
   }
   .time{
-    max-width: 125px;
+    width: 150px;
+    max-width: 150px;
+  }
+  .option{
+    width: 250px;
+    max-width: 250px;
   }
 }
 
@@ -171,13 +169,11 @@ tr:first-child th {
 
 .custom-table {
   width: 100%;
-  border-collapse: collapse;
 }
 
 .custom-table th,
 .custom-table td {
   padding: 15px;
-  /* border: 1px solid #ddd; */
   font-weight: 400;
   text-align: center;
 }
@@ -202,12 +198,13 @@ tr:first-child th {
   color: black;
   border: none;
   border-radius: 10px;
-  transition: background-color 0.3s;
+  transition: all  0.3s;
   font-size: 15px;
 }
 
 .custom-table button:hover {
-  background-color: rgb(101, 101, 101) !important;
+  background-color: rgb(121, 197, 138) !important;
+  transform: translateY(-2px);
   color: #fffbfb;
 }
 
