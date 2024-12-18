@@ -12,6 +12,7 @@ export const ARTICLE_API = `/api/academic/getPublicationById`
 export const REFERENCE_API = `/api/academic/getReferenceById`
 export const ADD_DOWNLOADS_API = `/api/academic/addDownloads`
 export const ADD_VIEWS_API = `/api/academic/addViews`
+export const GET_RECOMMEND_BY_ID = `/api/academic/getRecommend`
 
 //登录注册页
 export const LOGIN_API = `/user/auth/login`;
