@@ -52,6 +52,8 @@
   
   <style scoped>
   .reference-container {
+    max-height: 42vw;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     width: 100%;

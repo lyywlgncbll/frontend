@@ -30,7 +30,7 @@
         placeholder="输入姓名"
        />
 
-       <!-- 编辑 Institution -->
+       
        <p class="institution">{{ institution }}</p>
        
 
@@ -233,7 +233,6 @@ export default {
 .name-edit {
   all: unset; /* 清除默认输入框样式 */
   font-size: 24px; /* h2 的样式 */
-  font-weight: bold;
   margin: 0;
   padding: 0;
   border: none; /* 移除边框 */
