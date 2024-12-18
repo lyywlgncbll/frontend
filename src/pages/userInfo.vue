@@ -216,7 +216,6 @@ import Tabs from "../components/UserInfo/Tabs.vue";
               this.user.bio=response.data.description;
               this.user.claim=response.data.claim;
               this.user.researchAreas=response.data.fieldsOfStudy;
-              this.user.institution;
               if(this.user.claim!=null){
                 this.tabs=['发表文献','学术研究']
               }
