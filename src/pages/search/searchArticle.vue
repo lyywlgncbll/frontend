@@ -3,7 +3,7 @@
     <div id="search-root">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
-                <img src="/src/assets/search/icon/down-expand.svg" width="15px" height="15px"
+                <img src="/src/assets/iconfonts/search/down-expand.svg" width="15px" height="15px"
                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
@@ -14,8 +14,7 @@
             <div :class="{ main: true, collapsed: !isExpand }">
                 <searchNav @sortChanged="handleSort" :totalEntries="totalEntries"></searchNav>
                 <searchTopic></searchTopic>
-                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index"
-                    @openClaimForm="showClaimForm">
+                <searchItem v-for="(searchItem, index) in searchItems" :searchItem="searchItem" :key="index">
                 </searchItem>
                 <div class="page">
                     <pageComponent v-model:currentPage="currentPage" v-model:totalPage="totalPages"></pageComponent>
@@ -81,6 +80,7 @@ const handleFilter = (selections) => {
     journals.value = selections.journals
     fields.value = selections.fields
     currentPage.value = 1
+    console.log(selections);
     advancedSearch()
 }
 
@@ -175,7 +175,6 @@ const advancedSearch = async () => {
     display: flex;
     margin: 30px auto;
     position: relative;
-    transition: all 1s ease;
 }
 
 .left-bar {
@@ -185,11 +184,10 @@ const advancedSearch = async () => {
     width: 20%;
     overflow: hidden;
     height: 100%;
-    transition: all .1s ease;
 }
 
 .left-bar.collapsed {
-    width: 0;
+    width: 0%;
 }
 
 .left-expand {
@@ -203,7 +201,7 @@ const advancedSearch = async () => {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
+    z-index: 999;
     &:hover {
         background-color: var(--expand-button-hover-color);
     }
@@ -213,17 +211,10 @@ const advancedSearch = async () => {
     width: 75%;
     min-height: 80vh;
     margin: 0 auto;
-    transition: all 0.3 ease;
     position: relative;
 
-    .null {
-        width: 100%;
-        height: 70vh;
-        text-align: center;
-    }
-
     &.collapsed {
-        width: 90%;
+        width: 95%;
     }
 
     .page {

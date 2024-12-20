@@ -1,43 +1,32 @@
 <template>
   <div class="profile-header">
     <div class="avatar-container" @click="triggerFileInput">
-      <img
-        v-if="avatar"
-        :src="avatar"
-        alt="加载中"
-        class="avatar"
-      />
+      <img v-if="avatar" :src="avatar" alt="加载中" class="avatar" />
       <div v-else class="default-avatar">{{ getInitial }}</div>
     </div>
     <form @submit.prevent="uploadAvatar" ref="avatarForm" style="display: none;">
-      <input
-        type="file"
-        ref="fileInput"
-        @change="uploadAvatar"
-        style="display: none;"
-      />
+      <input type="file" ref="fileInput" @change="uploadAvatar" style="display: none;" />
     </form>
+
     <div class="profile-info">
+      <div>
+        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/name.svg">名称：</div>
+        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/instruction.svg">机构：</div>
+        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/bio.svg">签名：</div>
+      </div>
+      <div class="info">
+        <!-- 编辑 Name -->
+        <div class="name" v-if="!editable">{{ name }}</div>
+        <input v-if="editable" v-model="nameLocal" class="name-edit" type="text" placeholder="输入姓名" />
 
-      
-       <!-- 编辑 Name -->
-       <h2 class="name" v-if="!editable">{{ name }}</h2>
-       <input
-        v-if="editable"
-        v-model="nameLocal"
-        class="name-edit"
-        type="text"
-        placeholder="输入姓名"
-       />
+        <!-- 编辑 Institution -->
+        <div class="institution"> {{ institution }}</div>
+        <input v-if="editable" v-model="bioLocal" class="bio-edit"></input>
 
-       
-       <p class="institution">{{ institution }}</p>
-       
-
-
-      <p class="bio" v-if="!editable">{{ bio }}</p> 
-      <textarea v-if="editable" v-model="bioLocal" class="bio-edit"></textarea>
+        <div class="bio" v-if="!editable">{{ bio }}</div>
+      </div>
     </div>
+
     <button v-if="!editable" @click="editProfile" class="edit-button">编辑</button>
     <button v-else @click="saveProfile" class="save-button">保存</button>
   </div>
@@ -72,7 +61,7 @@ export default {
       type: String,
       default: '生动有趣的个人描述更容易让别人认识你~',
     },
-    authorization:{
+    authorization: {
       type: String,
       required: true,
     }
@@ -114,18 +103,11 @@ export default {
       });
     },
 
-
-
-
-
-
-
-
     // 通过ref触发input的click事件，模拟点击文件选择框
     triggerFileInput() {
-      if(!this.editable){
+      if (!this.editable) {
         return;
-      }else{
+      } else {
         this.$refs.fileInput.click();
       }
     },
@@ -171,24 +153,26 @@ export default {
 
 <style scoped>
 .profile-header {
-  margin-bottom: 10px;
-  height: 35vh;
+  margin-bottom: 50px;
+  height: 25vh;
+  width: 60%;
+  min-height: 250px;
+  min-width: 600px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 16px;
+  justify-content: center;
+  border-radius: 20px;
   background-color: white;
+  overflow: hidden;
 }
 
 .avatar-container {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e0e0e0;
-  margin-right: 16px;
   cursor: pointer;
 }
 
@@ -199,7 +183,7 @@ export default {
 }
 
 .default-avatar {
-  font-size: 48px;
+  font-size: 60px;
   color: #fff;
   background-color: #4CAF50;
   display: flex;
@@ -208,87 +192,57 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  
 }
 
 .profile-info {
-  flex: 1;
-  padding-right: 50px;
-  flex-direction: column;
+  width: 60%;
+  height: 70%;
+  margin-left: 30px;
+  border-left: 2px solid grey;
+  display: flex;
+  align-items: center;
+
+  .info-name {
+    padding: 5px;
+    margin: 25px 10px 25px 30px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+
+    img {
+      display: inline-block;
+      width: 23px;
+      height: 23px;
+      margin-right: 8px;
+    }
+  }
+
+  .name,
+  .institution,
+  .bio {
+    margin: 25px 0;
+    padding: 5px 8px;
+    white-space: nowrap;
+  }
 }
 
-.name {
-  font-size: 24px;
-  margin: 0;
-}
-
-.institution {
-  color: #666;
-}
-
-.research-areas {
-  font-size: 14px;
-  color: #333;
-}
-
-.name-edit {
-  all: unset; /* 清除默认输入框样式 */
-  font-size: 24px; /* h2 的样式 */
-  margin: 0;
-  padding: 0;
-  border: none; /* 移除边框 */
-  width: 100%; /* 保证宽度一致 */
-}
-
-.institution-edit {
-  all: unset; /* 清除默认输入框样式 */
-  font-size: 16px; /* p 的样式 */
-  color: #666;
-  margin: 0;
-  padding: 0;
-  border: none; /* 移除边框 */
-  width: 100%; /* 保证宽度一致 */
-  
-}
-
-.research-areas-edit {
-  all: unset; /* 清除默认文本域样式 */
-  font-size: 14px; /* p 的样式 */
-  color: #333;
-  margin: 0;
-  margin-bottom: -25px;
-  padding: 0;
-  width: 100%; /* 保证宽度一致 */
-  resize: none; /* 禁止调整大小 */
-  
-}
-
-.bio {
-  font-size: 16px;
-  color: #333;
-  background-color: #f7f7f7;
-  border-left: 4px solid #4CAF50;
-  padding: 10px 16px;
-  border-radius: 8px;
-  line-height: 1.5;
-  max-height: 100px;
-  overflow-y: auto;
-  word-wrap: break-word;
-  max-width: 40%; /* 设置为父容器的70%宽度 */
-}
+.name-edit,
+.institution-edit,
 .bio-edit {
-  font-size: 16px;
-  color: #333;
-  background-color: #f7f7f7;
-  border-left: 4px solid #4CAF50;
-  padding: 10px 16px;
-  border-radius: 8px;
-  line-height: 1.5;
-  width: 100%;  /* 让输入框的宽度填满可用空间 */
-  max-height: 120px;
-  overflow-y: auto;
-  resize: none;  /* 禁止调整大小 */
-  max-width: 40%; /* 确保输入框不会超出右侧按钮 */
+  width: 100%;
+  padding: 5px 8px;
+  background-color: #eeecec;
+  border-radius: 8px; 
+  outline: none; 
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; 
+}
 
+.name-edit:focus,
+.institution-edit:focus,
+.bio-edit:focus {
+  border-color: #b6b6b9; 
+  box-shadow: 0 0 5px rgba(194, 197, 194, 0.5); 
 }
 
 .edit-button {
@@ -300,6 +254,7 @@ export default {
   color: #333;
   border-radius: 4px;
 }
+
 .save-button {
   background-color: green;
   border: none;

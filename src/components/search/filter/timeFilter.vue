@@ -3,8 +3,8 @@
         <div class="menu-title" @click="handleDExpand">
             {{ item.title }}
             <span>
-                <img v-if="dexpand" src="/src/assets/search/icon/down-expand2.svg" alt="" width="15px" height="15px">
-                <img v-else src="/src/assets/search/icon/down-expand2.svg" alt="" width="15px" height="15px"
+                <img v-if="dexpand" src="/src/assets/iconfonts/search/down-expand2.svg" alt="" width="15px" height="15px">
+                <img v-else src="/src/assets/iconfonts/search/down-expand2.svg" alt="" width="15px" height="15px"
                     :style="{ transform: 'rotate(180deg)' }">
             </span>
         </div>
@@ -42,7 +42,6 @@ const selectedContents = ref([])
 watch([beginYear, endYear], ([newBeginYear, newEndYear]) => {
     if (newBeginYear && newEndYear && newBeginYear > 1900 && newEndYear >= newBeginYear) {
         selectedContents.value = Array.from({ length: newEndYear - newBeginYear + 1 }, (_, i) => newBeginYear + i);
-        console.log(selectedContents.value);
     } else {
         selectedContents.value = []
     }

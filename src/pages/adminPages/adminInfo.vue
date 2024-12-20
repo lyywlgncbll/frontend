@@ -81,8 +81,8 @@ export default {
 .content {
   display: flex;
   z-index: 50;
-  padding-left: 25%;
-  padding-top: 110px;
+  margin-left: 20%;
+  margin-top: 90px;
 }
 
 </style>
