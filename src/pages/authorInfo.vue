@@ -217,7 +217,6 @@ export default {
     this.sendGetHisCooperators();
     this.sendGetHischartData();
   }
-
 }
 </script>
 
