@@ -19,7 +19,6 @@
     </form>
 
     <div class="profile-info">
-<<<<<<< HEAD
       <!-- 编辑 Name -->
       <h2 class="name" v-if="!editable">{{ name }}</h2>
       <input
@@ -34,24 +33,6 @@
 
       <p class="bio" v-if="!editable">{{ bio }}</p>
       <textarea v-if="editable" v-model="bioLocal" class="bio-edit"></textarea>
-=======
-      <div>
-        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/name.svg">名称：</div>
-        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/instruction.svg">机构：</div>
-        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/bio.svg">个性签名：</div>
-      </div>
-      <div class="info">
-        <!-- 编辑 Name -->
-        <div class="name" v-if="!editable">{{ name }}</div>
-        <input v-if="editable" v-model="nameLocal" class="name-edit" type="text" placeholder="输入姓名" />
-
-        <!-- 编辑 Institution -->
-        <div class="institution"> {{ institution }}</div>
-
-        <div class="bio" v-if="!editable">{{ bio }}</div>
-        <input v-if="editable" v-model="bioLocal" class="bio-edit"></input>
-      </div>
->>>>>>> parent of 25ecdbf (修改用户中心，没改完)
     </div>
 
     <button v-if="!editable" @click="editProfile" class="edit-button">编辑</button>
@@ -274,6 +255,7 @@ export default {
   justify-content: center;
   border-radius: 20px;
   background-color: white;
+  overflow: hidden;
 }
 
 .avatar-container {
@@ -302,6 +284,7 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  
 }
 
 .profile-info {
@@ -332,31 +315,13 @@ export default {
   .bio {
     margin: 25px 0;
     padding: 5px 8px;
+    white-space: nowrap;
   }
 }
 
-<<<<<<< HEAD
 .name {
   font-size: 24px;
   margin: 0;
-=======
-.name-edit,
-.institution-edit,
-.bio-edit {
-  width: 100%;
-  padding: 5px 8px;
-}
-
-.name-edit,
-.institution-edit,
-.bio-edit {
-  width: 100%;
-  padding: 5px 8px;
-  background-color: #eeecec;
-  border-radius: 8px; 
-  outline: none; 
-  transition: border-color 0.3s ease, box-shadow 0.3s ease; 
->>>>>>> parent of 25ecdbf (修改用户中心，没改完)
 }
 
 .institution {
