@@ -102,7 +102,6 @@ export default {
   font-weight: bold;
   padding: 0.5rem 1rem;
   border-bottom: 1px solid #ddd;
-  background-color: #f1f1f1;
 }
 
 .header.editable-header {
@@ -122,8 +121,7 @@ export default {
   grid-template-columns: 7fr 1fr 1fr;
   padding: 1rem;
   border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  
 }
 
 .reference-item.editable-item {
