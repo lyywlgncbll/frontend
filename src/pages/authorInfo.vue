@@ -3,14 +3,14 @@
   <div class="page">
     <div class="container">
       <div class="header">
-        <ProfileHeader :avatar="user.avatar" :name="user.name" :bio="user.bio" :institution="user.institution"
-          :researchAreas="user.researchAreas" :editable="isEditable" :authorization="authorization"
-          @editProfile="handleStartEditProfile" @saveProfile="handleSaveEditProfile" />
+        <ProfileHeader :avatar="user.avatar" :claim="user.claim" :name="user.name" :bio="user.bio"
+          :institution="user.institution" :researchAreas="user.researchAreas" :editable="isEditable"
+          :authorization="authorization" @editProfile="handleStartEditProfile" @saveProfile="handleSaveEditProfile" />
         <State :chartData="chartData" :totalCitations="totalCitations" :totalPapers="totalPapers"></State>
       </div>
       <div class="detail">
         <div class="pagetabs">
-          <References :references="references"/>
+          <References :references="references" />
         </div>
         <div class="pagewriters">
           <AuthorList :authors="authorData" />

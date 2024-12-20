@@ -11,8 +11,8 @@
         <div class="info-name"><img src="/src/assets/iconfonts/userinfo/bio.svg">签名：</div>
       </div>
       <div class="info">
-        <div class="name">{{ name }}</div>
-        <div class="institution"> {{ institution==''?'未有所属机构':institution }}</div>
+        <div class="name">{{ claim }}</div>
+        <div class="institution"> {{ institution == '' ? '未有所属机构' : institution }}</div>
         <div class="bio">{{ bio }}</div>
       </div>
     </div>
@@ -51,16 +51,19 @@ export default {
   computed: {
     getInitial() {
       // 返回 name 的第一个字母的大写形式
-      return this.name.charAt(0).toUpperCase();
+      if (this.claim == null) {
+        return '';
+      }
+      return this.claim.charAt(0).toUpperCase();
     },
   },
   data() {
     return {
-      
+
     };
   },
   methods: {
-    
+
   },
 };
 </script>
@@ -141,8 +144,6 @@ export default {
     white-space: nowrap;
   }
 
-  .bio{
-
-  }
+  .bio {}
 }
 </style>
