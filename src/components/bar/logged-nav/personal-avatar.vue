@@ -24,7 +24,7 @@
 import {ref, onMounted, onBeforeUnmount} from 'vue';
 import router from "@/router/index.js";
 import axios from "@/utils/axios.js";
-import {GET_AVATAR_API} from "@/utils/request.js";
+import {GET_PERSONAL_AVATAR_API} from "@/utils/request.js";
 
 export default {
   name: 'personal-avatar',
@@ -52,7 +52,7 @@ export default {
     };
     const getMyAvatar = async () => {
       try {
-        const response = await axios.get(GET_AVATAR_API);
+        const response = await axios.get(GET_PERSONAL_AVATAR_API);
         avatarUrl.value = "data:image/jpeg;base64," + response.data;
         console.log("获取头像成功");
       } catch (error) {
