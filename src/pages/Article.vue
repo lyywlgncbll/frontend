@@ -4,7 +4,7 @@
     <div class="paper-detail-left">
       <!-- 标题 -->
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
-      <h1 class="paper-title" v-else>{{ paper.title }}</h1>
+      <h1 class="paper-title" v-else ><div v-html="paper.title"></div></h1>
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <el-row class="paper-row" v-else>
         <!-- <p>Authors:&emsp;</p> -->
@@ -94,11 +94,11 @@
                   <div v-if="reference.isLoaded">
                     <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
                       color="#0969da">
-                      {{ reference.title }}
+                      <div v-html="reference.title"></div>
                     </el-link>
                     <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
                       color="#0969da">
-                      {{ reference.title }}
+                      <div v-html="reference.title"></div>
                     </el-link>
                   </div>
                   <div v-else></div>
