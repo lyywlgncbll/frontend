@@ -8,7 +8,7 @@
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <el-row class="paper-row" v-else>
         <!-- <p>Authors:&emsp;</p> -->
-        <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text" 
+        <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
           @click="goToAuthorPage(author)">
           {{ author }}
         </el-button>
@@ -44,7 +44,8 @@
           <p v-else class="abstract" :class="{ 'collapsed': !isExpanded }">
             {{ paper.abstract }}
           </p>
-          <el-button v-if="!isLoading && paper.abstract.length > 100" @click="toggleExpand" type="text" class="expand-button">
+          <el-button v-if="!isLoading && paper.abstract.length > 100" @click="toggleExpand" type="text"
+            class="expand-button">
             <el-icon v-if="isExpanded">
               <ArrowUpBold />
             </el-icon>
@@ -122,7 +123,7 @@
       </el-row>
 
       <h2 class="section-title">论文推荐</h2>
-      <paper-details class="papers" :id="newId"/>
+      <paper-details class="papers" :id="newId" />
 
       <!-- <h2 class="section-title">数据统计</h2>
       <el-row>
@@ -219,7 +220,7 @@
         </el-row>
 
         <!-- <div class="striped-divider2"></div> -->
-         <el-divider />
+        <el-divider />
         <el-row class="stat-footer">
           <span>引用文章次数</span>
           <div class="stat-number">
@@ -262,7 +263,7 @@
 <script>
 import { createRouter, createWebHistory } from 'vue-router';
 import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
-import { ARTICLE_API, REFERENCE_API, INCREASE_READ_CNT_API, ADD_DOWNLOADS_API, ADD_VIEWS_API } from "~/utils/request.js"
+import { ARTICLE_API, REFERENCE_API, INCREASE_READ_CNT_API, ADD_DOWNLOADS_API, ADD_VIEWS_API, GET_PDF_BINARY } from "~/utils/request.js"
 import Reader from './Reader.vue';
 //import Article from '.Article.vue';
 import axios from '@/utils/axios.js';
@@ -417,6 +418,7 @@ export default defineComponent({
     },
     async fetchReferenceData(ref) {
       try {
+        console.log(ref.id);
         const response = await axios.get(REFERENCE_API, {
           params: {
             referenceId: ref.id
@@ -470,6 +472,31 @@ export default defineComponent({
         }
       });
       this.paper.downloads = response.data.downloads;
+      try {
+        // 获取 PDF 文件的二进制数据
+        var config = {
+          method: 'get',
+          url: GET_PDF_BINARY + `?url=${this.paper.pdfUrl}`,
+          responseType: 'blob',
+        }
+        const response = await axios(config);
+        // window.atob(response.data)
+        const blob = response.data;
+
+        // 创建一个 URL 对象指向 Blob
+        const pdfUrlBlob = URL.createObjectURL(blob);
+
+        // 创建一个临时的 <a> 元素并模拟点击下载
+        const link = document.createElement('a');
+        link.href = pdfUrlBlob;
+        link.download = 'sample.pdf'; // 设置默认文件名
+        link.click();
+
+        // 释放 Blob URL 对象
+        URL.revokeObjectURL(pdfUrlBlob);
+      } catch (error) {
+        console.error('下载失败:', error);
+      }
     },
     async downloadPdf(pdfUrl) {
       try {
@@ -679,10 +706,11 @@ export default defineComponent({
   margin-bottom: 8px;
   //background-color: #ddf4ff;
   color: #0969da;
+
   &:hover {
-        color: white;
-        background-color: #0969da;
-    }
+    color: white;
+    background-color: #0969da;
+  }
 }
 
 .paper-row {
@@ -855,7 +883,7 @@ export default defineComponent({
       #ff4500 20px, #ff4500 30px,
       #ffa500 30px, #ffa500 40px
     ); */
-    background-color: #5b636d;
+  background-color: #5b636d;
   margin: 10px 0;
 }
 
@@ -879,7 +907,7 @@ export default defineComponent({
       #bf50ff 20px, #bf50ff 30px,
       #ff50d9 30px, #ff50d9 40px
     ); */
-    background-color: #5b636d;
+  background-color: #5b636d;
   margin: 10px 0;
 }
 
@@ -912,15 +940,16 @@ export default defineComponent({
   margin-left: 0%;
   padding: 25px 25px;
   color: #0969da;
+
   &:hover {
-        color: white;
-        background-color: #0969da;
-    }
+    color: white;
+    background-color: #0969da;
+  }
 }
 
 .papers {}
 
-.expand-button{
+.expand-button {
   margin-top: 0;
   margin-bottom: 0;
 }

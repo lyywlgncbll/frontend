@@ -14,6 +14,7 @@
 import { ref, onMounted } from "vue";
 import axios from "@/utils/axios.js";
 import { GET_RECOMMEND_BY_ID, GET_TOP_K_API } from "@/utils/request.js";
+import router from "@/router/index.js";
 
 // 使用 defineProps 获取传递的 props
 const props = defineProps({
@@ -42,6 +43,14 @@ const getPapers = async () => {
   } catch (error) {
     console.error("请求失败:", error);
   }
+};
+
+const goToArticle = (id) => {
+  const url = router.resolve({
+    path: '/article',
+    query: { id }
+  }).href;
+  window.open(url, "_blank");
 };
 
 onMounted(() => {
