@@ -12,7 +12,7 @@
       <div>
         <div class="info-name"><img src="/src/assets/iconfonts/userinfo/name.svg">名称：</div>
         <div class="info-name"><img src="/src/assets/iconfonts/userinfo/instruction.svg">机构：</div>
-        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/bio.svg">个性签名：</div>
+        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/bio.svg">签名：</div>
       </div>
       <div class="info">
         <!-- 编辑 Name -->
@@ -21,9 +21,9 @@
 
         <!-- 编辑 Institution -->
         <div class="institution"> {{ institution }}</div>
+        <input v-if="editable" v-model="bioLocal" class="bio-edit"></input>
 
         <div class="bio" v-if="!editable">{{ bio }}</div>
-        <input v-if="editable" v-model="bioLocal" class="bio-edit"></input>
       </div>
     </div>
 
@@ -163,6 +163,7 @@ export default {
   justify-content: center;
   border-radius: 20px;
   background-color: white;
+  overflow: hidden;
 }
 
 .avatar-container {
@@ -191,6 +192,7 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  
 }
 
 .profile-info {
@@ -221,14 +223,8 @@ export default {
   .bio {
     margin: 25px 0;
     padding: 5px 8px;
+    white-space: nowrap;
   }
-}
-
-.name-edit,
-.institution-edit,
-.bio-edit {
-  width: 100%;
-  padding: 5px 8px;
 }
 
 .name-edit,
