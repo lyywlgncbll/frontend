@@ -2,7 +2,7 @@
   <div class="author-list">
     <div class="title">合著作者</div>
     <div v-for="(author, index) in authors" :key="index" class="author-item">
-      <img class="avatar" :src="author.avatar" alt="Author Avatar" />
+      <div class="default-avatar">{{ getInitial(author.name) }}</div>
       <div class="author-info">
         <p class="author-name">{{ author.name }}</p>
         <p class="author-university">{{ author.university }}</p>
@@ -25,6 +25,10 @@ export default {
     }
   },
   methods: {
+    getInitial(name) {
+        // 返回 name 的第一个字母的大写形式
+        return name ? name.charAt(0).toUpperCase() : "";
+    },
     forceRefresh(event) {
       // 阻止 Vue Router 默认行为
       event.preventDefault();
@@ -78,6 +82,17 @@ export default {
 }
 
 .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.default-avatar {
+  color: #fff;
+  background-color: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 40px;
   height: 40px;
   border-radius: 50%;
