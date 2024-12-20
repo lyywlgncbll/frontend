@@ -1,5 +1,6 @@
 <template>
   <div class="reference-container">
+    <div class="title">发表文献</div>
     <div class="reference-item" v-for="(reference, index) in references" :key="index">
       <div class="reference-info" @click="goToArticle(reference.id)">
         <h3 class="reference-title" :title="reference.title">{{ reference.title }}</h3>
@@ -52,16 +53,33 @@ export default {
 </script>
 
 <style scoped>
+.title {
+  position: sticky;
+  top: 0; 
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  padding: 5px;
+  border-bottom: 2px solid #e0e0e0;
+  background-color: #fff; 
+  z-index: 1; 
+  padding-top: 20px;
+}
+
 .reference-container {
-  height: 90%;
-  widows: 100%;
+  height: 100%;
+  width: 100%;
   background-color: #fff;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  padding: 10px 20px;
+  border-radius: 20px;
+  padding: 0px 20px;
+  padding-bottom: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: scroll;
   scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .reference-item {
