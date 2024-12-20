@@ -1,30 +1,38 @@
 <template>
   <div class="profile-header">
     <div class="avatar-container" @click="triggerFileInput">
-      <img v-if="avatar" :src="avatar" alt="加载中" class="avatar" />
+      <img
+          v-if="avatar"
+          :src="avatar"
+          alt="加载中"
+          class="avatar"
+      />
       <div v-else class="default-avatar">{{ getInitial }}</div>
     </div>
     <form @submit.prevent="uploadAvatar" ref="avatarForm" style="display: none;">
-      <input type="file" ref="fileInput" @change="uploadAvatar" style="display: none;" />
+      <input
+          type="file"
+          ref="fileInput"
+          @change="uploadAvatar"
+          style="display: none;"
+      />
     </form>
 
     <div class="profile-info">
-      <div>
-        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/name.svg">名称：</div>
-        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/instruction.svg">机构：</div>
-        <div class="info-name"><img src="/src/assets/iconfonts/userinfo/bio.svg">签名：</div>
-      </div>
-      <div class="info">
-        <!-- 编辑 Name -->
-        <div class="name" v-if="!editable">{{ name }}</div>
-        <input v-if="editable" v-model="nameLocal" class="name-edit" type="text" placeholder="输入姓名" />
+      <!-- 编辑 Name -->
+      <h2 class="name" v-if="!editable">{{ name }}</h2>
+      <input
+          v-if="editable"
+          v-model="nameLocal"
+          class="name-edit"
+          type="text"
+          placeholder="输入姓名"
+      />
 
-        <!-- 编辑 Institution -->
-        <div class="institution"> {{ institution }}</div>
-        <input v-if="editable" v-model="bioLocal" class="bio-edit"></input>
+      <p class="institution">{{ institution }}</p>
 
-        <div class="bio" v-if="!editable">{{ bio }}</div>
-      </div>
+      <p class="bio" v-if="!editable">{{ bio }}</p>
+      <textarea v-if="editable" v-model="bioLocal" class="bio-edit"></textarea>
     </div>
 
     <button v-if="!editable" @click="editProfile" class="edit-button">编辑</button>
@@ -34,6 +42,7 @@
 
 <script>
 import axios from '@/utils/axios.js';
+
 export default {
   name: "ProfileHeader",
   props: {
@@ -88,9 +97,7 @@ export default {
   },
 
   methods: {
-
     editProfile() {
-      // 可以在这里触发编辑事件，比如显示一个编辑框
       this.$emit("editProfile");
     },
     saveProfile() {
@@ -105,12 +112,14 @@ export default {
 
     // 通过ref触发input的click事件，模拟点击文件选择框
     triggerFileInput() {
-      if (!this.editable) {
+      if(!this.editable) {
         return;
       } else {
         this.$refs.fileInput.click();
       }
     },
+
+    // 上传头像
     async uploadAvatar() {
       const fileInput = this.$refs.fileInput;
       const file = fileInput.files[0]; // 获取用户选择的文件
@@ -118,15 +127,27 @@ export default {
         alert("请先选择一个文件");
         return;
       }
+
       const currentAvatarBase64 = this.avatar;
       const fileBase64 = await this.convertFileToBase64(file);
+
+      // 如果上传的头像没有改变，提示用户
       if (fileBase64 === currentAvatarBase64) {
         alert("上传的头像没有改变");
         return;
       }
+
+      // 压缩图片
+      const compressedFile = await this.compressImage(file);
+      if (!compressedFile) {
+        alert("图片压缩失败或图片过大");
+        return;
+      }
+
       // 创建 FormData 对象并附加文件
       const formData = new FormData();
-      formData.append("avator", file);
+      formData.append("avator", compressedFile);
+
       try {
         const response = await axios.post("/user/avator/upload", formData, {
           headers: {
@@ -138,6 +159,7 @@ export default {
         console.error("上传头像失败", error);
       }
     },
+
     // 将文件转换为 base64 编码的辅助方法
     convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
@@ -146,8 +168,78 @@ export default {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
+    },
+
+    // 压缩图片方法
+    async compressImage(file) {
+      const maxSize = 2 * 1024 * 1024; // 2MB
+
+      // 读取文件为 Image 对象
+      const image = await this.loadImage(file);
+
+      const originalWidth = image.width;
+      const originalHeight = image.height;
+
+      // 压缩比例
+      let width = originalWidth;
+      let height = originalHeight;
+      const maxDimension = 1024;
+
+      if (width > height && width > maxDimension) {
+        height = Math.round(height * (maxDimension / width));
+        width = maxDimension;
+      } else if (height > maxDimension) {
+        width = Math.round(width * (maxDimension / height));
+        height = maxDimension;
+      }
+
+      // 使用 canvas 压缩图片
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(image, 0, 0, width, height);
+
+      const compressedBase64 = canvas.toDataURL(file.type, 0.8); // 80% 质量压缩
+
+      // 判断压缩后的图片大小是否小于 2MB
+      const compressedBlob = this.dataURItoBlob(compressedBase64);
+      if (compressedBlob.size > maxSize) {
+        alert("图片压缩后仍然超过 2MB");
+        return null;
+      }
+
+      // 转回文件对象
+      const compressedFile = new File([compressedBlob], file.name, { type: file.type });
+      return compressedFile;
+    },
+
+    // 将 base64 转换为 Blob
+    dataURItoBlob(dataURI) {
+      const byteString = atob(dataURI.split(',')[1]);
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ua = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ua[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mimeString });
+    },
+
+    // 读取文件为 Image 对象
+    loadImage(file) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          image.onload = () => resolve(image);
+          image.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
     }
-  },
+  }
 };
 </script>
 
@@ -227,22 +319,42 @@ export default {
   }
 }
 
-.name-edit,
-.institution-edit,
-.bio-edit {
-  width: 100%;
-  padding: 5px 8px;
-  background-color: #eeecec;
-  border-radius: 8px; 
-  outline: none; 
-  transition: border-color 0.3s ease, box-shadow 0.3s ease; 
+.name {
+  font-size: 24px;
+  margin: 0;
 }
 
-.name-edit:focus,
-.institution-edit:focus,
-.bio-edit:focus {
-  border-color: #b6b6b9; 
-  box-shadow: 0 0 5px rgba(194, 197, 194, 0.5); 
+.institution {
+  color: #666;
+}
+
+.bio {
+  font-size: 16px;
+  color: #333;
+  background-color: #f7f7f7;
+  border-left: 4px solid #4CAF50;
+  padding: 10px 16px;
+  border-radius: 8px;
+  line-height: 1.5;
+  max-height: 100px;
+  overflow-y: auto;
+  word-wrap: break-word;
+  max-width: 40%;
+}
+
+.bio-edit {
+  font-size: 16px;
+  color: #333;
+  background-color: #f7f7f7;
+  border-left: 4px solid #4CAF50;
+  padding: 10px 16px;
+  border-radius: 8px;
+  line-height: 1.5;
+  width: 100%;
+  max-height: 120px;
+  overflow-y: auto;
+  resize: none;
+  max-width: 40%;
 }
 
 .edit-button {
