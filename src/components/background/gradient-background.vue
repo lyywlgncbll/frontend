@@ -9,7 +9,7 @@
 </template>
 
 <style scoped>
-body{
+body {
   /* 初始化 取消内外边距 */
   margin: 0;
   padding: 0;
@@ -19,23 +19,23 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
-  /* 渐变背景 */
-  background: linear-gradient(125deg,#2c3e50,#27ae60,#2980b9,#e74c3c,#8e44ad);
+  /* 灰白黑的渐变背景 */
+  background: linear-gradient(125deg, #7f8c8d, #9b9a9f, #34495e);
   /* 指定背景图像的大小 */
   background-size: 500%;
   /* 执行动画：动画名 时长 线性的 无限次播放 */
-  animation: bgAnimation 40s linear infinite;
+  animation: bgAnimation 20s linear infinite;
 }
 
 /* 定义动画 */
 @keyframes bgAnimation {
-  0%{
+  0% {
     background-position: 0% 50%;
   }
-  50%{
+  50% {
     background-position: 100% 50%;
   }
-  100%{
+  100% {
     background-position: 0% 50%;
   }
 }
