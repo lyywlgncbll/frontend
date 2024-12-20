@@ -45,6 +45,4 @@ export const UPDATECLIAM_API='/portal/op/claim/close';
 export const GETUSER_API='/user/get'
 
 export const GETSCOLARS_API='/user/search/authors'
-
-//用户
-export const GET_AVATAR_API='/user/avator/self/get'
+export const GET_PERSONAL_AVATAR_API='user/avator/self/get'
