@@ -120,7 +120,7 @@ export default {
   .info-name {
     min-width: 90px;
     padding: 5px;
-    margin: 25px 10px 25px 30px;
+    margin: 25px 5px 25px 20px;
     text-align: left;
     display: flex;
     align-items: center;

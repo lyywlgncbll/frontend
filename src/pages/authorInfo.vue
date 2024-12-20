@@ -10,10 +10,7 @@
       </div>
       <div class="detail">
         <div class="pagetabs">
-          <Tabs :tabs=this.tabs @changeTab="handleTabChange" />
-
-          <References :references="references" v-if="activeTab === 0" />
-          
+          <References :references="references"/>
         </div>
         <div class="pagewriters">
           <AuthorList :authors="authorData" />
@@ -28,7 +25,6 @@ import AuthorList from "@/components/AuthorInfo/AuthorList.vue";
 import Chart from "@/components/AuthorInfo/Chart.vue";
 import ProfileHeader from "@/components/AuthorInfo/ProfileHeader.vue";
 import References from "@/components/AuthorInfo/References.vue";
-import Tabs from "@/components/AuthorInfo/Tabs.vue";
 import LoggedNavBar from '@/components/bar/logged-nav-bar.vue';
 import axios from '@/utils/axios.js';
 import default_pic from "../assets/default.png";
@@ -37,7 +33,6 @@ export default {
   name: "authorInfo",
   components: {
     ProfileHeader,
-    Tabs,
     AuthorList,
     References,
     Chart,
@@ -57,8 +52,6 @@ export default {
         avatar: '',
         institution: "Beihang University",
       },
-      tabs: ['发表文献', '学术研究'],
-      activeTab: 0,
       authorData: [
         // {
         //   name: "Xiaotian Hu",
@@ -110,12 +103,6 @@ export default {
     console.log('Author ID:', this.authorid);
   },
   methods: {
-    //处理切换子页面
-    handleTabChange(index) {
-      this.activeTab = index;
-    },
-
-
     getAuthorNames(authorsArray) {
       if (!Array.isArray(authorsArray)) {
         console.error("Input is not a valid array");
@@ -224,9 +211,8 @@ export default {
 <style scoped>
 .page {
   padding: 50px 0;
-  background-color: aliceblue;
+  background-color: rgb(247, 250, 252);
   width: 100%;
-  height: auto;
   min-height: 100vh;
 }
 
@@ -255,13 +241,7 @@ export default {
 .pagetabs {
   width: 70%;
   max-height: 70vh;
-  overflow: scroll;
-  scrollbar-width: none;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  
+  min-height: 40vh;
 }
 
 .pagewriters {
