@@ -66,7 +66,6 @@
         <button @click="openClaimModal" class="claim-button">发起认领请求</button>
       </div>
     </div>
-    <button @click="sendGetMyClaims">点击我获取用户认领请求</button>
   </template>
   
   <script>
@@ -220,7 +219,7 @@
   .container {
     padding: 20px;
     font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
+    
   }
   
   /* 居中按钮容器 */
