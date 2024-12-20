@@ -15,12 +15,11 @@ import HomePage from "~/pages/homePage/homePage.vue"
 
 import SelectCharacter from "~/pages/user/selectCharacter.vue"
 
-import ResetPassword from "~/pages/user/resetPassword.vue";
 import TransferRequest from "../pages/transfer/transferRequest.vue"
 import TransferResult from "../pages/transfer/transferResult.vue"
 import Login from "../pages/user/login.vue"
 import Register from "../pages/user/register.vue"
-
+import ResetPassword from "../pages/user/resetPassword.vue"
 import Audit from '../components/AdminInfo/audit.vue'
 import PlatformOverview from '../components/AdminInfo/platform-overview.vue'
 import Scholars from '../components/AdminInfo/scholars.vue'

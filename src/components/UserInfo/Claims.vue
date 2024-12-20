@@ -66,7 +66,6 @@
         <button @click="openClaimModal" class="claim-button">发起认领请求</button>
       </div>
     </div>
-    <button @click="sendGetMyClaims">点击我获取用户认领请求</button>
   </template>
   
   <script>
@@ -153,6 +152,7 @@
         if (!this.searchQuery) return; // 如果没有选择认领对象，直接返回
         const authorid = this.filteredClaims.find(a => a.claim === this.searchQuery).authorid;
         this.isSubmitting = true;
+        console.log(authorid)
         axios.post(
             "/portal/claim/open", // 请求的 URL
             { 
@@ -219,7 +219,7 @@
   .container {
     padding: 20px;
     font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
+    
   }
   
   /* 居中按钮容器 */

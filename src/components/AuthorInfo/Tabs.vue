@@ -46,8 +46,13 @@ export default {
 <style scoped>
 .tabs {
   display: flex;
+  position: sticky;
+  top: 0;
   border-bottom: 2px solid #e0e0e0;
   background-color: white;
+  border-top-left-radius: 20px; 
+  border-top-right-radius: 20px;
+  padding-top: 5px;
 }
 
 .tab {

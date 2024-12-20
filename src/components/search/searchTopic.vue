@@ -1,16 +1,18 @@
 <template>
     <div id="topic-item" class="nav" v-if="topic != ''">
-        <div class="container" @mouseenter="hover = true" @mouseleave="hover = false">
+        <div @click="handleClick">
             <div class="title" :class="{ expand: hover }" :title="topic.name">
                 Topic: {{ topic.name }}
             </div>
-            <div class="before" v-show="hover"></div>
-            <div class="content" v-show="hover">
-                {{ topic.description }}
-            </div>
-            <div class="after" v-show="hover"></div>
-            <div class="keywords" v-show="hover">
-                <div class="keyword" v-for="keyword in topic.keywords" title="keyword">{{ keyword }}</div>
+            <div class="container" :class="{ expand: hover }">
+                <div class="before"></div>
+                <div class="content">
+                    {{ topic.description }}
+                </div>
+                <div class="after"></div>
+                <div class="keywords">
+                    <div class="keyword" v-for="keyword in topic.keywords" title="keyword">{{ keyword }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -25,6 +27,10 @@ onMounted(() => {
         topic.value = JSON.parse(localStorage.getItem('topicObj'))
     }
 })
+
+const handleClick = () => {
+    hover.value = !hover.value
+}
 </script>
 
 <style scoped>
@@ -59,14 +65,12 @@ onMounted(() => {
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--content-color);
-
+    transition: color 1.5s ease;
+    cursor: pointer;
     &.expand {
         color: black;
-        transition: all .5s ease;
     }
 }
-
-
 
 .before {
     border-left: 5px solid var(--content-border-color);
@@ -82,7 +86,7 @@ onMounted(() => {
     background-color: var(--content-background-color);
     width: 100%;
     height: 10px;
-    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
     margin-bottom: 10px;
 }
 
@@ -93,6 +97,16 @@ onMounted(() => {
     padding: 0 18px;
     font-size: 19px;
     font-family: 'Nunito', sans-serif;
+}
+
+.container {
+    overflow: hidden;
+    transition: max-height 1s ease;
+    max-height: 0;
+
+    &.expand{
+        max-height: 1000px;
+    }
 }
 
 .keywords {

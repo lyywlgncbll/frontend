@@ -4,7 +4,7 @@
     <div class="paper-detail-left">
       <!-- 标题 -->
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
-      <h1 class="paper-title" v-else>{{ paper.title }}</h1>
+      <h1 class="paper-title" v-else ><div v-html="paper.title"></div></h1>
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <el-row class="paper-row" v-else>
         <!-- <p>Authors:&emsp;</p> -->
@@ -20,7 +20,7 @@
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <template v-else>
         <el-row class="paper-metadata" gutter="20">
-          <el-button v-for="field in paper.fields" :key="field" type="primary" class="keyword-button" round
+          <el-button v-for="field in paper.fields" :key="field" class="keyword-button" round
             @click="goToFieldPage(field)">
             {{ field }}
           </el-button>
@@ -30,7 +30,7 @@
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <template v-else>
         <el-row class="paper-metadata" gutter="20">
-          <el-button v-for="keyword in paper.keywords" :key="keyword" type="primary" class="keyword-button" round
+          <el-button v-for="keyword in paper.keywords" :key="keyword" class="keyword-button" round
             @click="goToKeywordPage(keyword)">
             {{ keyword }}
           </el-button>
@@ -44,7 +44,8 @@
           <p v-else class="abstract" :class="{ 'collapsed': !isExpanded }">
             {{ paper.abstract }}
           </p>
-          <el-button v-if="!isLoading && paper.abstract.length > 100" @click="toggleExpand" type="text">
+          <el-button v-if="!isLoading && paper.abstract.length > 100" @click="toggleExpand" type="text"
+            class="expand-button">
             <el-icon v-if="isExpanded">
               <ArrowUpBold />
             </el-icon>
@@ -92,12 +93,12 @@
                 <li v-for="(reference, index) in visibleReferences" :key="index">
                   <div v-if="reference.isLoaded">
                     <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
-                      type="primary">
-                      {{ reference.title }}
+                      color="#0969da">
+                      <div v-html="reference.title"></div>
                     </el-link>
                     <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
-                      type="primary">
-                      {{ reference.title }}
+                      color="#0969da">
+                      <div v-html="reference.title"></div>
                     </el-link>
                   </div>
                   <div v-else></div>
@@ -122,7 +123,7 @@
       </el-row>
 
       <h2 class="section-title">论文推荐</h2>
-      <paper-details class="papers" />
+      <paper-details class="papers" :id="newId" />
 
       <!-- <h2 class="section-title">数据统计</h2>
       <el-row>
@@ -178,7 +179,8 @@
           </div>
         </el-row>
 
-        <div class="striped-divider"></div>
+        <!-- <div class="striped-divider"></div> -->
+        <el-divider />
 
         <el-row class="stat-footer">
           <span>下载次数</span>
@@ -197,7 +199,8 @@
           </div>
         </el-row>
 
-        <div class="striped-divider1"></div>
+        <!-- <div class="striped-divider1"></div> -->
+        <el-divider />
 
         <el-row class="stat-footer">
           <span>浏览次数</span>
@@ -216,8 +219,8 @@
           </div>
         </el-row>
 
-        <div class="striped-divider2"></div>
-
+        <!-- <div class="striped-divider2"></div> -->
+        <el-divider />
         <el-row class="stat-footer">
           <span>引用文章次数</span>
           <div class="stat-number">
@@ -233,17 +236,17 @@
       </div>
       <el-row><span>&emsp;</span></el-row>
       <el-tooltip class="box-item" effect="dark" content="下载论文" placement="right">
-        <el-button circle class="stat-button" size="large" type="primary" @click="downloadPaper()"><el-icon size="25px">
+        <el-button circle class="stat-button" size="large" @click="downloadPaper()"><el-icon size="25px">
             <Download />
           </el-icon></el-button>
       </el-tooltip>
       <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right">
-        <el-button circle class="stat-button" size="large" type="success" @click="preview()"><el-icon size="25px">
+        <el-button circle class="stat-button" size="large" @click="preview()"><el-icon size="25px">
             <View />
           </el-icon></el-button>
       </el-tooltip>
       <el-tooltip class="box-item" effect="dark" content="收藏论文" placement="right">
-        <el-button circle class="stat-button" size="large" @click="toggleFavorite()" type="warning">
+        <el-button circle class="stat-button" size="large" @click="toggleFavorite()">
           <el-icon v-if="isFavorite" size="25px">
             <StarFilled />
           </el-icon>
@@ -260,7 +263,7 @@
 <script>
 import { createRouter, createWebHistory } from 'vue-router';
 import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
-import { ARTICLE_API, REFERENCE_API, INCREASE_READ_CNT_API, ADD_DOWNLOADS_API, ADD_VIEWS_API } from "~/utils/request.js"
+import { ARTICLE_API, REFERENCE_API, INCREASE_READ_CNT_API, ADD_DOWNLOADS_API, ADD_VIEWS_API, GET_PDF_BINARY } from "~/utils/request.js"
 import Reader from './Reader.vue';
 //import Article from '.Article.vue';
 import axios from '@/utils/axios.js';
@@ -321,7 +324,8 @@ export default defineComponent({
         pdfUrl: "/test/test.pdf",
         isFavorite: false,
         views: 0,
-        downloads: 0
+        downloads: 0,
+        newId: ""
       },
       // stats: [
       //   { icon: 'path/to/icon1.png', number: 101, label: 'Views' },
@@ -374,6 +378,7 @@ export default defineComponent({
       handler(newId) {
         this.isLoading = true;
         this.isLoadingReference = true;
+        this.newId = newId;
         this.fetchAllData(newId); // 调用方法加载数据
         // this.paper.references.forEach((ref, index) => {
         //   this.fetchReferenceData(ref);
@@ -413,6 +418,7 @@ export default defineComponent({
     },
     async fetchReferenceData(ref) {
       try {
+        console.log(ref.id);
         const response = await axios.get(REFERENCE_API, {
           params: {
             referenceId: ref.id
@@ -466,6 +472,31 @@ export default defineComponent({
         }
       });
       this.paper.downloads = response.data.downloads;
+      try {
+        // 获取 PDF 文件的二进制数据
+        var config = {
+          method: 'get',
+          url: GET_PDF_BINARY + `?url=${this.paper.pdfUrl}`,
+          responseType: 'blob',
+        }
+        const response = await axios(config);
+        // window.atob(response.data)
+        const blob = response.data;
+
+        // 创建一个 URL 对象指向 Blob
+        const pdfUrlBlob = URL.createObjectURL(blob);
+
+        // 创建一个临时的 <a> 元素并模拟点击下载
+        const link = document.createElement('a');
+        link.href = pdfUrlBlob;
+        link.download = 'sample.pdf'; // 设置默认文件名
+        link.click();
+
+        // 释放 Blob URL 对象
+        URL.revokeObjectURL(pdfUrlBlob);
+      } catch (error) {
+        console.error('下载失败:', error);
+      }
     },
     async downloadPdf(pdfUrl) {
       try {
@@ -657,7 +688,7 @@ export default defineComponent({
 .section-title {
   font-size: 20px;
   font-weight: bold;
-  color: #1890ff;
+  color: #0969da;
   margin: 20px 0 0 0;
   /* border-bottom: 2px solid #1890ff; */
   /* padding-bottom: 5px; */
@@ -667,11 +698,19 @@ export default defineComponent({
   margin-right: 8px;
   margin-bottom: 8px;
   font-style: italic;
+  color: #0969da;
 }
 
 .keyword-button {
   margin-left: 8px;
   margin-bottom: 8px;
+  //background-color: #ddf4ff;
+  color: #0969da;
+
+  &:hover {
+    color: white;
+    background-color: #0969da;
+  }
 }
 
 .paper-row {
@@ -826,7 +865,7 @@ export default defineComponent({
   font-size: 25px;
   /* 图标大小 */
   margin-right: 10px;
-  color: #3498db;
+  color: #0969da;
   /* 图标颜色 */
 }
 
@@ -838,46 +877,37 @@ export default defineComponent({
 
 .striped-divider {
   height: 4px;
-  background: repeating-linear-gradient(45deg,
+  /* background: repeating-linear-gradient(45deg,
       #ff7f50, #ff7f50 10px,
-      /* 红色 */
       #ff6347 10px, #ff6347 20px,
-      /* 橙色 */
       #ff4500 20px, #ff4500 30px,
-      /* 深红 */
       #ffa500 30px, #ffa500 40px
-      /* 黄橙色 */
-    );
+    ); */
+  background-color: #5b636d;
   margin: 10px 0;
 }
 
 .striped-divider1 {
   height: 4px;
-  background: repeating-linear-gradient(45deg,
+  /* background: repeating-linear-gradient(45deg,
       #28ea2c, #28ea2c 10px,
-      /* 红色 */
       #07a649 10px, #07a649 20px,
-      /* 橙色 */
       #03b94e 20px, #03b94e 30px,
-      /* 深红 */
       #4cec8e 30px, #4cec8e 40px
-      /* 黄橙色 */
-    );
+    ); */
+  background-color: #5b636d;
   margin: 10px 0;
 }
 
 .striped-divider2 {
   height: 4px;
-  background: repeating-linear-gradient(45deg,
+  /* background: repeating-linear-gradient(45deg,
       #ff50ee, #ff50ee 10px,
-      /* 红色 */
       #cb50ff 10px, #cb50ff 20px,
-      /* 橙色 */
       #bf50ff 20px, #bf50ff 30px,
-      /* 深红 */
       #ff50d9 30px, #ff50d9 40px
-      /* 黄橙色 */
-    );
+    ); */
+  background-color: #5b636d;
   margin: 10px 0;
 }
 
@@ -899,7 +929,7 @@ export default defineComponent({
 .stat-footer .stat-number {
   font-size: 14px;
   font-weight: bold;
-  color: #3498db;
+  color: #0969da;
   /* 统计数字的颜色 */
   margin-left: 20px;
   /* 如果需要，增加数字与文字之间的间距 */
@@ -909,7 +939,18 @@ export default defineComponent({
   margin-top: 15px;
   margin-left: 0%;
   padding: 25px 25px;
+  color: #0969da;
+
+  &:hover {
+    color: white;
+    background-color: #0969da;
+  }
 }
 
 .papers {}
+
+.expand-button {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 </style>

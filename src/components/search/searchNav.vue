@@ -2,9 +2,9 @@
     <div class="nav" id="filter-root">
         <ul class="sort" @mouseover="handleMouseOver" @mouseout="handleMouseOut" @click="handleClick">
             <li>综合</li>
-            <li class="sort-year">年份 <img src="/src/assets/search/icon/down-expand2.svg"
+            <li class="sort-year">年份 <img src="/src/assets/iconfonts/search/down-expand2.svg"
                     :style="{ transform: yearRotate ? 'rotate(180deg)' : 'rotate(0deg)' }"></li>
-            <li class="sort-cite">引用 <img src="/src/assets/search/icon/down-expand2.svg"
+            <li class="sort-cite">引用 <img src="/src/assets/iconfonts/search/down-expand2.svg"
                     :style="{ transform: citeRotate ? 'rotate(180deg)' : 'rotate(0deg)' }"></li>
             <li class="slide"></li>
             <li class="slide2"></li>

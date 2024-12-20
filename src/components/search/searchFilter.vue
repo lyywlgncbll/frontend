@@ -58,7 +58,7 @@ const handleJournalChanged = (selectedJournal) => {
     padding: 10px;
     margin: 0 auto;
     position: relative;
-    transition: all 0.3s ease;
+    transition: width 0.3s ease;
     min-width: 150px;
     border: 1px solid var(--bar-border-color);
     border-radius: 5px;
