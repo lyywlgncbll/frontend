@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "echarts": "^5.5.1",
     "element-plus": "^2.8.8",
+    "marked": "^15.0.4",
     "pdfjs-dist": "^4.8.69",
     "pnpm": "^9.14.4",
     "postcss": "^8.4.49",
@@ -25,7 +26,8 @@
     "vue": "^3.4.21",
     "vue-pdf-embed": "^1.1.6",
     "vue-router": "^4.3.2",
-    "vue3-pdfjs": "^0.1.6"
+    "vue3-pdfjs": "^0.1.6",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

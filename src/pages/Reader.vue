@@ -47,21 +47,21 @@
             </el-row>
           </el-col>
           <el-col :span="2">
-            <el-icon size="20" style="float: right;"><QuestionFilled /></el-icon>
+            <el-icon size="20" style="float: right; padding-top: 8px;"><QuestionFilled /></el-icon>
           </el-col>
         </el-row>
         <el-row style="padding-top: 1%;padding-bottom: 1%;">
           <el-col :span="2">
-            <el-icon size="20"><ChatDotRound /></el-icon>
+            <el-icon size="20" style="padding-top: 8px;"><ChatDotRound /></el-icon>
           </el-col>
-          <el-col :span="18">
+          <el-col :span="20">
             <el-row class="answer">
-              <div v-html="QAndA.answer" class="msg answer_msg"></div>
+              <div v-html="QAndA.answer" class="msg_no_bgc answer_msg"></div>
             </el-row>
           </el-col>
-          <el-col :span="2">
+          <!-- <el-col :span="2">
             
-          </el-col>
+          </el-col> -->
           <el-col :span="2">
             
           </el-col>
@@ -82,7 +82,7 @@
           />
         </el-col>
         <el-col :span="3">
-          <el-icon class="middle" color="grey" size="32px" @click="AIReading(), sendHistoryProgress(null)"><Top /></el-icon>
+          <el-icon class="middle" color="grey" size="32px" @click="AIReading()"><Top /></el-icon>
         </el-col>
       </el-row>
     </el-footer>
@@ -96,6 +96,8 @@ import { createLoadingTask } from "vue3-pdfjs";
 import { QIANFAN_ASK, GET_HISTORY_RATE, SEND_HISTORY_RATE, GET_PDF_BINARY, ARTICLE_API } from "@/utils/request"
 import { ElNotification } from 'element-plus'
 import { AxiosError, AxiosResponse } from "axios";
+import { marked } from "marked";
+import { useStore } from 'vuex';
 const props = defineProps({
   //for pdf render
   id:{
@@ -106,7 +108,7 @@ const props = defineProps({
 //for pdf render
 const state = reactive({
   source: props.id,
-  data: null,
+  data: "",
   pageNum: 1,
   scale: 1,
   numPages: 0,
@@ -127,7 +129,6 @@ const loadStatus = ref<LoadStatus>(LoadStatus.Loading);
 onMounted(() => {
   loadedPageNum = 0
   //for pdf render
-  console.log(props.id)
   const articleId = props.id
   var config = {
     method: 'get',
@@ -141,55 +142,102 @@ onMounted(() => {
       url: GET_PDF_BINARY + `?url=${url}`,
       responseType: 'blob',
     }
-    axios(config).then((response: any) => {
-      loadStatus.value = LoadStatus.Success
+    const storedPdf = localStorage.getItem(url)
+    // const storedPdf = null
+    if (storedPdf) {
+      console.log("stored")
+      
+      state.data = storedPdf
+      const loadingTask = createLoadingTask(state.data)
+      loadingTask.promise.then((pdf) => {
+        loadStatus.value = LoadStatus.Success
+        state.numPages = pdf.numPages
+      })
+      /*const byteCharacters = atob(storedPdf);
 
-      // window.atob(response.data)
-      const blob = response.data;  // 获取 Blob 数据
-  
-      // 创建一个 FileReader 实例
+      // 将解码后的字符串转换为字节数组
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset++) {
+        byteArrays.push(byteCharacters.charCodeAt(offset));
+      }
+
+      // 创建一个 Blob 对象
+      const blob = new Blob([new Uint8Array(byteArrays)], { type: "text/plain" });
+      console.log(blob)
       const reader = new FileReader();
-  
+      
       reader.onloadend = function () {
         const dataUrl = reader.result;  // 获取 Data URL 格式的 Base64 编码数据
         console.log('PDF Data URL:', dataUrl);
-  
+
         // 将 Data URL 传递给 vue-pdf-embed 组件
         state.data = dataUrl;  // 假设你使用 Vue.js 管理状态
         const loadingTask = createLoadingTask(state.data);
+
+        // for store
+        const base64String = reader.result.split(',')[1];
+
+        localStorage.setItem(url, base64String)
+        console.log("store pdf")
+
         loadingTask.promise.then((pdf) => {
           state.numPages = pdf.numPages
         })
       };
-  
+
       // 读取 Blob 数据为 Data URL
-      reader.readAsDataURL(blob);
-    }).catch((error:AxiosError) => {
-      console.log(error)
-      loadStatus.value = LoadStatus.Failed
-    })
+      reader.readAsDataURL(blob);*/
+    } else {
+      console.log("not store")
+      axios(config).then((response: any) => {
+        loadStatus.value = LoadStatus.Success
+  
+        // window.atob(response.data)
+        const blob = response.data;  // 获取 Blob 数据
+        console.log(blob)
+    
+        // 创建一个 FileReader 实例
+        const reader = new FileReader();
+    
+        reader.onloadend = function () {
+          const dataUrl = reader.result;  // 获取 Data URL 格式的 Base64 编码数据
+          console.log('PDF Data URL:', dataUrl);
+    
+          // 将 Data URL 传递给 vue-pdf-embed 组件
+          state.data = dataUrl;  // 假设你使用 Vue.js 管理状态
+          const loadingTask = createLoadingTask(state.data);
+  
+          // for store
+          const base64String = reader.result;
+  
+          localStorage.setItem(url, base64String)
+          console.log("store pdf")
+  
+          loadingTask.promise.then((pdf) => {
+            state.numPages = pdf.numPages
+          })
+        };
+    
+        // 读取 Blob 数据为 Data URL
+        reader.readAsDataURL(blob);
+      }).catch((error:AxiosError) => {
+        console.log(error)
+        loadStatus.value = LoadStatus.Failed
+      })
+    }
   })
   config = {
     method: 'post',
     url: GET_HISTORY_RATE + `?articleId=${props.id}`,
   }
-  // axios.post(GET_HISTORY_RATE + `?articleId=${props.id}`).then((response) => {
-  //   axios.post(SEND_HISTORY_RATE + `?articleId=${props.id}&readingProgress=${response.data.progress}`).then(() => {
-  //     console.log("get and send")
-  //   })
-  // })
   axios(config).then((response:AxiosResponse) => {
     const config = {
       method: 'post',
       url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${response.data.progress}`
     }
     axios(config).then(() => {
-      console.log("get and send") 
     })
   })
-  // state.source = `D:/40995/Documents/课程资料/软分/frontend/dist/test/01.pdf`
-  // state.source = url
-  // state.source = "test/01.pdf"
   notifyShortcutKey()
   AIconfig.data.sessionId = "1"
   AIconfig.data.question = "下面我将给出一些论文中的内容，请你为我解释它们"
@@ -212,31 +260,27 @@ const sendHistoryProgress = (event:BeforeUnloadEvent) => {
     url: SEND_HISTORY_RATE + `?articleId=${articleId}&readingProgress=${rate}`
   }
   axios(config).then((response:any) => {
-    console.log(response)
+    // console.log(response)
   }).then(() => {
     setTimeout(() => {
       window.close()
     }, 1000)
   })
-  console.log("call send")
-  setTimeout(() => {
-    window.close()
-  }, 2000)
 }
 
 const isInput = ref(false)
 
 const handleInput = (event : KeyboardEvent) => {
-  console.log(event.shiftKey, event.key)
+  // console.log(event.shiftKey, event.key)
   if (event.shiftKey && event.key === "Enter") {
     event.preventDefault()
     textarea.value += "\n"
-    console.log("press shift enter")
+    // console.log("press shift enter")
   }
   else if (event.key === "Enter") {
     isInput.value = true
     event.preventDefault()
-    console.log("press enter")
+    // console.log("press enter")
     AIReading()
   }
 }
@@ -248,18 +292,22 @@ const AIReading = () => {
   const question = textarea.value
   AIconfig.data.question = question
   AIconfig.data.sessionId = token == null ? "" : token
-  console.log(AIconfig)
+  // console.log(AIconfig)
   sendAIReadingRequest(AIconfig).then((answer : string) => {
-      if (answer != null) {
-        answer = formatString(answer)
+    if (answer != null) {
+      // console.log("before parse: ", answer)
+      markdownToHtml(answer).then((res) => {
+          // console.log("after parse: ", res)
+          res = res.replace(/<code>/g, `<code style="background-color: #f0f0f0; border-radius: 5px; margin-left: 5px; margin-right: 5px;">`)
+          answer = res
+          QAndAList.value.push({
+            question: `<p>${question}<p>`,
+            answer: answer || "对不起，我暂时无法解释这段文字",
+            index: QAndAListIndex++
+          })
+          isInput.value = false
+        })
       }
-      QAndAList.value.push({
-        question: formatString(question),
-        answer: answer || "对不起，我暂时无法解释这段文字",
-        index: QAndAListIndex++
-      })
-      isInput.value = false
-      console.log(QAndAList.value)
     })
 }
 
@@ -283,13 +331,11 @@ const AIconfig = {
 }
 const sendAIReadingRequest = async (config:any) => {
   try {
-    console.log("config: ", config)
     const response = await axios(config)
-    console.log("response: ", response.data)
     textarea.value = ""
     return response.data
   } catch (error) {
-    console.error("error: ", error);
+    // console.error("error: ", error);
   }
 }
 
@@ -311,14 +357,22 @@ const QAndAList = ref<QAndA[]>([
     question: "question",
     answer: "answer",
     index: QAndAListIndex++
+  },
+  {
+    question: "answer",
+    answer: `<p>aaa</p><code style="background-color: #f0f0f0; border: 10px; border-radius: 5px;">MarkdownToHtml.convert(mdFilePath, htmlFilePath);</code>`,
+    index: QAndAListIndex++
   }
 ])
 
-const formatString = (answer : string) => {
-  const boldPattern = /\*\*([^*]+)\*\*/g;
-  var formatted = answer.replace(boldPattern, (match, text) => `<b>${text}</b>`);
-  formatted = formatted.replace(/\n/g, '<br>');
-  return `<p>${formatted}</p>`;
+const markdownToHtml = async (answer : string) => {
+  const text = await marked.parse(answer)
+  // console.log(text)
+  return text;
+}
+
+const setStyle = (res : string) => {
+  
 }
 
 // for history progress
@@ -326,12 +380,12 @@ const calReadingProgressRate = () => {
   const scrollHeight = document.documentElement.scrollHeight
   const clientHeight = document.documentElement.clientHeight
   const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-  console.log("in cal " + scrollHeight + " " + clientHeight + " " + scrollTop)
+  // console.log("in cal " + scrollHeight + " " + clientHeight + " " + scrollTop)
   return +(scrollTop/(scrollHeight-clientHeight)).toFixed(2)*100
 }
 
 const afterPDFLoaded = () => {// 每加载一个页面就会调用一次该函数😅
-  console.log("call load pdf")
+  // console.log("call load pdf")
   loadedPageNum++
   if (loadedPageNum == state.numPages) {
     setTimeout(() => {//虽然是afterLoaded但仍然不能获取正确的高度😅故增加延时
@@ -347,13 +401,10 @@ const scrollTo = () => {
     url: GET_HISTORY_RATE + `?articleId=` + articleId,
   }
   axios(config).then((resopnse:any) => {
-    console.log(resopnse)
     const rate = resopnse.data.progress
     const scrollHeight = document.documentElement.scrollHeight
     const clientHeight = document.documentElement.clientHeight
     const top = rate/100*(scrollHeight - clientHeight)
-    console.log("in scrollTo top = " + top + " rate = " + rate)
-    console.log("call function scrollTo")
     if (top != 0) {
       ElNotification({
         title: 'tips',
@@ -460,6 +511,15 @@ const scrollTo = () => {
   max-width: 100%;
   overflow-wrap: break-word;
   background-color: #f3f3f3;
+}
+.msg_no_bgc {
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 .question_msg {
   align-self: flex-end;
