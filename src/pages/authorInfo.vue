@@ -11,15 +11,9 @@
       <div class="detail">
         <div class="pagetabs">
           <Tabs :tabs=this.tabs @changeTab="handleTabChange" />
-          <div class="tabdetail">
-            <div v-if="activeTab === 0">
-              <References :references="references" />
-            </div>
-            <div v-if="activeTab === 1">
-              <!-- <Chart :chartData="chartData" /> -->
-            </div>
-          </div>
 
+          <References :references="references" v-if="activeTab === 0" />
+          
         </div>
         <div class="pagewriters">
           <AuthorList :authors="authorData" />
@@ -253,14 +247,13 @@ export default {
 }
 
 .detail {
+  min-height: 100px;
   display: flex;
   gap: 30px;
 }
 
 .pagetabs {
   width: 70%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
   max-height: 70vh;
   overflow: scroll;
   scrollbar-width: none;

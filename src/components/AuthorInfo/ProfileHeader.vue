@@ -12,7 +12,7 @@
       </div>
       <div class="info">
         <div class="name">{{ name }}</div>
-        <div class="institution"> {{ institution }}</div>
+        <div class="institution"> {{ institution==''?'未有所属机构':institution }}</div>
         <div class="bio">{{ bio }}</div>
       </div>
     </div>
