@@ -83,9 +83,17 @@ export default {
 
 <style scoped>
 .reference-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
   width: 100%;
+  
+  overflow: scroll;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .header {

@@ -2,7 +2,8 @@
   <div id="bar-root">
     <div class="avatar-wrapper">
       <div class="avatar">
-        <img :src="avatarUrl" @click="toggleOptionsList" />
+        <img v-if="avatarUrl" :src="avatarUrl" @click="toggleOptionsList" />
+        <img v-else :src="defaultAvatarUrl" @click="toggleOptionsList" />
       </div>
     </div>
     <!-- 下拉选项列表 -->
@@ -22,14 +23,22 @@
 <script>
 import {ref, onMounted, onBeforeUnmount} from 'vue';
 import router from "@/router/index.js";
+import axios from "@/utils/axios.js";
+import {GET_PERSONAL_AVATAR_API} from "@/utils/request.js";
 
 export default {
   name: 'personal-avatar',
+  methods:{
+
+  },
   setup() {
+
     const avatarUrl = ref('');
+    const defaultAvatarUrl = ref('/src/assets/defaultAvatar.jpeg');
     const optionsListActive = ref(false);
 
     // 定义显示个人中心和退出登录的操作
+
     const showProfile = () => {
       optionsListActive.value = false; // 点击后隐藏下拉菜单
       router.push('/userInfo')
@@ -37,7 +46,18 @@ export default {
     };
     const exit = () => {
       optionsListActive.value = false;
-      alert('退出登录'); // 执行退出登录的逻辑
+      localStorage.removeItem('authToken'); // 如果存储在localStorage中
+      router.push("/login")
+      // alert('退出登录'); // 执行退出登录的逻辑
+    };
+    const getMyAvatar = async () => {
+      try {
+        const response = await axios.get(GET_PERSONAL_AVATAR_API);
+        avatarUrl.value = "data:image/jpeg;base64," + response.data;
+        console.log("获取头像成功");
+      } catch (error) {
+        console.error('获取头像失败:', error);
+      }
     };
 
     // 下拉选项
@@ -61,7 +81,8 @@ export default {
 
     // 在组件挂载时添加监听器
     onMounted(() => {
-      avatarUrl.value = '/src/assets/defaultAvatar.jpeg'; // 头像路径
+      getMyAvatar();
+      // avatarUrl.value = '/src/assets/defaultAvatar.jpeg'; // 头像路径
       window.addEventListener('mousedown', handleClickOutside);
     });
 
@@ -75,6 +96,7 @@ export default {
       optionsListActive,
       options,
       toggleOptionsList,
+      defaultAvatarUrl
     };
   },
 };

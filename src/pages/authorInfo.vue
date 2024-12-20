@@ -29,9 +29,9 @@ import Chart from "@/components/AuthorInfo/Chart.vue";
 import ProfileHeader from "@/components/AuthorInfo/ProfileHeader.vue";
 import References from "@/components/AuthorInfo/References.vue";
 import Tabs from "@/components/AuthorInfo/Tabs.vue";
+import LoggedNavBar from '@/components/bar/logged-nav-bar.vue';
 import axios from '@/utils/axios.js';
 import default_pic from "../assets/default.png";
-import LoggedNavBar from '@/components/bar/logged-nav-bar.vue';
 import State from "../components/UserInfo/State.vue";
 export default {
   name: "authorInfo",
@@ -255,6 +255,13 @@ export default {
 .pagetabs {
   width: 70%;
   max-height: 70vh;
+  overflow: scroll;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
 }
 
 .pagewriters {

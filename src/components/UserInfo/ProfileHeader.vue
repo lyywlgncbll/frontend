@@ -111,6 +111,7 @@ export default {
         this.$refs.fileInput.click();
       }
     },
+    // 上传头像
     async uploadAvatar() {
       const fileInput = this.$refs.fileInput;
       const file = fileInput.files[0]; // 获取用户选择的文件
@@ -118,15 +119,27 @@ export default {
         alert("请先选择一个文件");
         return;
       }
+
       const currentAvatarBase64 = this.avatar;
       const fileBase64 = await this.convertFileToBase64(file);
+
+      // 如果上传的头像没有改变，提示用户
       if (fileBase64 === currentAvatarBase64) {
         alert("上传的头像没有改变");
         return;
       }
+
+      // 压缩图片
+      const compressedFile = await this.compressImage(file);
+      if (!compressedFile) {
+        alert("图片压缩失败或图片过大");
+        return;
+      }
+
       // 创建 FormData 对象并附加文件
       const formData = new FormData();
-      formData.append("avator", file);
+      formData.append("avator", compressedFile);
+
       try {
         const response = await axios.post("/user/avator/upload", formData, {
           headers: {
@@ -138,6 +151,7 @@ export default {
         console.error("上传头像失败", error);
       }
     },
+
     // 将文件转换为 base64 编码的辅助方法
     convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
@@ -146,8 +160,78 @@ export default {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
+    },
+
+    // 压缩图片方法
+    async compressImage(file) {
+      const maxSize = 2 * 1024 * 1024; // 2MB
+
+      // 读取文件为 Image 对象
+      const image = await this.loadImage(file);
+
+      const originalWidth = image.width;
+      const originalHeight = image.height;
+
+      // 压缩比例
+      let width = originalWidth;
+      let height = originalHeight;
+      const maxDimension = 1024;
+
+      if (width > height && width > maxDimension) {
+        height = Math.round(height * (maxDimension / width));
+        width = maxDimension;
+      } else if (height > maxDimension) {
+        width = Math.round(width * (maxDimension / height));
+        height = maxDimension;
+      }
+
+      // 使用 canvas 压缩图片
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(image, 0, 0, width, height);
+
+      const compressedBase64 = canvas.toDataURL(file.type, 0.8); // 80% 质量压缩
+
+      // 判断压缩后的图片大小是否小于 2MB
+      const compressedBlob = this.dataURItoBlob(compressedBase64);
+      if (compressedBlob.size > maxSize) {
+        alert("图片压缩后仍然超过 2MB");
+        return null;
+      }
+
+      // 转回文件对象
+      const compressedFile = new File([compressedBlob], file.name, { type: file.type });
+      return compressedFile;
+    },
+
+    // 将 base64 转换为 Blob
+    dataURItoBlob(dataURI) {
+      const byteString = atob(dataURI.split(',')[1]);
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ua = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ua[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mimeString });
+    },
+
+    // 读取文件为 Image 对象
+    loadImage(file) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          image.onload = () => resolve(image);
+          image.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
     }
-  },
+  }
 };
 </script>
 
@@ -164,6 +248,7 @@ export default {
   border-radius: 20px;
   background-color: white;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .avatar-container {

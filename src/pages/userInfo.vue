@@ -9,22 +9,16 @@
         <State></State>
       </div>
       <div class="detail">
-        <div class="pagetabs">
+        <div :class="{'pagetabs': this.user.claim!==null, 'anotherPagetabs': this.user.claim===null}" >
           <Tabs :tabs=this.tabs @changeTab="handleTabChange" />
           <div class="tabdetail">
             <div v-if="activeTab === 0">
               <div v-if="this.user.claim === null">
                 <Claims ref="Claims" :userid="user.id" :authorization="authorization" :myclaimRequests="this.userclaims"
                   @updataUserClaim="handleUserClaimsUpdata" />
-                <button @click="sendVerification">点击我发送邮件</button>
-                <button @click="sendCreateData">点击我发送注册信息</button>
-                <button @click="sendLoginRequest">点击我发送登录请求</button>
-                <button @click="sendGetMyInfo">点击我获取用户信息</button>
-                <button @click="sendGetMyAvatar">点击我获取用户头像信息</button>
               </div>
               <div v-else>
                 <References :references="references" :editable="isEditable" />
-                <p>我是发表文献</p>
               </div>
 
             </div>
@@ -40,7 +34,6 @@
           </div>
 
         </div>
-
         <div v-if="this.user.claim !== null" class="pagewriters">
           <AuthorList :authors="authorData" />
         </div>
@@ -52,6 +45,7 @@
 </template>
 
 <script>
+import LoggedNavBar from '@/components/bar/logged-nav-bar.vue';
 import Chart from '@/components/UserInfo/Chart.vue';
 import axios from '@/utils/axios.js';
 import default_pic from "../assets/default.png";
@@ -59,9 +53,8 @@ import AuthorList from "../components/UserInfo/AuthorList.vue";
 import Claims from "../components/UserInfo/Claims.vue";
 import ProfileHeader from "../components/UserInfo/ProfileHeader.vue";
 import References from '../components/UserInfo/References.vue';
-import Tabs from "../components/UserInfo/Tabs.vue";
-import LoggedNavBar from '@/components/bar/logged-nav-bar.vue';
 import State from "../components/UserInfo/State.vue";
+import Tabs from "../components/UserInfo/Tabs.vue";
 export default {
   name: "userInfo",
   components: {
@@ -148,8 +141,6 @@ export default {
       this.user.name = profile.name;
       this.user.researchAreas = profile.researchAreas;
       this.user.bio = profile.bio;
-
-
       axios.post('/user/data/mod', {
         name: profile.name,
         fieldsOfStudy: profile.researchAreas,
@@ -302,41 +293,63 @@ export default {
 
 <style scoped>
 .page {
-  padding-top: 50px;
+  padding: 50px 0;
   background-color: aliceblue;
-  min-width: 80vh;
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
 }
 
 .container {
   width: 80%;
+  height: auto;
   margin: auto;
 }
 
-.header{
+.header {
   width: 100%;
   display: flex;
   align-items: center;
 }
 
 .tabdetail {
-  height: 70vh;
   background-color: white;
 }
 
 .detail {
   display: flex;
   gap: 30px;
-  align-items: stretch;
+  
 }
 
 .pagetabs {
-  flex-grow: 1;
-  align-items: stretch;
+  width: 70%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  max-height: 70vh;
+  overflow: scroll;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
+}
+.anotherPagetabs{
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  max-height: 70vh;
+  overflow: scroll;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .pagewriters {
-  background-color: white;
-  width: 40vw;
-  align-items: stretch;
+  width: 30%;
+  max-height: 70vh;
 }
 </style>
