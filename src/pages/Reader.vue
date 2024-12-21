@@ -1,7 +1,7 @@
 <template>
   <div class="background">
-
   </div>
+  <el-icon size="40" class="ai-button" @click="showAIReading = true; showAIbutton = false;callClick" v-if="showAIbutton"><ChatDotRound /></el-icon>
   <div class="pdf-preview">
     <div class="pdf-wrap" v-if="loadStatus === LoadStatus.Success">
       <vue-pdf-embed 
@@ -27,10 +27,10 @@
       </el-footer>
     </div>
   </div>
-  <div class="AI-reading" v-if="loadStatus === LoadStatus.Success">
-    <!-- <el-header class="header">
-      <el-icon class="close" @click="showAIReading = false"><Close /></el-icon>
-    </el-header> -->
+  <div class="AI-reading" v-if="loadStatus === LoadStatus.Success && showAIReading">
+    <el-header class="header">
+      <el-icon class="close" @click="showAIReading = false; showAIbutton = true"><Close /></el-icon>
+    </el-header>
     <el-main class="main">
       <div v-for="QAndA in QAndAList" :key="QAndA.index">
         <el-divider v-if="QAndA.index != 0"/>
@@ -69,23 +69,10 @@
         
       </div>
     </el-main>
-    <el-footer class="footer">
-      <el-row>
-        <el-col :span="21">
-          <el-input
-          v-model="textarea"
-          :autosize="{ minRows: 2, maxRows: 4 }"
-          type="textarea"
-          placeholder="Please input"
-          @keypress="handleInput"
-          :disabled = isInput
-          />
-        </el-col>
-        <el-col :span="3">
-          <el-icon class="middle" color="grey" size="32px" @click="AIReading()"><Top /></el-icon>
-        </el-col>
-      </el-row>
-    </el-footer>
+      <div class="chat-input-container" ref="textareaContainer">
+        <textarea ref="textarea" v-model="message" :disabled = isInput @keypress="handleInput" type="text" class="chat-textarea" placeholder="向“AI助手”发送消息" ></textarea>
+        <el-icon color="grey" size="32px" @click="AIReading()" class="up-button"><Top /></el-icon>
+      </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -122,7 +109,8 @@ enum LoadStatus {
   Failed = "Failed",
 }
 
-const showAIReading = ref(true)
+const showAIReading = ref(false)
+const showAIbutton = ref(true)
 
 const loadStatus = ref<LoadStatus>(LoadStatus.Loading);
 
@@ -143,7 +131,6 @@ onMounted(() => {
       responseType: 'blob',
     }
     const storedPdf = localStorage.getItem(url)
-    // const storedPdf = null
     if (storedPdf) {
       console.log("stored")
       
@@ -153,40 +140,6 @@ onMounted(() => {
         loadStatus.value = LoadStatus.Success
         state.numPages = pdf.numPages
       })
-      /*const byteCharacters = atob(storedPdf);
-
-      // 将解码后的字符串转换为字节数组
-      const byteArrays = [];
-      for (let offset = 0; offset < byteCharacters.length; offset++) {
-        byteArrays.push(byteCharacters.charCodeAt(offset));
-      }
-
-      // 创建一个 Blob 对象
-      const blob = new Blob([new Uint8Array(byteArrays)], { type: "text/plain" });
-      console.log(blob)
-      const reader = new FileReader();
-      
-      reader.onloadend = function () {
-        const dataUrl = reader.result;  // 获取 Data URL 格式的 Base64 编码数据
-        console.log('PDF Data URL:', dataUrl);
-
-        // 将 Data URL 传递给 vue-pdf-embed 组件
-        state.data = dataUrl;  // 假设你使用 Vue.js 管理状态
-        const loadingTask = createLoadingTask(state.data);
-
-        // for store
-        const base64String = reader.result.split(',')[1];
-
-        localStorage.setItem(url, base64String)
-        console.log("store pdf")
-
-        loadingTask.promise.then((pdf) => {
-          state.numPages = pdf.numPages
-        })
-      };
-
-      // 读取 Blob 数据为 Data URL
-      reader.readAsDataURL(blob);*/
     } else {
       console.log("not store")
       axios(config).then((response: any) => {
@@ -226,6 +179,12 @@ onMounted(() => {
       })
     }
   })
+  // state.data = "test/01.pdf"
+  //     const loadingTask = createLoadingTask(state.data)
+  //     loadingTask.promise.then((pdf) => {
+  //       loadStatus.value = LoadStatus.Success
+  //       state.numPages = pdf.numPages
+  //     })
   config = {
     method: 'post',
     url: GET_HISTORY_RATE + `?articleId=${props.id}`,
@@ -274,22 +233,34 @@ const handleInput = (event : KeyboardEvent) => {
   // console.log(event.shiftKey, event.key)
   if (event.shiftKey && event.key === "Enter") {
     event.preventDefault()
-    textarea.value += "\n"
+    message.value += "\n"
     // console.log("press shift enter")
+    adjustHeight()
   }
   else if (event.key === "Enter") {
     isInput.value = true
     event.preventDefault()
     // console.log("press enter")
     AIReading()
+  } else if (event.key === "Backspace") {
+    adjustHeight()
   }
 }
+
+const adjustHeight = () => {
+  const el = textarea.value;
+      if (el) {
+        el.scrollTop += 24
+        // container.style.height = `${Math.min(el.scrollHeight, maxHeight) + 16}px`
+      }
+}
+
 const token = localStorage.getItem('authToken')
 const AIReading = () => {
-  if (textarea.value == null || textarea.value === "") {
+  if (message.value == null || message.value === "") {
     return
   }
-  const question = textarea.value
+  const question = message.value
   AIconfig.data.question = question
   AIconfig.data.sessionId = token == null ? "" : token
   // console.log(AIconfig)
@@ -298,10 +269,10 @@ const AIReading = () => {
       // console.log("before parse: ", answer)
       markdownToHtml(answer).then((res) => {
           // console.log("after parse: ", res)
-          res = res.replace(/<code>/g, `<code style="background-color: #f0f0f0; border-radius: 5px; margin-left: 5px; margin-right: 5px;">`)
+          res = res.replace(/<code(\s+[^>]*)?>/g, `<code style="background-color: #f0f0f0; border-radius: 5px; margin-left: 5px; margin-right: 5px;">`)
           answer = res
           QAndAList.value.push({
-            question: `<p>${question}<p>`,
+            question: `<p>${question.replace(/\n/g, `<br>`)}<p>`,
             answer: answer || "对不起，我暂时无法解释这段文字",
             index: QAndAListIndex++
           })
@@ -318,7 +289,9 @@ const notifyShortcutKey = () => {
   })
 }
 
-const textarea = ref("")
+const message = ref("")
+const textarea = ref(null);
+const textareaContainer = ref(null);
 
 // for AI reading
 const AIconfig = {
@@ -332,7 +305,7 @@ const AIconfig = {
 const sendAIReadingRequest = async (config:any) => {
   try {
     const response = await axios(config)
-    textarea.value = ""
+    message.value = ""
     return response.data
   } catch (error) {
     // console.error("error: ", error);
@@ -419,12 +392,16 @@ const scrollTo = () => {
   })
 }
 
+const callClick = () => {
+  console.log("click")
+}
+
 </script>
 
 <style lang="css" scoped>
 .pdf-preview {
   position: relative;
-  height: 100vh;
+  /* height: 100vh; */
   /* padding: 20px 0; */
   box-sizing: border-box;
   /* background: rgb(66, 66, 66); */
@@ -481,7 +458,6 @@ const scrollTo = () => {
   height: 94px;
   padding-bottom: 16px;
   padding-top: 16px;
-  padding-right: 0%;
 }
 .background {
   position: fixed;
@@ -529,4 +505,55 @@ const scrollTo = () => {
 .answer_msg {
   text-align: left;
 }
+
+.chat-input-container {
+  display: flex;
+  align-items: flex-start; /* 保证其他元素对齐 */
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 8px;
+  background-color: #f9f9f9;
+  width: calc(100% - 16px);
+  box-sizing: border-box;
+  position: relative;
+  height: auto;
+  margin: 8px;
+  max-height: 65.33px;
+}
+
+.chat-textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 0px 10px;
+  width: calc(100% - 52px);
+  resize: none; /* 禁止用户手动调整大小 */
+  background-color: transparent;
+  height: auto; /* 初始高度 */
+  min-height: 20px;
+  position: relative;
+}
+
+.up-button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.chat-input-container:hover {
+  border-color: #bbb;
+}
+
+.ai-button {
+  position: fixed; /* 绝对定位 */
+  top: 20%; /* 距离父容器顶部20% */
+  left: 20%; /* 距离父容器左侧20% */
+  width: 40px; /* 设置图标大小 */
+  height: 40px;
+  z-index: 100;
+}
+
 </style>
