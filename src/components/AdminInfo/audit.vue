@@ -31,7 +31,7 @@ export default {
       tableData: [],
       currentPage: 1,
       totalPage: 1,
-      pageSize: 6,
+      pageSize: 5,
       filterStatus: "pending_only",
     };
   },
@@ -41,14 +41,30 @@ export default {
     pageComponent
   },
   created() {
+    const savedState = sessionStorage.getItem('pageState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      this.currentPage = parsedState.currentPage || this.currentPage;
+      this.filterStatus = parsedState.filterStatus || this.filterStatus;
+    }
     this.getClaim();
   },
+  beforeRouteLeave(to, from, next) {
+    this.saveState();
+    next();
+  },
   methods: {
+    saveState(){
+      const state = {
+        currentPage: this.currentPage,
+        filterStatus: this.filterStatus
+      };
+      sessionStorage.setItem('pageState', JSON.stringify(state));
+    },
     getClaim() {
       try {
         axios.get(GETCLAIMALL_API, {
           params: {
-            keyword: this.keyword,
             pageSize: this.pageSize,
             page: this.currentPage,
             queryMode: this.filterStatus
@@ -199,7 +215,7 @@ export default {
 }
 
 .claimTable-pos {
-  margin: 40px 0px;
+  margin: 20px 0px;
 }
 
 .pageComponent {
