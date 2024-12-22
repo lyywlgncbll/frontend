@@ -6,8 +6,9 @@
           <th>
             <input type="checkbox" @click="toggleAllSelection" :checked="isAllSelected" />
           </th>
-          <th>姓名</th>
+          <th>用户名</th>
           <th>认领对应作者</th>
+          <th>认领描述</th>
           <th>创建时间</th>
           <th>操作</th>
         </tr>
@@ -17,8 +18,9 @@
           <td>
             <input type="checkbox" :checked="isSelected(row)" @click.stop="toggleRowSelection(row)" />
           </td>
-          <td class="name" @click="changeTo(row)">{{ row.name }}</td>
-          <td class="authorName">{{ row.authorName }}</td>
+          <td class="name" >{{ row.name }}</td>
+          <td class="authorName" @click="changeTo(row)">{{ row.authorName }}</td>
+          <td class="content" @click="open(row.claim.content)">{{ getContent(row.claim.content) }}</td>
           <td class="time">{{ getTime(row.claim.createTime) }}</td>
           <td v-if="row.claim.status === 'ACCEPTED'" class="option">
             <el-tag type="success">已通过</el-tag>
@@ -86,7 +88,14 @@ export default {
 
     // 点击姓名触发父组件方法
     changeTo(row) {
+      this.$router.push('/authorInfo/'+row.claim.claim);
       this.$emit('name-clicked', row);
+    },
+    
+    open(content){
+      this.$alert(content, '认领描述', {
+          confirmButtonText: '确定',
+        });
     },
 
     // 通过操作
@@ -111,6 +120,10 @@ export default {
       } catch (error) {
         console.error('update failed:', error);
       }
+    },
+    getContent(content){
+      if(content) return content;
+      return '暂无内容';
     },
     getTime(time) {
       const date = new Date(time);
@@ -139,16 +152,28 @@ export default {
 <style scoped>
 tbody {
   .name {
-    text-decoration: underline;
-    color: rgb(53, 94, 255);
-    cursor: pointer;
     width: 150px;
+    max-height: 80px;
     overflow: hidden;
   }
   .authorName{
+    text-decoration: underline;
+    color: rgb(53, 94, 255);
+    cursor: pointer;
     font-style: italic;
+    width: 220px;
+    max-width: 220px;
+    max-height: 80px;
+  }
+  .content{
     width: 280px;
     max-width: 280px;
+    max-height: 80px;
+    height: 80px;
+    overflow: hidden;
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .time{
     width: 150px;
