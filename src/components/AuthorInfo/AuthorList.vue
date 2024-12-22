@@ -89,7 +89,7 @@ export default {
 }
 .default-avatar {
   color: #fff;
-  background-color: #4CAF50;
+  background-color: #5ca5cd;
   display: flex;
   align-items: center;
   justify-content: center;
