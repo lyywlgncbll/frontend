@@ -20,7 +20,7 @@
           </td>
           <td class="name" >{{ row.name }}</td>
           <td class="authorName" @click="changeTo(row)">{{ row.authorName }}</td>
-          <td class="content" @click="open(row.content)">{{ getContent(row.content) }}</td>
+          <td class="content" @click="open(row.claim.content)">{{ getContent(row.claim.content) }}</td>
           <td class="time">{{ getTime(row.claim.createTime) }}</td>
           <td v-if="row.claim.status === 'ACCEPTED'" class="option">
             <el-tag type="success">已通过</el-tag>

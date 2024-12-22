@@ -70,6 +70,7 @@ export default {
             queryMode: this.filterStatus
           }
         }).then(response => {
+        console.log(response.data)
           if (response.status === 200) {
             this.tableData = response.data.view;
             this.totalPage = response.data.totalPage;
