@@ -326,6 +326,7 @@ export default {
     margin-top: 30px;
     width: 100%;
     max-height: 70vh;
+    /*overflow-y: scroll;*/
 }
 
 

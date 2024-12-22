@@ -198,7 +198,7 @@ tr:first-child th {
 
 .custom-table th,
 .custom-table td {
-  padding: 15px;
+  padding: 15px 10px;
   font-weight: 400;
   text-align: center;
 }
