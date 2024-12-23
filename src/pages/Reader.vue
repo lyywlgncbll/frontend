@@ -1,7 +1,7 @@
 <template>
   <div class="background">
   </div>
-  <el-icon size="40" class="ai-button" @click="showAIReading = true; showAIbutton = false;callClick" v-if="showAIbutton && LoadStatus.Success"><ChatDotRound /></el-icon>
+  <el-icon size="40" class="ai-button" @click="showAIReading = true; showAIbutton = false;callClick" v-if="showAIbutton && loadStatus === LoadStatus.Success"><ChatDotRound /></el-icon>
   <div class="pdf-preview">
     <div class="pdf-wrap" v-if="loadStatus === LoadStatus.Success">
       <vue-pdf-embed 
