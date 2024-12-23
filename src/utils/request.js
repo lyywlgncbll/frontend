@@ -33,7 +33,7 @@ export const GET_RECOMMEND_ARTICLE_API = '/api/history/getRecommend';
 
 //搜索
 export const SEARCH_API = '/api/academic/searchPublications';
-
+export const SEARCH_TOPIC_API='/topics/pubs';
 
 //管理员
 export const USERCOUNT_API = '/user/total';

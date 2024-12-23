@@ -1,7 +1,7 @@
 <template>
     <div id="topic-item" class="nav" v-if="topic != ''">
-        <div @click="handleClick">
-            <div class="title" :class="{ expand: hover }" :title="topic.name">
+        <div>
+            <div class="title" :class="{ expand: hover }" :title="topic.name" @click="handleClick">
                 Topic: {{ topic.name }}
             </div>
             <div class="container" :class="{ expand: hover }">
@@ -101,11 +101,11 @@ const handleClick = () => {
 
 .container {
     overflow: hidden;
-    transition: max-height 1s ease;
-    max-height: 0;
+    transition: height 1s ease;
+    height: 0;
 
     &.expand{
-        max-height: 1000px;
+        height: calc-size(auto,size);
     }
 }
 

@@ -82,13 +82,13 @@ watch(sortBy, (newValue) => {
 const handlSortBy = (target) => {
     if (target.classList.contains('sort-year')) {
         if (yearRotate.value) {
-            sortBy.value = 2
+            sortBy.value = 2//降序
         } else {
             sortBy.value = 3
         }
     } else if (target.classList.contains('sort-cite')) {
         if (citeRotate.value) {
-            sortBy.value = 4
+            sortBy.value = 4//降序
         } else {
             sortBy.value = 5
         }

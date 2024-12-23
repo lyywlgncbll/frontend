@@ -52,7 +52,7 @@ export default {
       router.push('search/result')
     },
     searchKeyWord(keyword){
-      localStorage.setItem('searchOption', 5)
+      localStorage.setItem('searchOption', 2)
       localStorage.setItem('topicObj', '')
       localStorage.setItem('searchString', keyword)
       router.push('search/result')
