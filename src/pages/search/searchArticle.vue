@@ -38,16 +38,18 @@ import axios from '@/utils/axios';
 import {SEARCH_API} from '../../utils/request.js'
 
 const searchContent = ref("learning")
-const option = ref(2)
+const option = ref(1)
 onMounted(() => {
-    if (localStorage.getItem('topicObj')) {
-        searchContent.value = JSON.parse(localStorage.getItem('topicObj')).name
-        option.value = 6
-    } else {
-        searchContent.value = localStorage.getItem('searchString')
-        option.value = Number(localStorage.getItem('searchOption'))
-    }
-    // console.log(searchContent.value, option.value);
+    // if (localStorage.getItem('topicObj')) {
+    //     searchContent.value = JSON.parse(localStorage.getItem('topicObj')).name
+    //     option.value = 6
+    // } else {
+    //     searchContent.value = localStorage.getItem('searchString')
+    //     option.value = Number(localStorage.getItem('searchOption'))
+    // }
+    searchContent.value = localStorage.getItem('searchString')
+    option.value = Number(localStorage.getItem('searchOption'))
+    console.log("搜索内容:",searchContent.value, "搜索选项",option.value);
     search()
 })
 
@@ -82,7 +84,11 @@ const handleFilter = (selections) => {
     fields.value = selections.fields
     currentPage.value = 1
     console.log("筛选的数据: ", selections);
-    advancedSearch()
+    if(years.value.length===0 && journals.value.length===0 && fields.value.length===0){
+        search()
+    }else{
+        advancedSearch()
+    }
 }
 
 //获取排序方式
@@ -142,7 +148,7 @@ const isLoading = ref(false)
 const advancedSearch = async () => {
     isLoading.value = true
     try {
-        await axios.post('/api/academic/searchPublications', {
+        await axios.post(SEARCH_API, {
             searchContent: searchContent.value,
             isFiltered: true,
             option: option.value,
