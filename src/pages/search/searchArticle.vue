@@ -94,8 +94,8 @@ const handleSort = (sort) => {
 
 watch(currentPage, () => {
     // console.log(currentPage.value);
-    // search()
-    advancedSearch()
+    search()
+    // advancedSearch()
 })
 
 const totalEntries = ref(0)
