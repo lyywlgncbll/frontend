@@ -233,7 +233,12 @@ const handleInput = (event : KeyboardEvent) => {
   // console.log(event.shiftKey, event.key)
   if (event.shiftKey && event.key === "Enter") {
     event.preventDefault()
-    message.value += "\n"
+    const position = textarea.value?.selectionStart
+    console.log(position)
+    const input = message.value
+    message.value = input.slice(0, position) + '\n' + input.slice(position)
+    textarea.value?.focus()
+    textarea.value?.setSelectionRange(0, 1, "forward")
     // console.log("press shift enter")
     adjustHeight()
   }
@@ -290,8 +295,8 @@ const notifyShortcutKey = () => {
 }
 
 const message = ref("")
-const textarea = ref(null);
-const textareaContainer = ref(null);
+const textarea = ref<HTMLTextAreaElement | null>(null);
+const textareaContainer = ref<HTMLTextAreaElement | null>(null);
 
 // for AI reading
 const AIconfig = {
@@ -320,23 +325,7 @@ interface QAndA {
 
 var QAndAListIndex = 0
 
-const QAndAList = ref<QAndA[]>([
-  // {
-  //   question: "大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题",
-  //   answer: "大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答",
-  //   index: QAndAListIndex++
-  // },
-  // {
-  //   question: "question",
-  //   answer: "answer",
-  //   index: QAndAListIndex++
-  // },
-  // {
-  //   question: "answer",
-  //   answer: `<p>aaa</p><code style="background-color: #f0f0f0; border: 10px; border-radius: 5px;">MarkdownToHtml.convert(mdFilePath, htmlFilePath);</code>`,
-  //   index: QAndAListIndex++
-  // }
-])
+const QAndAList = ref<QAndA[]>([])
 
 const markdownToHtml = async (answer : string) => {
   const text = await marked.parse(answer)
