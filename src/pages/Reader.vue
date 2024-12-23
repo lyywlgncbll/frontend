@@ -17,14 +17,9 @@
       <p style="font-size: large;">对不起，该链接无法打开</p>
     </div>
     <div class="middle loading" v-if="loadStatus === LoadStatus.Loading">
-      <el-header>
         <el-icon class="is-loading" size="160px">
           <Loading />
         </el-icon>
-      </el-header>
-      <el-footer>
-        <!-- <p>加载中</p> -->
-      </el-footer>
     </div>
   </div>
   <div class="AI-reading" v-if="loadStatus === LoadStatus.Success && showAIReading">
@@ -178,6 +173,8 @@ onMounted(() => {
         loadStatus.value = LoadStatus.Failed
       })
     }
+  }).catch(() => {
+    loadStatus.value = LoadStatus.Failed;
   })
   // state.data = "test/01.pdf"
   //     const loadingTask = createLoadingTask(state.data)
@@ -390,7 +387,7 @@ const callClick = () => {
 <style lang="css" scoped>
 .pdf-preview {
   position: relative;
-  /* height: 100vh; */
+  height: 100vh;
   /* padding: 20px 0; */
   box-sizing: border-box;
   /* background: rgb(66, 66, 66); */
@@ -411,7 +408,7 @@ const callClick = () => {
   z-index: 100;
   left: 50%;
   top: 40%;
-  transform: translate(-50%);
+  /* transform: translate(-50%); */
 }
 .AI-reading {
   position: fixed;
