@@ -4,13 +4,15 @@
     <div class="paper-detail-left">
       <!-- 标题 -->
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
-      <h1 class="paper-title" v-else ><div v-html="paper.title"></div></h1>
+      <h1 class="paper-title" v-else>
+        <div v-html="paper.title"></div>
+      </h1>
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <el-row class="paper-row" v-else>
-        <!-- <p>Authors:&emsp;</p> -->
-        <el-button v-for="author in paper.authors" :key="author" class="author-button" type="text"
-          @click="goToAuthorPage(author)">
-          {{ author }}
+        <!-- 使用 v-for 循环生成作者按钮 -->
+        <el-button v-for="(author, index) in paper.authors" :key="author" class="author-button" type="text"
+          @click="goToAuthorPage(author)" :style="getAuthorButtonStyle(index)">
+          {{ author.name }}
         </el-button>
         <el-button type="text" disabled class="date-button">{{ paper.publishedDate }}</el-button>
       </el-row>
@@ -109,7 +111,7 @@
               <!-- <div v-if="paper.references.length > 10 && !isReferenceExpanded">
                 <el-button @click="toggleExpand" type="text" class="expand-button">查看更多引用</el-button>
               </div> -->
-              <el-button v-if="currentLoadedReferenceCount > 10" @click="toggleReferenceExpand()" type="text">
+              <el-button v-if="paper.references.length > 10" @click="toggleReferenceExpand()" type="text">
                 <el-icon v-if="isReferenceExpanded">
                   <ArrowUpBold />
                 </el-icon>
@@ -299,7 +301,10 @@ export default defineComponent({
     return {
       paper: {
         title: "A Comprehensive Study on Artificial Intelligence",
-        authors: ["John Doe", "Jane Smith", "Alice Johnson"],
+        authors: [{
+          name: "aaa",
+          id: "1"
+        }],
         publishedDate: "2024-11-17",
         abstract:
           "This paper explores the latest advancements in artificial intelligence (AI), covering topics such as neural networks, natural language processing, and the ethical implications of AI systems.",
@@ -428,7 +433,6 @@ export default defineComponent({
         ref.isReachable = response.data.isReachable;
         ref.isLoaded = true;
         this.isLoadingReference = false;
-        this.currentLoadedReferenceCount++;
       } catch (error) {
         console.log("error")
       }
@@ -443,6 +447,8 @@ export default defineComponent({
         while (!ref.isLoaded) {
           await this.fetchReferenceData(ref);  // Fetch data asynchronously and wait
         }
+        this.currentLoadedReferenceCount++;
+        console.log(this.currentLoadedReferenceCount)
       }
 
       // 等待所有引用数据请求都完成
@@ -462,10 +468,10 @@ export default defineComponent({
       this.downloads++;
       console.log(this.id);
       //this.downloadPdf(this.paper.pdfUrl);
-      this.$message({
-        message: "Downloading PDF...",
-        type: "info",
-      });
+      // this.$message({
+      //   message: "Downloading PDF...",
+      //   type: "info",
+      // });
       const response = await axios.post(ADD_DOWNLOADS_API, null, {
         params: {
           publicationId: this.id
@@ -494,8 +500,16 @@ export default defineComponent({
 
         // 释放 Blob URL 对象
         URL.revokeObjectURL(pdfUrlBlob);
+        this.$message({
+          message: "论文下载成功",
+          type: "info",
+        });
       } catch (error) {
         console.error('下载失败:', error);
+        this.$message({
+          message: "该论文无法下载",
+          type: "warning",
+        });
       }
     },
     async downloadPdf(pdfUrl) {
@@ -539,16 +553,24 @@ export default defineComponent({
       // });
       window.open(url, '_blank');
     },
+    getAuthorButtonStyle(index) {
+      return index > 2 ? {
+        display: 'inline-block',
+        width: '100px', // 你可以根据需要调整宽度
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+      } : {};
+    },
     goToAuthorPage(author) {
       this.$message({
-        message: `Redirecting to ${author}'s articles...`,
+        message: `Redirecting to ${author.name}'s articles...`,
         type: "info",
       });
-      localStorage.setItem('searchOption', 4);
-      localStorage.setItem('searchString', author);
-      localStorage.setItem('topic', '')
-      if (!this.$route.path.includes('search/result')) {
-        router.push('/search/result');
+      if (!this.$route.path.includes('/authorInfo')) {
+        this.$router.push({
+          path: `/authorInfo/${author.id}`
+        });
       } else {
         window.location.reload();
       }
