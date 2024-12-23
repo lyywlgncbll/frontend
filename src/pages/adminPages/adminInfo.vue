@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import LoggedNavBar from "~/components/bar/logged-nav-bar.vue";
+import LoggedNavBar from "~/components/AdminInfo/head/head-bar.vue";
 import LeftTab from "~/components/AdminInfo/LeftTab.vue";
 
 export default {
