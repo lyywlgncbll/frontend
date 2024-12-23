@@ -12,11 +12,11 @@ const props = defineProps({
   },
   ctaLink: {
     type: String,
-    default: '#/login'
+    default: 'login'
   },
   indexLink: {
     type: String,
-    default: '#/'
+    default: '/'
   }
 });
 </script>

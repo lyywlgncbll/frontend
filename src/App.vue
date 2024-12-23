@@ -16,7 +16,8 @@ export default {
       </nav>
     </header> -->
     <div id="BG">
-      <gradient-background v-if="$route.meta.requiresGradient"/>
+      <parallax-background v-if="$route.meta.requiresGradient"/>
+      <parallax-background v-if="$route.meta.requiresParallax"/>
     </div>
     <!-- 渲染页面内容 -->
     <router-view />
@@ -35,4 +36,5 @@ export default {
 <script setup>
 
 
+import ParallaxBackground from "@/components/background/parallax-background.vue";
 </script>
