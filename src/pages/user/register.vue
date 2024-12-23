@@ -51,7 +51,6 @@ export default defineComponent({
       };
       try {
         const response = await axios.post(REGISTER_API, params);
-
         // 处理成功响应，例如：
         if (response.status === 200) {
           alert('注册成功');
@@ -60,13 +59,12 @@ export default defineComponent({
         } else {
           alert('注册失败');
           console.error('注册失败', response);
-
         }
       } catch (error) {
         console.error('注册时出现错误', error);
 
       }
-    }
+    },
   }
 });
 </script>
