@@ -28,16 +28,18 @@
           </el-button>
         </el-row>
       </template>
-      <h2 class="section-title">关键词</h2>
-      <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
-      <template v-else>
-        <el-row class="paper-metadata" gutter="20">
-          <el-button v-for="keyword in paper.keywords" :key="keyword" class="keyword-button" round
-            @click="goToKeywordPage(keyword)">
-            {{ keyword }}
-          </el-button>
-        </el-row>
-      </template>
+      <div v-if="!isKeywordsEmpty()">
+        <h2 class="section-title">关键词</h2>
+        <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
+        <template v-else>
+          <el-row class="paper-metadata" gutter="20">
+            <el-button v-for="keyword in paper.keywords" :key="keyword" class="keyword-button" round
+              >
+              {{ keyword }}
+            </el-button>
+          </el-row>
+        </template>
+      </div>
       <!-- 摘要 -->
       <h2 class="section-title">论文概述</h2>
       <el-row class="paper-abstract">
@@ -46,7 +48,7 @@
           <p v-else class="abstract" :class="{ 'collapsed': !isExpanded }">
             {{ paper.abstract }}
           </p>
-          <el-button v-if="!isLoading && paper.abstract.length > 100" @click="toggleExpand" type="text"
+          <el-button v-if="!isLoading && paper.abstract.length > 435" @click="toggleExpand" type="text"
             class="expand-button">
             <el-icon v-if="isExpanded">
               <ArrowUpBold />
@@ -83,46 +85,48 @@
           </el-descriptions>
         </el-col>
       </el-row> -->
+      <div v-if="!isReferencesEmpty()">
+        <h2 class="section-title">论文引用</h2>
+        <el-row class="paper-references">
+          <el-col :span="24">
+            <el-skeleton v-if="isLoadingReference" :rows="2" animated></el-skeleton>
+            <el-descriptions border v-else>
+              <el-descriptions-item>
+                <!-- 显示前10条引用 -->
+                <ul>
+                  <li v-for="(reference, index) in visibleReferences" :key="index">
+                    <div v-if="reference.isLoaded">
+                      <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)"
+                        class="reference-link" color="#0969da">
+                        <div v-html="reference.title"></div>
+                      </el-link>
+                      <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
+                        color="#0969da">
+                        <div v-html="reference.title"></div>
+                      </el-link>
+                    </div>
+                    <div v-else></div>
+                  </li>
+                </ul>
 
-      <h2 class="section-title">论文引用</h2>
-      <el-row class="paper-references">
-        <el-col :span="24">
-          <el-skeleton v-if="isLoadingReference" :rows="2" animated></el-skeleton>
-          <el-descriptions border v-else>
-            <el-descriptions-item>
-              <!-- 显示前10条引用 -->
-              <ul>
-                <li v-for="(reference, index) in visibleReferences" :key="index">
-                  <div v-if="reference.isLoaded">
-                    <el-link v-if="reference.isReachable" @click="gotoArticlePage(reference.id)" class="reference-link"
-                      color="#0969da">
-                      <div v-html="reference.title"></div>
-                    </el-link>
-                    <el-link v-else @click="gotoArticlePage(reference.id)" disabled class="reference-link"
-                      color="#0969da">
-                      <div v-html="reference.title"></div>
-                    </el-link>
-                  </div>
-                  <div v-else></div>
-                </li>
-              </ul>
-
-              <!-- 如果引用数量超过10条，显示“查看更多引用”按钮 -->
-              <!-- <div v-if="paper.references.length > 10 && !isReferenceExpanded">
+                <!-- 如果引用数量超过10条，显示“查看更多引用”按钮 -->
+                <!-- <div v-if="paper.references.length > 10 && !isReferenceExpanded">
                 <el-button @click="toggleExpand" type="text" class="expand-button">查看更多引用</el-button>
               </div> -->
-              <el-button v-if="paper.references.length > 10" @click="toggleReferenceExpand()" type="text">
-                <el-icon v-if="isReferenceExpanded">
-                  <ArrowUpBold />
-                </el-icon>
-                <el-icon v-else>
-                  <ArrowDownBold />
-                </el-icon>
-              </el-button>
-            </el-descriptions-item>
-          </el-descriptions>
-        </el-col>
-      </el-row>
+                <el-button v-if="paper.references.length > 10" @click="toggleReferenceExpand()" type="text">
+                  <el-icon v-if="isReferenceExpanded">
+                    <ArrowUpBold />
+                  </el-icon>
+                  <el-icon v-else>
+                    <ArrowDownBold />
+                  </el-icon>
+                </el-button>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
+        </el-row>
+      </div>
+
 
       <h2 class="section-title">论文推荐</h2>
       <paper-details class="papers" :id="newId" />
@@ -247,7 +251,7 @@
             <View />
           </el-icon></el-button>
       </el-tooltip>
-      <el-tooltip class="box-item" effect="dark" content="收藏论文" placement="right">
+      <!-- <el-tooltip class="box-item" effect="dark" content="收藏论文" placement="right">
         <el-button circle class="stat-button" size="large" @click="toggleFavorite()">
           <el-icon v-if="isFavorite" size="25px">
             <StarFilled />
@@ -256,7 +260,7 @@
             <Star />
           </el-icon>
         </el-button>
-      </el-tooltip>
+      </el-tooltip> -->
     </div>
   </div>
 </template>
@@ -444,11 +448,10 @@ export default defineComponent({
       //const referencePromises = 
       for (const ref of this.paper.references) {
         // Wait until the reference is loaded
-        while (!ref.isLoaded) {
-          await this.fetchReferenceData(ref);  // Fetch data asynchronously and wait
+        await this.fetchReferenceData(ref);  // Fetch data asynchronously and wait
+        if (!ref.isLoaded) {
+          await this.fetchReferenceData(ref);
         }
-        this.currentLoadedReferenceCount++;
-        console.log(this.currentLoadedReferenceCount)
       }
 
       // 等待所有引用数据请求都完成
@@ -614,7 +617,7 @@ export default defineComponent({
       const paper = {
         title: backendData.title,
         authors: backendData.authors,
-        publishedDate: `${backendData.publishedYear}-01-01`, // 默认设置为每年 1 月 1 日
+        publishedDate: `${backendData.publishedYear}`, // 默认设置为每年 1 月 1 日
         abstract: backendData.abstract,
         keywords: backendData.keywords,
         fields: backendData.fields,
@@ -663,7 +666,23 @@ export default defineComponent({
       } catch (error) {
         console.error("请求失败:", error)
       }
-    }
+    },
+    isKeywordsEmpty() {
+      if (this.paper.keywords.length == 0) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    },
+    isReferencesEmpty() {
+      if (this.paper.references.length == 0) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    },
   },
 });
 
