@@ -1,10 +1,13 @@
 <script>
+import axios from '@/utils/axios';
+import { defineComponent } from "vue";
+import { useRouter } from 'vue-router';
 import NavigationBar from "~/components/bar/unlogged-nav-bar.vue";
-import {defineComponent} from "vue";
-
+import { RESETPASSWORD_API, RESETPASSWORD_SEND_EMAIL_API } from "~/utils/request.js";
 export default defineComponent({
   components:{
-    NavigationBar
+    NavigationBar,
+    axios
   },
   data() {
     return {
@@ -16,7 +19,50 @@ export default defineComponent({
     };
   },
   setup(){
+    const router = useRouter(); // 在 setup 函数中初始化 router
+    return { router }; // 返回 router，使其可在模板和方法中使用
+  },
+  methods: {
+    async sendVerificationCode() {
+      const params = new URLSearchParams();
+      params.append('email', this.Email);
+      try {
+        const response = await axios.post(RESETPASSWORD_SEND_EMAIL_API+"?mail="+this.Email);
+        // 处理成功响应，例如：
+        if (response.status === 200) {
+          console.log('验证码发送成功');
+          // 可以在这里添加成功提示，例如弹出一个提示框
+        } else {
+          console.error('验证码发送失败', response);
+          // 处理其他错误状态码，例如弹出一个错误提示框
+        }
+      } catch (error) {
+        console.error('发送验证码时出现错误', error);
+        // 处理请求错误，例如网络错误，弹出一个错误提示框
+      }
+    },
 
+    async resetPassword() {
+      const params = {
+        mail: this.Email,
+        newPassword: this.Password,
+        code: this.EmailVerificationCode
+      };
+      try {
+        const response = await axios.post(RESETPASSWORD_API, params);
+        // 处理成功响应，例如：
+        if (response.status === 200) {
+          alert('修改密码成功');
+          console.log('修改密码成功');
+          await this.router.push('/login');
+        } else {
+          alert('修改密码失败');
+          console.error('修改密码失败', response);
+        }
+      } catch (error) {
+        console.error('修改密码时出现错误', error);
+      }
+    },
   },
 });
 </script>
