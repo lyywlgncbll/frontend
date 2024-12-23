@@ -118,6 +118,7 @@ export default {
     },
     updateTableTo(status) {
       this.filterStatus = status;
+      this.currentPage = 1;
       this.getClaim();
       //更新（搜索）指定状态的表单
     },
