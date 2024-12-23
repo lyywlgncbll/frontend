@@ -27,7 +27,8 @@ import AdminInfo from '../pages/adminPages/adminInfo.vue'
 const routes = [
     {
         path: "/",
-        component: Index
+        component: Index,
+        meta: { requiresParallax: true ,requiresCharacter:true}
     },
     {
         path: "/reader",
