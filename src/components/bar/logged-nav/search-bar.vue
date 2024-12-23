@@ -22,7 +22,7 @@ export default {
     window.addEventListener("keydown", this.handleKeydown);
     window.addEventListener("mousedown", this.handleClickOutside);
     this.input=localStorage.getItem('searchString')|| '';
-    this.select=localStorage.getItem('searchOption')|| '';
+    this.select=localStorage.getItem('searchOption')|| 1;
   },
   beforeDestroy() {
     // 在组件销毁时移除事件监听
@@ -59,7 +59,7 @@ export default {
           }else{
             localStorage.setItem('searchOption',this.select);
             localStorage.setItem('searchString',this.input);
-            localStorage.setItem('topicObj','')
+            // localStorage.setItem('topicObj','')
             if (!this.$route.path.includes('search/result')) {
               router.push('/search/result');
             } else{
