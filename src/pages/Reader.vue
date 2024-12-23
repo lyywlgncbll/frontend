@@ -158,7 +158,11 @@ onMounted(() => {
           // for store
           const base64String = reader.result;
   
-          localStorage.setItem(url, base64String)
+          try {
+            localStorage.setItem(url, base64String)
+          } catch (e) {
+            localStorage.clear()
+          }
           console.log("store pdf")
   
           loadingTask.promise.then((pdf) => {
