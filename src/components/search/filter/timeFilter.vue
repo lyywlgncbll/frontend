@@ -133,24 +133,4 @@ watch(selectedContents, (newValue) => {
     padding: 0 10px;
 }
 
-.content-item {
-    display: flex;
-    align-items: center;
-    padding: 2px 15px;
-    margin: 5px auto;
-    white-space: nowrap;
-
-    input {
-        margin-right: 8px;
-        cursor: pointer;
-    }
-
-    span {
-        text-align: center;
-        font-size: 15px;
-        cursor: pointer;
-        color: #333;
-        white-space: nowrap;
-    }
-}
 </style>
