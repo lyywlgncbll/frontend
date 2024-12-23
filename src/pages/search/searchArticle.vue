@@ -1,10 +1,11 @@
 <template>
-    <loggedNavBar class="nav-bar" />
+    <loggedNavBar class="nav-bar"/>
+    <div class="progress-bar" v-if="isLoading"></div>
     <div id="search-root">
         <div id="mid">
             <div class="left-expand" @click="expandBar">
                 <img src="/src/assets/iconfonts/search/down-expand.svg" width="15px" height="15px"
-                    :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
+                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
             <div class="left-bar" :class="{ collapsed: !isExpand }">
                 <searchFilter :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
@@ -26,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, onUnmounted } from 'vue';
+import {ref, onMounted, watch, onUnmounted} from 'vue';
 import searchFilter from '/src/components/search/searchFilter.vue';
 import searchItem from '/src/components/search/searchItem.vue';
 import pageComponent from '/src/components/search/pageComponent.vue';
@@ -34,7 +35,7 @@ import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
 import searchNav from '@/components/search/searchNav.vue';
 import searchTopic from '@/components/search/searchTopic.vue';
 import axios from '@/utils/axios';
-import { SEARCH_API } from '../../utils/request.js'
+import {SEARCH_API} from '../../utils/request.js'
 
 const searchContent = ref("learning")
 const option = ref(2)
@@ -63,9 +64,9 @@ const expandBar = () => {
 }
 
 const menuItems = ref([
-    { id: 'years', title: '时间', contents: [] },
-    { id: 'fields', title: '领域', contents: [] },
-    { id: 'journals', title: '期刊', contents: [] },
+    {id: 'years', title: '时间', contents: []},
+    {id: 'fields', title: '领域', contents: []},
+    {id: 'journals', title: '期刊', contents: []},
 ])
 
 const searchItems = ref([])
@@ -80,7 +81,7 @@ const handleFilter = (selections) => {
     journals.value = selections.journals
     fields.value = selections.fields
     currentPage.value = 1
-    console.log("筛选的数据: ",selections);
+    console.log("筛选的数据: ", selections);
     advancedSearch()
 }
 
@@ -103,6 +104,7 @@ const years = ref([])
 const journals = ref([])
 const fields = ref([])
 const search = async () => {
+    isLoading.value = true
     try {
         await axios.post(SEARCH_API, {
             searchContent: searchContent.value,
@@ -123,13 +125,16 @@ const search = async () => {
             } else {
                 console.error("搜索失败:", response.data.message)
             }
+            isLoading.value = false
         })
     } catch (error) {
         console.error('请求失败:', error)
     }
 }
 
+const isLoading = ref(false)
 const advancedSearch = async () => {
+    isLoading.value = true
     try {
         await axios.post('/api/academic/searchPublications', {
             searchContent: searchContent.value,
@@ -150,6 +155,7 @@ const advancedSearch = async () => {
             } else {
                 console.error("筛选失败:", response.data.message)
             }
+            isLoading.value = false
         })
     } catch (error) {
         console.error('请求失败:', error)
@@ -202,6 +208,7 @@ const advancedSearch = async () => {
     justify-content: center;
     cursor: pointer;
     z-index: 999;
+
     &:hover {
         background-color: var(--expand-button-hover-color);
     }
@@ -222,6 +229,41 @@ const advancedSearch = async () => {
         bottom: -40px;
         left: 50%;
         transform: translateX(-50%);
+    }
+}
+
+/* 进度条样式 */
+.progress-bar {
+    width: 100%;
+    height: 5px;
+    background-color: #ddd;
+    border-radius: 2px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.progress-bar::after {
+    content: '';
+    width: 50%; /* 进度条的宽度 */
+    height: 100%;
+    background-color: #6db2f4;
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: loading 2s infinite linear;
+}
+
+@keyframes loading {
+    0% {
+        width: 0%;
+    }
+    50% {
+        width: 50%;
+    }
+    100% {
+        width: 100%;
     }
 }
 </style>

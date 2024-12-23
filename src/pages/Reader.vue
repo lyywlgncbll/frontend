@@ -1,7 +1,7 @@
 <template>
   <div class="background">
   </div>
-  <el-icon size="40" class="ai-button" @click="showAIReading = true; showAIbutton = false;callClick" v-if="showAIbutton"><ChatDotRound /></el-icon>
+  <el-icon size="40" class="ai-button" @click="showAIReading = true; showAIbutton = false;callClick" v-if="showAIbutton && LoadStatus.Success"><ChatDotRound /></el-icon>
   <div class="pdf-preview">
     <div class="pdf-wrap" v-if="loadStatus === LoadStatus.Success">
       <vue-pdf-embed 
@@ -17,14 +17,9 @@
       <p style="font-size: large;">对不起，该链接无法打开</p>
     </div>
     <div class="middle loading" v-if="loadStatus === LoadStatus.Loading">
-      <el-header>
         <el-icon class="is-loading" size="160px">
           <Loading />
         </el-icon>
-      </el-header>
-      <el-footer>
-        <!-- <p>加载中</p> -->
-      </el-footer>
     </div>
   </div>
   <div class="AI-reading" v-if="loadStatus === LoadStatus.Success && showAIReading">
@@ -178,6 +173,8 @@ onMounted(() => {
         loadStatus.value = LoadStatus.Failed
       })
     }
+  }).catch(() => {
+    loadStatus.value = LoadStatus.Failed;
   })
   // state.data = "test/01.pdf"
   //     const loadingTask = createLoadingTask(state.data)
@@ -233,7 +230,12 @@ const handleInput = (event : KeyboardEvent) => {
   // console.log(event.shiftKey, event.key)
   if (event.shiftKey && event.key === "Enter") {
     event.preventDefault()
-    message.value += "\n"
+    const position = textarea.value?.selectionStart
+    console.log(position)
+    const input = message.value
+    message.value = input.slice(0, position) + '\n' + input.slice(position)
+    textarea.value?.focus()
+    textarea.value?.setSelectionRange(0, 1, "forward")
     // console.log("press shift enter")
     adjustHeight()
   }
@@ -290,8 +292,8 @@ const notifyShortcutKey = () => {
 }
 
 const message = ref("")
-const textarea = ref(null);
-const textareaContainer = ref(null);
+const textarea = ref<HTMLTextAreaElement | null>(null);
+const textareaContainer = ref<HTMLTextAreaElement | null>(null);
 
 // for AI reading
 const AIconfig = {
@@ -320,23 +322,7 @@ interface QAndA {
 
 var QAndAListIndex = 0
 
-const QAndAList = ref<QAndA[]>([
-  // {
-  //   question: "大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题",
-  //   answer: "大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答",
-  //   index: QAndAListIndex++
-  // },
-  // {
-  //   question: "question",
-  //   answer: "answer",
-  //   index: QAndAListIndex++
-  // },
-  // {
-  //   question: "answer",
-  //   answer: `<p>aaa</p><code style="background-color: #f0f0f0; border: 10px; border-radius: 5px;">MarkdownToHtml.convert(mdFilePath, htmlFilePath);</code>`,
-  //   index: QAndAListIndex++
-  // }
-])
+const QAndAList = ref<QAndA[]>([])
 
 const markdownToHtml = async (answer : string) => {
   const text = await marked.parse(answer)
@@ -401,7 +387,7 @@ const callClick = () => {
 <style lang="css" scoped>
 .pdf-preview {
   position: relative;
-  /* height: 100vh; */
+  height: 100vh;
   /* padding: 20px 0; */
   box-sizing: border-box;
   /* background: rgb(66, 66, 66); */
@@ -422,7 +408,7 @@ const callClick = () => {
   z-index: 100;
   left: 50%;
   top: 40%;
-  transform: translate(-50%);
+  /* transform: translate(-50%); */
 }
 .AI-reading {
   position: fixed;
