@@ -45,7 +45,7 @@ instance.interceptors.response.use(response => {
         // 你可以根据其他错误码处理
         if (status === 403) {
             // 禁止访问
-            alert('Forbidden: You do not have permission.');
+            // alert('Forbidden: You do not have permission.');
         }
 
         if (status === 500) {
