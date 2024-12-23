@@ -21,11 +21,8 @@ export default defineConfig({
     promiseImportName: i => `__tla_${i}`
   })
   ],
-  // build: {
-  //   target: ['edge90', 'chrome90', 'firefox90', 'safari15'],
-  // },
-  // server: {
-  //   port: 8080
-  // }
+  build: {
+    minify: false,
+  }
 
 })
