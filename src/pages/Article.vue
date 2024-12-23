@@ -22,7 +22,8 @@
 
 
         <!-- 如果作者数量超过 maxVisibleAuthors，显示“查看更多作者”按钮 -->
-        <el-button v-if="paper.authors.length > maxVisibleAuthors" @click="toggleAuthorExpand" type="text" class="expand-button">
+        <el-button v-if="paper.authors.length > maxVisibleAuthors" @click="toggleAuthorExpand" type="text"
+          class="expand-button">
           <el-icon v-if="isAuthorExpanded">
             <ArrowUpBold />
           </el-icon>
@@ -128,7 +129,8 @@
                 <!-- <div v-if="paper.references.length > 10 && !isReferenceExpanded">
                 <el-button @click="toggleExpand" type="text" class="expand-button">查看更多引用</el-button>
               </div> -->
-                <el-button v-if="paper.references.length > 10" @click="toggleReferenceExpand()" type="text">
+                <el-button v-if="paper.references.length > 10" @click="toggleReferenceExpand()" type="text"
+                  class="expand-button">
                   <el-icon v-if="isReferenceExpanded">
                     <ArrowUpBold />
                   </el-icon>
@@ -630,14 +632,11 @@ export default defineComponent({
       }
     },
     gotoArticlePage(paperId) {
-      if (!this.$route.path.includes('article')) {
-        this.$router.push({
-          name: "Article",
-          query: { id: paperId }
-        });
-      } else {
-        window.location.reload();
-      }
+      this.$router.push({
+        name: "Article",
+        query: { id: paperId }
+      });
+      window.location.reload();
     },
     transformBackendDataToPaper(backendData) {
       // 将后端数据转换为前端 paper 数据格式
