@@ -7,7 +7,8 @@
         <div class="info">
             <div class="works">Works: {{ item.worksCount }}</div>
             <div class="cited">Cited By: {{ item.citedByCount }}</div>
-            <div class="date">Created: {{ item.createdDate }}</div>
+            <div class="createdDate">Created: {{ item.createdDate }}</div>
+            <div class="updatedDate">Updated: {{ item.updatedDate}}</div>
         </div>
         <div class="before"></div>
         <div class="content">
@@ -85,7 +86,11 @@ const clickKeyword = (content) => {
         margin: 0 10px;
     }
 
-    .date {
+    .createdDate {
+        margin-left: 10px;
+    }
+
+    .updatedDate{
         margin-left: 10px;
     }
 }
