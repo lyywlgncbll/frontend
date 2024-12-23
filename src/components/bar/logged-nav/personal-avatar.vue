@@ -25,6 +25,7 @@ import {ref, onMounted, onBeforeUnmount} from 'vue';
 import router from "@/router/index.js";
 import axios from "@/utils/axios.js";
 import {GET_PERSONAL_AVATAR_API} from "@/utils/request.js";
+import defaultAvatar from '/src/assets/defaultAvatar.jpeg';
 
 export default {
   name: 'personal-avatar',
@@ -34,7 +35,7 @@ export default {
   setup() {
 
     const avatarUrl = ref('');
-    const defaultAvatarUrl = ref('/src/assets/defaultAvatar.jpeg');
+    const defaultAvatarUrl = ref(defaultAvatar);
     const optionsListActive = ref(false);
 
     // 定义显示个人中心和退出登录的操作
