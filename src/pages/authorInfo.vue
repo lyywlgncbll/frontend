@@ -211,7 +211,7 @@ export default {
 <style scoped>
 .page {
     padding: 50px 0;
-    background-color: rgb(212, 234, 248);
+    background-color: white;
     width: 100%;
     min-height: 100vh;
 }
