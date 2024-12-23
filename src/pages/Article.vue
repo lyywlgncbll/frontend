@@ -10,9 +10,25 @@
       <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
       <el-row class="paper-row" v-else>
         <!-- 使用 v-for 循环生成作者按钮 -->
-        <el-button v-for="(author, index) in paper.authors" :key="author" class="author-button" type="text"
-          @click="goToAuthorPage(author)" :style="getAuthorButtonStyle(index)">
+        <!-- <el-button v-for="(author, index) in visibleAuthors" :key="author" class="author-button" type="text"
+          @click="goToAuthorPage(author)">
           {{ author.name }}
+        </el-button> -->
+
+        <el-button v-for="(author, index) in visibleAuthors" :key="author" class="author-button" type="text"
+          @click="goToAuthorPage(author)">
+          {{ author.name }}
+        </el-button>
+
+
+        <!-- 如果作者数量超过 maxVisibleAuthors，显示“查看更多作者”按钮 -->
+        <el-button v-if="paper.authors.length > maxVisibleAuthors" @click="toggleAuthorExpand" type="text" class="expand-button">
+          <el-icon v-if="isAuthorExpanded">
+            <ArrowUpBold />
+          </el-icon>
+          <el-icon v-else>
+            <ArrowDownBold />
+          </el-icon>
         </el-button>
         <el-button type="text" disabled class="date-button">{{ paper.publishedDate }}</el-button>
       </el-row>
@@ -33,8 +49,7 @@
         <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
         <template v-else>
           <el-row class="paper-metadata" gutter="20">
-            <el-button v-for="keyword in paper.keywords" :key="keyword" class="keyword-button" round
-              >
+            <el-button v-for="keyword in paper.keywords" :key="keyword" class="keyword-button" round>
               {{ keyword }}
             </el-button>
           </el-row>
@@ -372,7 +387,9 @@ export default defineComponent({
       isLoadingReference: false,
       isExpanded: false,
       isReferenceExpanded: false,
-      currentLoadedReferenceCount: 0
+      currentLoadedReferenceCount: 0,
+      isAuthorExpanded: false,
+      maxVisibleAuthors: 6
     };
   },
   mounted() {
@@ -406,7 +423,13 @@ export default defineComponent({
     visibleReferences() {
       // 如果展开了，显示所有引用；否则只显示前10条引用
       return this.isReferenceExpanded ? this.paper.references : this.paper.references.slice(0, 10);
-    }
+    },
+    visibleAuthors() {
+      if (this.isAuthorExpanded) {
+        return this.paper.authors; // 展开时显示全部作者
+      }
+      return this.paper.authors.slice(0, this.maxVisibleAuthors); // 折叠时只显示部分作者
+    },
   },
   methods: {
     async fetchData(id) {
@@ -607,10 +630,14 @@ export default defineComponent({
       }
     },
     gotoArticlePage(paperId) {
-      this.$router.push({
-        name: "Article",
-        query: { id: paperId }
-      });
+      if (!this.$route.path.includes('article')) {
+        this.$router.push({
+          name: "Article",
+          query: { id: paperId }
+        });
+      } else {
+        window.location.reload();
+      }
     },
     transformBackendDataToPaper(backendData) {
       // 将后端数据转换为前端 paper 数据格式
@@ -654,6 +681,9 @@ export default defineComponent({
     },
     toggleReferenceExpand() {
       this.isReferenceExpanded = !this.isReferenceExpanded;
+    },
+    toggleAuthorExpand() {
+      this.isAuthorExpanded = !this.isAuthorExpanded;
     },
     async increaseReadCnt() {
       try {
