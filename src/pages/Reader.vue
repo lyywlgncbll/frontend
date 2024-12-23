@@ -273,7 +273,7 @@ const AIReading = () => {
           answer = res
           QAndAList.value.push({
             question: `<p>${question.replace(/\n/g, `<br>`)}<p>`,
-            answer: answer || "对不起，我暂时无法解释这段文字",
+            answer: answer || "<p>对不起，我暂时无法解释这段文字<p>",
             index: QAndAListIndex++
           })
           isInput.value = false
@@ -321,21 +321,21 @@ interface QAndA {
 var QAndAListIndex = 0
 
 const QAndAList = ref<QAndA[]>([
-  {
-    question: "大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题",
-    answer: "大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答",
-    index: QAndAListIndex++
-  },
-  {
-    question: "question",
-    answer: "answer",
-    index: QAndAListIndex++
-  },
-  {
-    question: "answer",
-    answer: `<p>aaa</p><code style="background-color: #f0f0f0; border: 10px; border-radius: 5px;">MarkdownToHtml.convert(mdFilePath, htmlFilePath);</code>`,
-    index: QAndAListIndex++
-  }
+  // {
+  //   question: "大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题大段问题",
+  //   answer: "大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答大段回答",
+  //   index: QAndAListIndex++
+  // },
+  // {
+  //   question: "question",
+  //   answer: "answer",
+  //   index: QAndAListIndex++
+  // },
+  // {
+  //   question: "answer",
+  //   answer: `<p>aaa</p><code style="background-color: #f0f0f0; border: 10px; border-radius: 5px;">MarkdownToHtml.convert(mdFilePath, htmlFilePath);</code>`,
+  //   index: QAndAListIndex++
+  // }
 ])
 
 const markdownToHtml = async (answer : string) => {
