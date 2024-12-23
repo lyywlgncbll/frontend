@@ -8,25 +8,33 @@
   </template>
   
 <script>
-  export default {
-    data() {
-      return {
-        options: [
-          { value: 'pending', label: '待处理' },
-          { value: 'accepted', label: '已通过' },
-          { value: 'rejected', label: '已拒绝' },
-          { value: 'all', label: '所有' }
-        ],
-        value: 'pending' 
-      };
-    },
-    methods: {
-      handleChange() {
-        //调用父组件方法
-        this.$emit('updateTableTo', this.value);
-      }
+export default {
+  created() {
+    const savedState = sessionStorage.getItem('pageState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      this.value = parsedState.filterStatus || this.value;
     }
-  };
+  },
+  data() {
+    return {
+      options: [
+        { value: 'pending_only', label: '待处理' },
+        { value: 'accepted_only', label: '已通过' },
+        { value: 'rejected_only', label: '已拒绝' },
+        { value: 'all', label: '所有' }
+      ],
+      value: 'pending_only' 
+    };
+  },
+  methods: {
+    handleChange() {
+      //调用父组件方法
+      this.$emit('updateTableTo', this.value);
+    },
+  },
+  
+};
 </script>
   
 <style scoped>

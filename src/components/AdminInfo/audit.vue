@@ -117,7 +117,7 @@ export default {
       }
     },
     updateTableTo(status) {
-      this.filterStatus = this.getFilterStatus(status);
+      this.filterStatus = status;
       this.getClaim();
       //更新（搜索）指定状态的表单
     },
@@ -129,18 +129,6 @@ export default {
     },
     handleNameClick(row) {
       console.log('Clicked on name:', row);
-    },
-    getFilterStatus(status) {
-      switch (status) {
-        case "pending":
-          return "pending_only";
-        case "accepted":
-          return "accepted_only";
-        case "rejected":
-          return "rejected_only";
-        case "all":
-          return "all";
-      }
     },
     handleBatchAction(status) {
       if (this.$refs.claimTable) {
