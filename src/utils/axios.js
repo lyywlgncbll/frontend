@@ -1,4 +1,5 @@
 import axios from 'axios';
+import router from "@/router/index.js";
 const BASE_IP = "113.44.131.146";
 const BASE_PORT = '8080';
 const BASE_URL = `http://${BASE_IP}:${BASE_PORT}`;
@@ -25,15 +26,36 @@ instance.interceptors.request.use(config => {
 });
 
 // 响应拦截器（如果需要的话）
-// instance.interceptors.response.use(response => {
-//     return response;
-// }, error => {
-//     // 错误处理（如 token 过期等）
-//     if (error.response && error.response.status === 401) {
-//         // 处理未授权的错误，例如跳转到登录页
-//     }
-//     return Promise.reject(error);
-// });
+// 响应拦截器（如果需要的话）
+instance.interceptors.response.use(response => {
+    // 成功响应
+    return response;
+}, error => {
+    // 错误处理（如 token 过期等）
+    if (error.response) {
+        const { status } = error.response;
+
+        // 401 错误 - 未授权
+        if (status === 401) {
+            // 清除过期 token 或 Vuex 中的状态
+            localStorage.removeItem('authToken');  // 清除 token
+            router.push('/login');  // 跳转到登录页
+        }
+
+        // 你可以根据其他错误码处理
+        if (status === 403) {
+            // 禁止访问
+            // alert('Forbidden: You do not have permission.');
+        }
+
+        if (status === 500) {
+            // 服务器错误
+            // alert('Server Error. Please try again later.');
+        }
+    }
+
+    return Promise.reject(error);
+});
 
 // 导出配置好的 Axios 实例
 export default instance;

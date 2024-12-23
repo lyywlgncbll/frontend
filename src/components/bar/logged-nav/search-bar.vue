@@ -9,7 +9,7 @@ export default {
         { value: "2", label: "摘要" },
         { value: "3", label: "领域" },
         { value: "4", label: "作者" },
-        { value: "5", label: "关键词" },
+        // { value: "5", label: "关键词" },
       ],
       select: 1, // 当前选中的值
       input: "", // 输入框内容
