@@ -113,7 +113,7 @@ const handleSelection = (content) => {
     transition: all 1s;
     padding: 0 10px;
     position: relative;
-
+    max-height: 300px;
     li:nth-child(1) {
         margin-top: 15px;
     }
@@ -135,7 +135,7 @@ const handleSelection = (content) => {
 }
 
 .menu-content.expand {
-    height: 145px;
+    height: calc-size(auto,size);
     padding: 0 10px;
 }
 
