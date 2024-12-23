@@ -50,7 +50,7 @@ instance.interceptors.response.use(response => {
 
         if (status === 500) {
             // 服务器错误
-            alert('Server Error. Please try again later.');
+            // alert('Server Error. Please try again later.');
         }
     }
 
