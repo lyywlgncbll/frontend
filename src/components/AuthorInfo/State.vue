@@ -2,7 +2,7 @@
     <div id="state">
         <div class="container">
             <div class="top">
-                <img src="/src/assets/iconfonts/userinfo/stats.svg" />Stats
+                <img src="/src/assets/iconfonts/userinfo/stats.svg"/>统计
             </div>
             <div class="body">
                 <div class="left">
@@ -25,7 +25,7 @@
 
 <script setup>
 import * as echarts from "echarts";
-import { ref, onMounted, watch, onBeforeUnmount } from "vue";
+import {ref, onMounted, watch, onBeforeUnmount} from "vue";
 
 // 定义 props
 const props = defineProps({
@@ -52,11 +52,19 @@ let myChart = null;
 
 // 转换传入的 chartData 为 ECharts 需要的格式
 const transformChartData = (data) => {
+    if (!data || data.length === 0) {
+        // 数据为空时返回一个默认数据
+        return [{
+            name: "No Data",
+            value: 0,
+            itemStyle: {color: "#94c9ed"}, // 设置灰色
+        }]
+    }
     return data.map((item) => ({
         name: item.year.toString(),
         value: item.paperNum,
-    }));
-};
+    }))
+}
 
 // 渲染或更新图表的函数
 const renderChart = (data) => {
@@ -105,7 +113,7 @@ const renderChart = (data) => {
 };
 
 onMounted(() => {
-    if (chart.value && props.chartData.length != 0) {
+    if (chart.value) {
         myChart = echarts.init(chart.value);
         const initialData = transformChartData(props.chartData);
         renderChart(initialData);
@@ -123,7 +131,7 @@ watch(
             renderChart(transformedData);
         }
     },
-    { immediate: true, deep: true } // 立即执行，使用初始数据渲染图表
+    {immediate: true, deep: true} // 立即执行，使用初始数据渲染图表
 );
 
 </script>

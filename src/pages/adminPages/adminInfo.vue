@@ -8,7 +8,6 @@
     </div>
   </div>
   <el-main class="content">
-      <!-- 放置表格 -->
       <router-view/>
   </el-main>
   

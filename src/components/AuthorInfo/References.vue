@@ -1,19 +1,14 @@
 <template>
   <div class="reference-container">
-    <div class="header">
-      <span class="header-title">文献</span>
-      <span class="header-date">日期</span>
-      <span class="header-citations">引用次数</span>
-    </div>
+    <div class="title">发表文献</div>
     <div class="reference-item" v-for="(reference, index) in references" :key="index">
-      <div class="reference-info">
-        <h3 class="reference-title" @click="goToArticle(reference.id)">{{ reference.title }}
-        </h3>
-        <p class="reference-authors">{{ reference.authors }}</p>
-        <p class="reference-journal">{{ reference.journal }}</p>
+      <div class="reference-info" @click="goToArticle(reference.id)">
+        <h3 class="reference-title" :title="reference.title">{{ reference.title }}</h3>
+        <p class="reference-authors"> Published by : {{ formatAuthors(reference.authors) }}</p>
+        <p class="reference-journal"> Journal : <span>{{ reference.journal }}</span> <span class="reference-date"> · {{
+          reference.date }}</span></p>
+        <p class="reference-citations">Cited By : {{ reference.citations }}</p>
       </div>
-      <span class="reference-date">{{ reference.date }}</span>
-      <span class="reference-citations">{{ reference.citations }}</span>
     </div>
   </div>
 
@@ -42,6 +37,15 @@ export default {
       // 使用 router.push 来进行路由跳转，传递 id 作为查询参数
       this.$router.push({ path: "/article", query: { id } });
     },
+    formatAuthors(authors) {
+      const authorsArray = authors.split(',').map(author => author.trim());
+
+      if (authorsArray.length > 3) {
+        return authorsArray.slice(0, 3).join(', ') + ', ...';
+      }
+
+      return authorsArray.join(', ');
+    },
   },
 
 
@@ -49,135 +53,81 @@ export default {
 </script>
 
 <style scoped>
+.title {
+  position: sticky;
+  top: 0; 
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  padding: 5px;
+  border-bottom: 2px solid #e0e0e0;
+  background-color: #fff; 
+  z-index: 1; 
+  padding-top: 20px;
+}
+
 .reference-container {
   height: 100%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
   width: 100%;
-}
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 0px 20px;
+  padding-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: scroll;
+  scrollbar-width: none;
 
-.header {
-  display: grid;
-  grid-template-columns: 8fr 1fr 1fr;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid #ddd;
-  background-color: #f1f1f1;
-}
-
-.header.editable-header {
-  grid-template-columns: 7fr 1fr 1fr 1fr;
-}
-
-.header.editable-header span:first-child {
-  text-align: left;
-}
-
-.header.editable-header span:not(:first-child) {
-  text-align: center;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .reference-item {
-  display: grid;
-  grid-template-columns: 7fr 1fr 1fr;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-.reference-item.editable-item {
-  grid-template-columns: 7fr 1fr 1fr 1fr;
+  width: 100%;
+  height: auto;
+  padding: 10px 0;
+  margin-bottom: 10px;
 }
 
 .reference-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.reference-title {
-  font-size: 1rem;
-  font-weight: bold;
-  word-break: break-word;
-  margin: 0;
-  cursor: pointer;
-  /* 添加鼠标手型 */
-  transition: color 0.3s;
-  /* 添加过渡效果 */
-}
-
-.reference-title:hover {
-  color: #007BFF;
-  /* 鼠标悬停时改变文字颜色 */
-  text-decoration: underline;
-  /* 鼠标悬停时添加下划线 */
-}
-
-.reference-authors,
-.reference-journal {
-  font-size: 0.7rem;
-  margin: 0.2rem 0;
-}
-
-.reference-date,
-.reference-citations,
-.reference-manage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-}
-
-.reference-manage {
-  cursor: pointer;
-}
-
-.dialog-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-
-.dialog {
-  background: white;
-  padding: 2rem 3rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  width: 500px;
-  /* 调整弹窗宽度 */
-}
-
-.dialog p {
-  text-align: left;
-}
-
-.dialog div {
-  text-align: right;
-}
-
-.dialog-buttons button {
-  margin: 0 0.5rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 8px;
   cursor: pointer;
-}
+  transition: .2s ease;
+  .reference-title {
+    margin-bottom: 5px;
+    font-size: 21px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-.dialog-buttons button:first-child {
-  background-color: rgba(73, 73, 233, 0.979);
-  color: white;
-}
+  .reference-authors {
+    font-size: 15px;
+    color: #808080;
+    margin-bottom: 5px;
+  }
 
-.dialog-buttons button:last-child {
-  background-color: gray;
-  color: white;
+  .reference-journal {
+    font-size: 15px;
+    color: #808080;
+
+    span {
+      font-style: italic;
+    }
+  }
+
+  .reference-citations {
+    font-size: 14px;
+    text-align: right;
+    color: #808080;
+  }
+
+  &:hover{
+    background-color: #f0f0f0;
+  }
 }
 </style>

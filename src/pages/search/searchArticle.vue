@@ -80,7 +80,7 @@ const handleFilter = (selections) => {
     journals.value = selections.journals
     fields.value = selections.fields
     currentPage.value = 1
-    console.log(selections);
+    console.log("筛选的数据: ",selections);
     advancedSearch()
 }
 
@@ -93,8 +93,8 @@ const handleSort = (sort) => {
 
 watch(currentPage, () => {
     // console.log(currentPage.value);
-    search()
-    // advancedSearch()
+    // search()
+    advancedSearch()
 })
 
 const totalEntries = ref(0)
