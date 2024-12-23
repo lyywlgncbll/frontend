@@ -88,14 +88,20 @@ const handleFilter = (selections) => {
 //获取排序方式
 const handleSort = (sort) => {
     sortBy.value = sort
-    // search()
-    advancedSearch()
+    if(years.value.length===0 && journals.value.length===0 && fields.value.length===0){
+        search()
+    }else{
+        advancedSearch()
+    }
 }
 
 watch(currentPage, () => {
-    // console.log(currentPage.value);
-    search()
-    // advancedSearch()
+    console.log("当前的页码",currentPage.value);
+    if(years.value.length===0 && journals.value.length===0 && fields.value.length===0){
+        search()
+    }else{
+        advancedSearch()
+    }
 })
 
 const totalEntries = ref(0)
