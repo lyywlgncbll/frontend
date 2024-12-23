@@ -82,6 +82,9 @@ export default {
         console.error('update failed:', error);
       }
       //调用接口获取数据
+      if (this.$refs.claimTable) {
+        this.$refs.claimTable.clearSelected();
+      }
     },
     async updateAllUser() {
       this.tableData.map(async (claim) => {

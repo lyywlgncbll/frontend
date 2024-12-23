@@ -63,6 +63,9 @@ export default {
   },
 
   methods: {
+    clearSelected(){
+      this.selectedRows.clear();
+    },
     // 选择/取消单行的选中状态
     toggleRowSelection(row) {
       if (this.selectedRows.has(row)) {
