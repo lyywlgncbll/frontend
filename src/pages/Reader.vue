@@ -281,12 +281,10 @@ const AIReading = () => {
     index: QAndAListIndex++
   })
   AIAnswerStatus.value = LoadStatus.Loading
-  // console.log(AIconfig)
+  message.value = ""
   sendAIReadingRequest(AIconfig).then((answer : string) => {
     if (answer != null) {
-      // console.log("before parse: ", answer)
       markdownToHtml(answer).then((res) => {
-          // console.log("after parse: ", res)
           res = res.replace(/<code(\s+[^>]*)?>/g, `<code style="background-color: #f0f0f0; border-radius: 5px; margin-left: 5px; margin-right: 5px;">`)
           answer = res
           var QAndA = QAndAList.value.pop()
@@ -324,7 +322,6 @@ const AIconfig = {
 const sendAIReadingRequest = async (config:any) => {
   try {
     const response = await axios(config)
-    message.value = ""
     return response.data
   } catch (error) {
     // console.error("error: ", error);
