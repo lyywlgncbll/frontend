@@ -3,6 +3,9 @@
         <div class="avatar-container" @click="triggerFileInput">
             <img v-if="avatar" :src="avatar" alt="加载中" class="avatar" :class="{'edit':editable}"/>
             <div v-else class="default-avatar" :class="{'edit':editable}">{{ getInitial }}</div>
+            <div class="name">
+                {{ name}}
+            </div>
             <div class="bio">
                 {{ bio }}
             </div>
@@ -15,9 +18,9 @@
         <button v-else @click="saveProfile" class="save-button">保存</button>
         <div class="profile-info">
             <div class="info" v-if="!editable">
-                <div class="name">
-                    <div class="info-name"><img src="/src/assets/iconfonts/userinfo/user.svg">名称：</div>
-                    {{ name }}
+                <div class="authorName">
+                    <div class="info-name"><img src="/src/assets/iconfonts/userinfo/user.svg">姓名：</div>
+                    {{ authorName == '' ? "None" : authorName }}
                 </div>
                 <div class="institution">
                     <div class="info-name"><img src="/src/assets/iconfonts/userinfo/instruction.svg">机构：</div>
@@ -25,7 +28,7 @@
                 </div>
                 <div class="ident">
                     <div class="info-name"><img src="/src/assets/iconfonts/userinfo/name.svg">身份：</div>
-                    {{ claim == null ? "普通用户" : "学者" }}
+                    {{ authorName == '' ? "普通用户" : "学者" }}
                 </div>
             </div>
             <div v-else class="info-edit">
@@ -70,7 +73,7 @@ export default {
             type: Array,
             default: () => [],
         },
-        claim: {
+        authorName: {
             type: String,
         },
         bio: {
@@ -323,9 +326,20 @@ export default {
     justify-content: center;
     width: 100%;
     height: auto;
-    margin: 20px auto 5px auto;
+    margin: 15px auto 5px auto;
     text-decoration: inherit;
     border-top: 1px solid;
+}
+
+.name{
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1.8rem;
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
 }
 
 .profile-info {
@@ -346,7 +360,7 @@ export default {
         margin-right: 8px;
     }
 
-    .name, .institution, .ident {
+    .authorName, .institution, .ident {
         width: 100%;
         display: flex;
         margin-bottom: 10px;

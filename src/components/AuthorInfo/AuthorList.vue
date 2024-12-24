@@ -46,16 +46,16 @@ export default {
     height: 100%;
     padding: 0 20px;
     min-height: 100px;
-    background-color: #fff;
-    border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    max-height: 70vh;
-    overflow: scroll;
-    scrollbar-width: none;
+    /*background-color: #fff;*/
+    /*border-radius: 20px;*/
+    /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
+    /*max-height: 70vh;*/
+    /*overflow: scroll;*/
+    /*scrollbar-width: none;*/
 
-    ::-webkit-scrollbar {
-        display: none;
-    }
+    /*::-webkit-scrollbar {*/
+    /*    display: none;*/
+    /*}*/
 }
 
 .title {

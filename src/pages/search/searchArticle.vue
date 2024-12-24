@@ -117,6 +117,7 @@ const search = () => {
 const generalSearch = async () => {
     isLoading.value = true
     try {
+        console.log("初级");
         await axios.post(SEARCH_API, {
             searchContent: searchContent.value,
             isFiltered: false,
@@ -126,7 +127,6 @@ const generalSearch = async () => {
             currentPage: currentPage.value,
         }).then(response => {
             if (response.status == 200) {
-                // console.log("初级", response.data);
                 menuItems.value[0].contents = response.data.years
                 menuItems.value[1].contents = response.data.fields
                 menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
@@ -209,6 +209,7 @@ const searchByTopic = async () => {
 
 const isLoading = ref(false)
 const advancedSearch = async () => {
+    console.log("高级");
     isLoading.value = true
     try {
         await axios.post(SEARCH_API, {

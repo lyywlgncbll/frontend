@@ -4,23 +4,24 @@
     <div class="container">
 
         <div class="right">
-            <ProfileHeader :avatar="user.avatar" :name="user.name" :claim="user.claim" :bio="user.bio"
+            <ProfileHeader :avatar="user.avatar" :name="user.name" :authorName="user.authorName" :bio="user.bio"
                            :institution="user.institution"
                            :researchAreas="user.researchAreas" :editable="isEditable" :authorization="authorization"
                            @editProfile="handleStartEditProfile" @saveProfile="handleSaveEditProfile"/>
-            <div class="pagewriters" v-if="this.user.claim!==null">
+            <div class="pagewriters" v-if="this.user.claimId!==null">
                 <AuthorList :authors="authorData"/>
             </div>
         </div>
         <div class="left">
             <div class="top">
                 <Claims ref="Claims" :userid="user.id" :authorization="authorization" :myclaimRequests="this.userclaims"
-                        :isClaim="user.claim"/>
-                <State v-if="this.user.claim!==null" :chartData="chartData" :totalCitations="totalCitations" :totalPapers="totalPapers"/>
+                        :isClaim="user.claimId"/>
+                <State v-if="this.user.claimId!==null" :chartData="chartData" :totalCitations="totalCitations"
+                       :totalPapers="totalPapers"/>
             </div>
 
-            <div class="pagetabs" v-if="this.user.claim!==null">
-                <References :references="references"/>
+            <div class="pagetabs" v-if="this.user.claimId!==null">
+                <References :references="references" :authors="authorData"/>
             </div>
 
         </div>
@@ -63,10 +64,10 @@ export default {
             user: {
                 id: 1,
                 name: "",
+                authorName: "",
                 mail: '',
                 bio: "",
-                claim: null,
-                researchAreas: ["Computer Vision", "Computer Graphics"],
+                claimId: '',
                 avatar: '',
                 institution: '',
             },
@@ -151,6 +152,7 @@ export default {
         sendGetMyInstitution() {
             axios.get('/user/selforg').then(response => {
                 console.log("获取用户的机构信息了", response.data);
+                this.user.authorName = response.data.authorName;
                 if (response.data.org.name != null) this.user.institution = response.data.org.name;
                 else {
                     this.user.institution = '未提供所属机构信息';
@@ -168,7 +170,7 @@ export default {
                     this.user.name = response.data.name;
                     this.user.mail = response.data.mail;
                     this.user.bio = response.data.description;
-                    this.user.claim = response.data.claim;
+                    this.user.claimId = response.data.claim;
                     this.user.researchAreas = response.data.fieldsOfStudy;
                     console.log(response.data);
                     resolve();
@@ -224,11 +226,14 @@ export default {
                 }
             }).then(response => {
                 console.log("获取合作作者了:", response.data);
-                const formatted = response.data.map(item => ({
+                const uniqueData = Array.from(
+                    new Map(response.data.map(item => [item.authorid, item])).values()
+                );
+                const formatted = uniqueData.map(item => ({
                     name: item.claim,
                     university: item.institution,
-                    avatar: default_pic,
                     authorid: item.authorid,
+                    isSelf: item.authorid === this.user.claimId,
                 }));
                 // 更新数据
                 this.authorData = formatted;
@@ -240,7 +245,7 @@ export default {
         sendGetMychartData() {
             axios.get('/api/academic/authorpub/byYear', {
                 params: {
-                    authorId: this.user.claim,
+                    authorId: this.user.claimId,
                 }
             }).then(response => {
                 console.log("获取该作者的年份论文信息了:", response.data);
@@ -267,7 +272,7 @@ export default {
         this.sendGetMyInfo()
             .then(() => {
                 this.sendGetMyAvatar().then(() => {
-                    if (this.user.claim === null) {
+                    if (this.user.claimId === null) {
                         this.$refs.Claims.sendGetMyClaims();
                         this.sendGetReadData();
                     } else {
@@ -297,7 +302,6 @@ export default {
     height: 100%;
     margin: auto;
     padding: 50px 0;
-    height: 100vh;
 }
 
 .right {
@@ -325,8 +329,15 @@ export default {
 .pagewriters {
     margin-top: 30px;
     width: 100%;
-    max-height: 70vh;
-    /*overflow-y: scroll;*/
+    max-height: 30vh;
+    overflow: scroll;
+    scrollbar-width: none;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    ::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 
