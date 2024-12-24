@@ -2,7 +2,7 @@
     <div class="reference-container">
         <div class="title">
             <span class="reference" :class="{'focus': !isChanged}" @click="changeTab">发表文献</span>
-            <span class="map" :class="{'focus': isChanged}" @click="changeTab">作者网络</span>
+            <span class="map" :class="{'focus': isChanged}" @click="changeTab">专家网络</span>
         </div>
         <!-- 发表文献部分 -->
         <div class="reference-item" v-for="(reference, index) in references" :key="index" v-if="!isChanged">
@@ -16,7 +16,7 @@
         </div>
         <!-- 作者网络部分 -->
         <div class="map-item" v-if="isChanged">
-            <div class="map-title"> 作者网络图 </div>
+            <div class="map-title"> 专家关系网络图 </div>
             <div ref="chartRef" style="width: 100%; height: 55vh;"></div>
         </div>
     </div>
