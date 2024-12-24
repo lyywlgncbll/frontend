@@ -39,7 +39,8 @@ const openForm = () => {
 };
 
 const goToArticle = (id) => {
-    router.push({ path: "/article", query: { id } });
+    const url = router.resolve({ path: '/article', query: { id: id } }).href;
+      window.open(url, '_blank');
 }
 
 const clickField = (content) => {
