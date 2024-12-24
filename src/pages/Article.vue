@@ -50,7 +50,7 @@
         <el-skeleton v-if="isLoading" :rows="1" animated style="margin: 20px 0;"></el-skeleton>
         <template v-else>
           <el-row class="paper-metadata" gutter="20">
-            <el-button v-for="keyword in paper.keywords" :key="keyword" class="keyword-button" round>
+            <el-button v-for="keyword in paper.keywords" :key="keyword" class="keyword-button" round @click="goToKeywordPage(keyword)">
               {{ keyword }}
             </el-button>
           </el-row>
@@ -245,7 +245,7 @@
         <!-- <div class="striped-divider2"></div> -->
         <el-divider />
         <el-row class="stat-footer">
-          <span>引用文章次数</span>
+          <span>引用文章数量</span>
           <div class="stat-number">
             <span>{{ getReferenceLength() }}</span>
           </div>
@@ -258,13 +258,23 @@
         </el-row>
       </div>
       <el-row><span>&emsp;</span></el-row>
-      <el-tooltip class="box-item" effect="dark" content="下载论文" placement="right">
+      <el-tooltip class="box-item" effect="dark" content="下载论文" placement="right" v-if="isPDFUrl()">
         <el-button circle class="stat-button" size="large" @click="downloadPaper()"><el-icon size="25px">
             <Download />
           </el-icon></el-button>
       </el-tooltip>
-      <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right">
+      <el-tooltip class="box-item" effect="dark" content="下载论文" placement="right" v-else>
+        <el-button circle class="stat-button" size="large" @click="downloadPaper()" disabled><el-icon size="25px">
+            <Download />
+          </el-icon></el-button>
+      </el-tooltip>
+      <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right" v-if="isPDFUrl()">
         <el-button circle class="stat-button" size="large" @click="preview()"><el-icon size="25px">
+            <View />
+          </el-icon></el-button>
+      </el-tooltip>
+      <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right" v-else>
+        <el-button circle class="stat-button" size="large" @click="preview()" disabled><el-icon size="25px">
             <View />
           </el-icon></el-button>
       </el-tooltip>
@@ -608,7 +618,7 @@ export default defineComponent({
         message: `Redirecting to articles related to ${keyword}...`,
         type: "info",
       });
-      localStorage.setItem('searchOption', 5);
+      localStorage.setItem('searchOption', 2);
       localStorage.setItem('searchString', keyword);
       localStorage.setItem('topic', '')
       if (!this.$route.path.includes('search/result')) {
@@ -632,11 +642,8 @@ export default defineComponent({
       }
     },
     gotoArticlePage(paperId) {
-      this.$router.push({
-        name: "Article",
-        query: { id: paperId }
-      });
-      window.location.reload();
+      const url = this.$router.resolve({ name: 'Article', query: { id: paperId } }).href;
+      window.open(url, '_blank');
     },
     transformBackendDataToPaper(backendData) {
       // 将后端数据转换为前端 paper 数据格式
@@ -712,6 +719,14 @@ export default defineComponent({
         return false;
       }
     },
+    isPDFUrl(){
+      if (this.paper.pdfUrl != null) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
   },
 });
 

@@ -1,7 +1,7 @@
 <template>
     <div id="topic-item" class="nav" v-if="topic != ''">
-        <div @click="handleClick">
-            <div class="title" :class="{ expand: hover }" :title="topic.name">
+        <div>
+            <div class="title" :class="{ expand: hover }" :title="topic.name" @click="handleClick">
                 Topic: {{ topic.name }}
             </div>
             <div class="container" :class="{ expand: hover }">
@@ -11,7 +11,7 @@
                 </div>
                 <div class="after"></div>
                 <div class="keywords">
-                    <div class="keyword" v-for="keyword in topic.keywords" title="keyword">{{ keyword }}</div>
+                    <div class="keyword" v-for="keyword in topic.keywords" title="keyword" @click="clickKeyword(keyword)">{{ keyword }}</div>
                 </div>
             </div>
         </div>
@@ -20,6 +20,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import router from "@/router/index.js";
 const topic = ref('')
 const hover = ref(false)
 onMounted(() => {
@@ -30,6 +31,14 @@ onMounted(() => {
 
 const handleClick = () => {
     hover.value = !hover.value
+}
+
+const clickKeyword = (content) => {
+    localStorage.setItem('searchOption', 2)
+    localStorage.setItem('topicObj', '')
+    localStorage.setItem('searchString', content)
+    window.location.reload()
+    // router.push('search/result')
 }
 </script>
 
@@ -101,11 +110,11 @@ const handleClick = () => {
 
 .container {
     overflow: hidden;
-    transition: max-height 1s ease;
-    max-height: 0;
+    transition: height 1s ease;
+    height: 0;
 
     &.expand{
-        max-height: 1000px;
+        height: calc-size(auto,size);
     }
 }
 

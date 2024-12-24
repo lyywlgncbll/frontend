@@ -3,11 +3,11 @@
     <div class="progress-bar" v-if="isLoading"></div>
     <div id="search-root">
         <div id="mid">
-            <div class="left-expand" @click="expandBar">
+            <div class="left-expand" @click="expandBar" v-if="!topicId">
                 <img src="/src/assets/iconfonts/search/down-expand.svg" width="15px" height="15px"
                      :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
             </div>
-            <div class="left-bar" :class="{ collapsed: !isExpand }">
+            <div class="left-bar" :class="{ collapsed: !isExpand }" v-if="!topicId">
                 <searchFilter :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
                 </searchFilter>
             </div>
@@ -35,22 +35,24 @@ import loggedNavBar from '/src/components/bar/logged-nav-bar.vue';
 import searchNav from '@/components/search/searchNav.vue';
 import searchTopic from '@/components/search/searchTopic.vue';
 import axios from '@/utils/axios';
-import {SEARCH_API} from '../../utils/request.js'
+import {SEARCH_API, SEARCH_TOPIC_API} from '../../utils/request.js'
 
 const searchContent = ref("learning")
+const topicId = ref("")
 const option = ref(1)
 onMounted(() => {
-    // if (localStorage.getItem('topicObj')) {
-    //     searchContent.value = JSON.parse(localStorage.getItem('topicObj')).name
-    //     option.value = 6
-    // } else {
-    //     searchContent.value = localStorage.getItem('searchString')
-    //     option.value = Number(localStorage.getItem('searchOption'))
-    // }
-    searchContent.value = localStorage.getItem('searchString')
-    option.value = Number(localStorage.getItem('searchOption'))
-    console.log("搜索内容:",searchContent.value, "搜索选项",option.value);
-    search()
+    if (localStorage.getItem('topicObj')) {
+        topicId.value = JSON.parse(localStorage.getItem('topicObj')).id
+        console.log("搜索Topic:", topicId.value)
+        searchByTopic()
+    } else {
+        searchContent.value = localStorage.getItem('searchString')
+        option.value = Number(localStorage.getItem('searchOption'))
+        searchContent.value = localStorage.getItem('searchString')
+        option.value = Number(localStorage.getItem('searchOption'))
+        console.log("搜索内容:", searchContent.value, "搜索选项", option.value);
+        generalSearch()
+    }
 })
 
 onUnmounted(() => {
@@ -84,30 +86,18 @@ const handleFilter = (selections) => {
     fields.value = selections.fields
     currentPage.value = 1
     console.log("筛选的数据: ", selections);
-    if(years.value.length===0 && journals.value.length===0 && fields.value.length===0){
-        search()
-    }else{
-        advancedSearch()
-    }
+    search()
 }
 
 //获取排序方式
 const handleSort = (sort) => {
     sortBy.value = sort
-    if(years.value.length===0 && journals.value.length===0 && fields.value.length===0){
-        search()
-    }else{
-        advancedSearch()
-    }
+    search()
 }
 
 watch(currentPage, () => {
-    console.log("当前的页码",currentPage.value);
-    if(years.value.length===0 && journals.value.length===0 && fields.value.length===0){
-        search()
-    }else{
-        advancedSearch()
-    }
+    console.log("当前的页码", currentPage.value);
+    search()
 })
 
 const totalEntries = ref(0)
@@ -115,9 +105,19 @@ const sortBy = ref(1)
 const years = ref([])
 const journals = ref([])
 const fields = ref([])
-const search = async () => {
+const search = () => {
+    if (topicId.value) {
+        searchByTopic()
+    } else if (years.value.length === 0 && journals.value.length === 0 && fields.value.length === 0) {
+        generalSearch()
+    } else {
+        advancedSearch()
+    }
+}
+const generalSearch = async () => {
     isLoading.value = true
     try {
+        console.log("初级");
         await axios.post(SEARCH_API, {
             searchContent: searchContent.value,
             isFiltered: false,
@@ -127,7 +127,6 @@ const search = async () => {
             currentPage: currentPage.value,
         }).then(response => {
             if (response.status == 200) {
-                // console.log("初级", response.data);
                 menuItems.value[0].contents = response.data.years
                 menuItems.value[1].contents = response.data.fields
                 menuItems.value[2].contents = response.data.journals.filter(content => content != null && content !== '')
@@ -144,8 +143,73 @@ const search = async () => {
     }
 }
 
+const searchByTopic = async () => {
+    isLoading.value = true
+    let orderBy = ''
+    let desc = false
+    if (sortBy.value === 2) {
+        orderBy = "publishYear"
+        desc = false
+    } else if (sortBy.value === 3) {
+        orderBy = "publishYear"
+        desc = true
+    } else if (sortBy.value === 4) {
+        orderBy = "citation"
+        desc = false
+    } else if (sortBy.value === 5) {
+        orderBy = "citation"
+        desc = true
+    }
+    try {
+        await axios.get(SEARCH_TOPIC_API, {
+            params: {
+                topicID: topicId.value,
+                page: currentPage.value,
+                pageSize: pageSize.value,
+                orderBy: orderBy,
+                desc: desc,
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                console.log("搜索Topic:", response.data)
+                totalPages.value = response.data.totalPage
+                totalEntries.value = response.data.totalElements
+
+                const journalSet = new Set();
+                const fieldSet = new Set();
+
+                searchItems.value = response.data.view.map((item) => {
+                    const parsedFields = JSON.parse(item.fos);
+                    const parsedAuthors = JSON.parse(item.authors).map(author => author.author.display_name);
+                    if (item.venue) journalSet.add(item.venue);
+                    parsedFields.forEach(field => fieldSet.add(field));
+                    // 返回转换后的结构
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        authors: parsedAuthors,
+                        abstract: item.summary || "",
+                        citationCount: item.citation,
+                        year: item.publishYear,
+                        journal: item.venue || "",
+                        fields: parsedFields
+                    }
+                })
+                menuItems.value[1].contents = Array.from(fieldSet)
+                menuItems.value[2].contents = Array.from(journalSet)
+            } else {
+                console.error("搜索Topic失败:", response.data.message)
+            }
+            isLoading.value = false
+        })
+    } catch (error) {
+        console.error('请求失败:', error)
+    }
+}
+
 const isLoading = ref(false)
 const advancedSearch = async () => {
+    console.log("高级");
     isLoading.value = true
     try {
         await axios.post(SEARCH_API, {
@@ -252,7 +316,7 @@ const advancedSearch = async () => {
     border-radius: 2px;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
 }
 
 .progress-bar::after {

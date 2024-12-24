@@ -12,7 +12,7 @@
             </div>
             <div class="detail">
                 <div class="pagetabs">
-                    <References :references="references"/>
+                    <References :references="references" :authors="authorData"/>
                 </div>
                 <div class="pagewriters">
                     <AuthorList :authors="authorData"/>
@@ -51,7 +51,6 @@ export default {
                 mail: '123456@qq.com',
                 bio: "我是原神!",
                 claim: null,
-                researchAreas: ["Computer Vision", "Computer Graphics"],
                 avatar: '',
                 institution: "Beihang University",
             },
@@ -171,11 +170,14 @@ export default {
                 }
             }).then(response => {
                 console.log("获取该作者的合作作者了:", response.data);
-                const formatted = response.data.map(item => ({
+                const uniqueData = Array.from(
+                    new Map(response.data.map(item => [item.authorid, item])).values()
+                );
+                const formatted = uniqueData.map(item => ({
                     name: item.claim,
                     university: item.institution,
-                    avatar: default_pic,
                     authorid: item.authorid,
+                    isSelf: item.authorid === this.authorid,
                 }));
                 // 更新数据
                 this.authorData = formatted;
@@ -247,5 +249,13 @@ export default {
 .pagewriters {
     width: 30%;
     max-height: 70vh;
+    overflow: scroll;
+    scrollbar-width: none;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    ::-webkit-scrollbar {
+        display: none;
+    }
 }
 </style>
