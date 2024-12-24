@@ -315,7 +315,7 @@ const advancedSearch = async () => {
     border-radius: 2px;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
 }
 
 .progress-bar::after {
