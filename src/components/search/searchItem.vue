@@ -15,7 +15,7 @@
         <div class="content" @click="goToArticle(searchItem.id)">{{ searchItem.abstract }}</div>
         <div class="line"></div>
         <div class="label">
-            <div class="label-item" v-for="(field, index) in searchItem.fields">{{ field }}</div>
+            <div class="label-item" v-for="(field, index) in searchItem.fields" @click="clickField(field)">{{ field }}</div>
         </div>
     </div>
 
@@ -40,6 +40,14 @@ const openForm = () => {
 
 const goToArticle = (id) => {
     router.push({ path: "/article", query: { id } });
+}
+
+const clickField = (content) => {
+    localStorage.setItem('searchOption', 3)
+    localStorage.setItem('topicObj', '')
+    localStorage.setItem('searchString', content)
+    window.location.reload()
+    // router.push('/search/result')
 }
 
 </script>

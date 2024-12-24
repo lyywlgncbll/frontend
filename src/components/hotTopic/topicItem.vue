@@ -7,7 +7,8 @@
         <div class="info">
             <div class="works">Works: {{ item.worksCount }}</div>
             <div class="cited">Cited By: {{ item.citedByCount }}</div>
-            <div class="date">Created: {{ item.createdDate }}</div>
+            <div class="createdDate">Created: {{ item.createdDate }}</div>
+            <div class="updatedDate">Updated: {{ item.updatedDate}}</div>
         </div>
         <div class="before"></div>
         <div class="content">
@@ -15,7 +16,7 @@
         </div>
         <div class="after"></div>
         <div class="keywords">
-            <div class="keyword" v-for="keyword in item.keywords">{{ keyword }}</div>
+            <div class="keyword" v-for="keyword in item.keywords" @click="clickKeyword(keyword)">{{ keyword }}</div>
         </div>
     </div>
 </template>
@@ -28,17 +29,16 @@ const props = defineProps({
 })
 
 const clickTopic = () => {
-    localStorage.setItem('searchOption', 1)
     localStorage.setItem('searchString', '')
     localStorage.setItem('topicObj', JSON.stringify(props.item))
     router.push('search/result')
 }
-// const clickKeyword = (content) => {
-//     localStorage.setItem('searchOption', 6)
-//     localStorage.setItem('topicObj', '')
-//     localStorage.setItem('searchString', content)
-//     router.push('search/result')
-// }
+const clickKeyword = (content) => {
+    localStorage.setItem('searchOption', 2)
+    localStorage.setItem('topicObj', '')
+    localStorage.setItem('searchString', content)
+    router.push('search/result')
+}
 </script>
 
 <style scoped>
@@ -86,7 +86,11 @@ const clickTopic = () => {
         margin: 0 10px;
     }
 
-    .date {
+    .createdDate {
+        margin-left: 10px;
+    }
+
+    .updatedDate{
         margin-left: 10px;
     }
 }

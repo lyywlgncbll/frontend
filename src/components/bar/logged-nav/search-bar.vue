@@ -59,7 +59,7 @@ export default {
           }else{
             localStorage.setItem('searchOption',this.select);
             localStorage.setItem('searchString',this.input);
-            // localStorage.setItem('topicObj','')
+            localStorage.setItem('topicObj','')
             if (!this.$route.path.includes('search/result')) {
               router.push('/search/result');
             } else{

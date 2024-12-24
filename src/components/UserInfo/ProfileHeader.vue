@@ -357,6 +357,7 @@ export default {
         align-items: center;
         justify-content: center;
         margin-right: 10px;
+        min-width: 80px;
     }
 }
 
