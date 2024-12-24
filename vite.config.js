@@ -23,6 +23,10 @@ export default defineConfig({
   ],
   build: {
     minify: false,
+  },
+  server: {
+    port: 80,
+    host: true,  // 允许外部访问
   }
 
 })
