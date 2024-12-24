@@ -23,7 +23,7 @@
 </template>
 <script>
 import * as echarts from 'echarts';
-
+import router from "@/router/index.js";
 export default {
     name: "References",
     props: {
@@ -162,6 +162,23 @@ export default {
 
                 // 渲染图表
                 chart.setOption(option);
+                // 添加点击事件监听
+                chart.on("click", (params) => {
+                    if (params.dataType === "node") {
+                        // 获取点击的节点数据
+                        const clickedNode = params.data;
+                        if (clickedNode.id) {
+                            // 使用 Vue 路由跳转
+                            if (this.$route.path.includes('authorInfo/')) {
+                                router.push(`/authorInfo/${clickedNode.id}`);
+                                window.location.reload();
+                            } else{
+                                router.push(`/authorInfo/${clickedNode.id}`);
+                            }
+
+                        }
+                    }
+                });
             });
         },
     },

@@ -23,7 +23,6 @@
             <div class="pagetabs" v-if="this.user.claimId!==null">
                 <References :references="references" :authors="authorData"/>
             </div>
-
         </div>
     </div>
 
@@ -33,7 +32,6 @@
 import LoggedNavBar from '@/components/bar/logged-nav-bar.vue';
 import Chart from '@/components/UserInfo/Chart.vue';
 import axios from '@/utils/axios.js';
-import default_pic from "../assets/default.png";
 import AuthorList from "../components/AuthorInfo/AuthorList.vue";
 import Claims from "../components/UserInfo/Claims.vue";
 import ProfileHeader from "../components/UserInfo/ProfileHeader.vue";
@@ -43,10 +41,12 @@ import Information from "@/components/UserInfo/ReadState.vue";
 import ReadState from "@/components/UserInfo/ReadState.vue";
 import {GET_READ_CNT_API} from "@/utils/request.js";
 import {nextTick} from "vue";
+import DailyStatsChart from "@/components/home-page/dailyStatisChart.vue";
 
 export default {
     name: "userInfo",
     components: {
+        DailyStatsChart,
         ReadState,
         Information,
         ProfileHeader,
@@ -339,6 +339,7 @@ export default {
         display: none;
     }
 }
+
 
 
 </style>
