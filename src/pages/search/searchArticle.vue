@@ -3,10 +3,16 @@
     <div class="progress-bar" v-if="isLoading"></div>
     <div id="search-root">
         <div id="mid">
-            <div class="left-expand" @click="expandBar" v-if="!topicId">
-                <img src="/src/assets/iconfonts/search/down-expand.svg" width="15px" height="15px"
-                     :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
+            <div class="left-button">
+                <div class="left-expand" @click="expandBar" v-if="!topicId">
+                    <img src="/src/assets/iconfonts/search/down-expand.svg" width="15px" height="15px"
+                         :style="{ transform: isExpand ? 'rotate(90deg)' : 'rotate(270deg)' }">
+                </div>
+                <div class="confirm" @click="filter" v-if="!topicId">
+                    筛选
+                </div>
             </div>
+
             <div class="left-bar" :class="{ collapsed: !isExpand }" v-if="!topicId">
                 <searchFilter :isExpand="isExpand" :menuItems="menuItems" @selectionChanged="handleFilter">
                 </searchFilter>
@@ -84,9 +90,7 @@ const handleFilter = (selections) => {
     years.value = selections.years
     journals.value = selections.journals
     fields.value = selections.fields
-    currentPage.value = 1
     console.log("筛选的数据: ", selections);
-    search()
 }
 
 //获取排序方式
@@ -112,6 +116,13 @@ const search = () => {
         generalSearch()
     } else {
         advancedSearch()
+    }
+}
+
+const filter=()=>{
+    if(isExpand.value){
+        currentPage.value = 1
+        search()
     }
 }
 const generalSearch = async () => {
@@ -272,9 +283,32 @@ const advancedSearch = async () => {
     width: 0%;
 }
 
-.left-expand {
+.left-button{
+    height: 200px;
+    margin-top: 21px;
     position: sticky;
     top: 31px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
+}
+
+.left-expand {
+    width: 20px;
+    height: 44px;
+    background-color: var(--expand-button-background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--expand-button-hover-color);
+    }
+}
+
+.confirm{
     margin-top: 21px;
     width: 20px;
     height: 44px;
@@ -283,8 +317,9 @@ const advancedSearch = async () => {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 999;
-
+    color: whitesmoke;
+    font-size: 12px;
+    text-align: center;
     &:hover {
         background-color: var(--expand-button-hover-color);
     }
