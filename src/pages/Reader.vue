@@ -50,7 +50,12 @@
             <el-icon size="20" style="padding-top: 8px;"><ChatDotRound /></el-icon>
           </el-col>
           <el-col :span="20">
-            <el-row class="answer">
+            <el-row v-if="QAndA.index + 1 === QAndAListIndex && AIAnswerStatus === LoadStatus.Loading">
+              <el-icon class="is-loading" size="28px">
+                <Loading />
+              </el-icon>
+            </el-row>
+            <el-row class="answer" v-else>
               <div v-html="QAndA.answer" class="msg_no_bgc answer_msg"></div>
             </el-row>
           </el-col>
@@ -261,6 +266,7 @@ const adjustHeight = () => {
       }
 }
 
+const AIAnswerStatus = ref<LoadStatus>(LoadStatus.Loading)
 const token = localStorage.getItem('authToken')
 const AIReading = () => {
   if (message.value == null || message.value === "") {
@@ -269,6 +275,12 @@ const AIReading = () => {
   const question = message.value
   AIconfig.data.question = question
   AIconfig.data.sessionId = token == null ? "" : token
+  QAndAList.value.push({
+    question: `<p>${question.replace(/\n/g, `<br>`)}<p>`,
+    answer: "",
+    index: QAndAListIndex++
+  })
+  AIAnswerStatus.value = LoadStatus.Loading
   // console.log(AIconfig)
   sendAIReadingRequest(AIconfig).then((answer : string) => {
     if (answer != null) {
@@ -277,12 +289,13 @@ const AIReading = () => {
           // console.log("after parse: ", res)
           res = res.replace(/<code(\s+[^>]*)?>/g, `<code style="background-color: #f0f0f0; border-radius: 5px; margin-left: 5px; margin-right: 5px;">`)
           answer = res
-          QAndAList.value.push({
-            question: `<p>${question.replace(/\n/g, `<br>`)}<p>`,
-            answer: answer || "<p>对不起，我暂时无法解释这段文字<p>",
-            index: QAndAListIndex++
-          })
+          var QAndA = QAndAList.value.pop()
+          if (QAndA) {
+            QAndA.answer = answer || "<p>对不起，我暂时无法解释这段文字<p>"
+            QAndAList.value.push(QAndA)
+          }
           isInput.value = false
+          AIAnswerStatus.value = LoadStatus.Success
         })
       }
     })
