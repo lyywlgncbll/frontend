@@ -142,7 +142,8 @@ export default {
                             links: links,
                             categories: categories,
                             roam: true, // 支持拖拽缩放
-
+                            draggable: true,
+                            cursor: "default",
                             label: {
                                 show: true,
                                 position: "right",
