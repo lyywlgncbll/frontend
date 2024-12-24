@@ -258,7 +258,7 @@
         </el-row>
       </div>
       <el-row><span>&emsp;</span></el-row>
-      <el-tooltip class="box-item" effect="dark" content="预览论文" placement="right" v-if="isPDFUrl()">
+      <el-tooltip class="box-item" effect="dark" content="下载论文" placement="right" v-if="isPDFUrl()">
         <el-button circle class="stat-button" size="large" @click="downloadPaper()"><el-icon size="25px">
             <Download />
           </el-icon></el-button>
