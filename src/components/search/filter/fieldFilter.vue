@@ -151,8 +151,9 @@ const addContent = () => {
         margin-left: 12px;
         font-size: 15px;
         color: #959595;
+        border:1px solid var(--border-color);
         padding: 3px 8px;
-        border-radius: 5px;
+        border-radius: 10px;
         transition: background-color 0.3s;
         &:hover {
             background-color: var(--button-background-color);
