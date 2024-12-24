@@ -13,7 +13,7 @@
             <div class="info">
                 <div class="name">{{ claim == null ? "None" : claim }}</div>
                 <div class="institution"> {{ institution == '' ? '未有所属机构' : institution }}</div>
-                <div class="bio">学者</div>
+                <div class="ident">学者</div>
             </div>
         </div>
     </div>
@@ -45,7 +45,6 @@ export default {
         },
         bio: {  // 个人描述字段
             type: String,
-            default: '生动有趣的个人描述更容易让别人认识你~',
         },
     },
     computed: {
@@ -88,7 +87,6 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
 .avatar {
@@ -135,13 +133,10 @@ export default {
 
     .name,
     .institution,
-    .bio {
+    .ident {
         margin: 25px 0;
         padding: 5px 8px;
         white-space: nowrap;
-    }
-
-    .bio {
     }
 }
 </style>
