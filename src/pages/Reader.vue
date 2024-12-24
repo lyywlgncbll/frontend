@@ -204,9 +204,6 @@ onMounted(() => {
     })
   })
   notifyShortcutKey()
-  AIconfig.data.sessionId = "1"
-  AIconfig.data.question = "下面我将给出一些论文中的内容，请你为我解释它们"
-  sendAIReadingRequest(AIconfig)
   window.addEventListener('beforeunload', sendHistoryProgress)
 });
 
