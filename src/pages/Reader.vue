@@ -18,7 +18,7 @@
     </div>
     <div class="middle loading" v-if="loadStatus === LoadStatus.Loading">
         <el-icon class="is-loading" size="160px">
-          <Loading />
+          <img src="../assets/loading.jpg"/>
         </el-icon>
     </div>
   </div>
