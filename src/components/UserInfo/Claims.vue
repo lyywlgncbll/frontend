@@ -20,7 +20,10 @@
                         <li v-for="(claim, index) in filteredClaims" :key="index" class="claim-item">
                             <span>{{ claim.claim }}</span>
                             <span :class="['status', claim.status]">{{ claim.status }}</span>
-                            <button v-if="!claim.isClaimed" @click="selectClaim(claim)" class="select-button">
+                            <button v-if="!claim.isClaimed" @click="selectClaim(claim)" class="select-button"
+                            :style="{
+                                marginLeft: claim.isSelected ? '34px' : '50px',
+                            }">
                                 {{ claim.isSelected ? '已选择' : '选择' }}
                             </button>
                             <button v-else class="select-button disabled">
@@ -368,7 +371,7 @@ export default {
 
 .search-button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #3D8CFF;
     color: white;
     border: none;
     border-radius: 5px;
@@ -378,7 +381,7 @@ export default {
 }
 
 .search-button:hover {
-    background-color: #0056b3;
+    background-color: #3D8CFF;
 }
 
 .results-container {
@@ -389,8 +392,9 @@ export default {
 
 .claim-item {
     display: flex;
-    justify-content: space-between;
+    gap:110px;
     margin-bottom: 10px;
+    
 
     span {
         &:first-child {
@@ -412,6 +416,7 @@ export default {
             text-overflow: ellipsis;
             white-space: nowrap;
             text-align: left;
+            
         }
     }
 }
@@ -422,32 +427,34 @@ export default {
     display: inline-block; /* 确保状态不会被挤压 */
 
     &.Claimed {
-        background-color: #28a745;
+        background-color: #555555;
         color: white;
     }
 
     &.Unclaimed {
-        background-color: #dc3545;
+        background-color: #28a745;
         color: white;
+        
     }
 }
 
 .select-button {
     padding: 5px 10px;
-    background-color: #007bff;
+    background-color: #3D8CFF;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-
+    margin-left: 50px;
     &:hover {
-        background-color: #0056b3;
+        background-color: #3D8CFF;
     }
 
     &.disabled {
         background-color: #ccc;
         color: #666;
         cursor: not-allowed;
+        
     }
 }
 
@@ -471,20 +478,20 @@ export default {
 }
 
 .submit-button {
-    background-color: #28a745;
+    background-color: #3D8CFF;
     color: white;
 
     &:hover {
-        background-color: #218838;
+        background-color: #3D8CFF;
     }
 }
 
 .cancel-button {
-    background-color: #dc3545;
+    background-color: red;
     color: white;
 
     &:hover {
-        background-color: #c82333;
+        background-color: red;
     }
 }
 
