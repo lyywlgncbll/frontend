@@ -140,7 +140,8 @@ onMounted(() => {
         loadStatus.value = LoadStatus.Success
         state.numPages = pdf.numPages
       })
-    } else {
+    }
+    else {
       console.log("not store")
       axios(config).then((response: any) => {
         loadStatus.value = LoadStatus.Success
@@ -166,7 +167,7 @@ onMounted(() => {
           try {
             localStorage.setItem(url, base64String)
           } catch (e) {
-            localStorage.clear()
+            // localStorage.clear()
           }
           console.log("store pdf")
   

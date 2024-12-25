@@ -11,6 +11,7 @@ const instance = axios.create({
 
 // 请求拦截器：在请求发送前动态设置请求头
 instance.interceptors.request.use(config => {
+    // console.log(localStorage.getItem('authToken'))
     // 从 localStorage 或 Vuex 中获取 token
     const token = localStorage.getItem('authToken') || '';  // 你可以根据需要使用 Vuex
 
@@ -40,6 +41,7 @@ instance.interceptors.response.use(response => {
             // 清除过期 token 或 Vuex 中的状态
             localStorage.removeItem('authToken');  // 清除 token
             router.push('/login');  // 跳转到登录页
+            // alert('401')
         }
 
         // 你可以根据其他错误码处理
