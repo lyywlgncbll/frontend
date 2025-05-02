@@ -6,3 +6,14 @@
 命令行运行 `npm install`安装依赖
 
 运行 `npm run dev`或者 `npm run serve`以运行前端代码。前者优化和启动速度快，适用于频繁改代码的开发场景（gpt说的）
+
+## 项目展示
+项目部分页面展示如下：
+![login.png](image/login.png)
+![home.png](image/home.png)
+![user.png](image/user.png)
+![user2.png](image/user2.png)
+![search.png](image/search.png)
+![paper.png](image/paper.png)
+![read.png](image/read.png)
+
